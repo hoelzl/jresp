@@ -10,7 +10,10 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.knowledge;
+package org.cmg.scel.knowledge.ts;
+
+import org.cmg.scel.knowledge.TemplateField;
+
 
 /**
  * @author loreti

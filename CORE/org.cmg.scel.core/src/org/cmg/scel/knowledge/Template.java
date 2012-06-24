@@ -12,22 +12,38 @@
  */
 package org.cmg.scel.knowledge;
 
+
 /**
+ * An instance of class <code>Template</code> is used as a pattern
+ * to select knowledge items in the repositories.
  * 
- * 
- * @author loreti
+ * @author Michele Loreti
  * 
  *
  */
 public class Template {
-	//FIXME: Add documentation;
 
+	/**
+	 * A list of template fields. 
+	 */
 	private TemplateField[] fields;
 
+	/**
+	 * Creates a new template starting from its fields.
+	 * 
+	 * @param fields
+	 */
 	public Template( TemplateField ... fields ) {
 		this.fields = fields;
 	}
 	
+	/**
+	 * Check if tuple <code>t</code> matches the tempalte.
+	 * 
+	 * @param t tuple to match
+	 * @return	<code>true</code> if the tuple matches against this template,
+	 * 	<code>false</code> otherwise.
+	 */
 	public boolean match( Tuple t ) {
 		int size = this.length();
 		if (size != t.length()) {
@@ -42,7 +58,9 @@ public class Template {
 	}
 
 	/**
-	 * @return
+	 * Returns the number of fields in the template.
+	 * 
+	 * @return number of fields in the template.
 	 */
 	public int length() {
 		return fields.length;

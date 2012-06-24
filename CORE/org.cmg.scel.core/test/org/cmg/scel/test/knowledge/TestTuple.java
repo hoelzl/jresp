@@ -12,12 +12,12 @@
  */
 package org.cmg.scel.test.knowledge;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.cmg.scel.exceptions.IllegalTypeException;
 import org.cmg.scel.knowledge.Tuple;
 import org.junit.Test;
-import org.junit.experimental.categories.Categories.ExcludeCategory;
 
 /**
  * @author loreti

@@ -10,29 +10,30 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.knowledge.ts;
 
-import org.cmg.scel.knowledge.Tuple;
+import org.cmg.scel.knowledge.TemplateField;
+
 
 /**
  * @author loreti
  * 
  *
  */
-public interface ProcessContainer {
+public class ActualTemplateField implements TemplateField {
+	
+	private Object formal;
+	
+	public ActualTemplateField( Object formal ) {
+		this.formal = formal;
+	}
 
-	public void put( Tuple t , Target l );
-	
-	public void get( Tuple t , Target l );
-	
-	public void getp( Tuple t , Target l );
-	
-	public void getAll( Tuple t , Target l );
-	
-	public void query( Tuple t , Target l );
-	
-	public void queryp( Tuple t , Target l );
-	
-	public void queryAll( Tuple t , Target l );
-	
+	/* (non-Javadoc)
+	 * @see org.cmg.scel.knowledge.TemplateField#match(java.lang.Object)
+	 */
+	@Override
+	public boolean match(Object o) {
+		return formal.equals(formal);
+	}
+
 }

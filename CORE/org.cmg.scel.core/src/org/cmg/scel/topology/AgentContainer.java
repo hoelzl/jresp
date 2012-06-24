@@ -10,27 +10,15 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.knowledge;
+package org.cmg.scel.topology;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-public class FormalTemplateField implements TemplateField {
-	
-	private Object formal;
-	
-	public FormalTemplateField( Object formal ) {
-		this.formal = formal;
-	}
+public interface AgentContainer extends AgentContext {
 
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.knowledge.TemplateField#match(java.lang.Object)
-	 */
-	@Override
-	public boolean match(Object o) {
-		return formal.equals(formal);
-	}
-
+	public void addAgent( Agent a );
+	public void start();
+	
 }

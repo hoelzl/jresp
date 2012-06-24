@@ -10,12 +10,16 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.knowledge;
+package org.cmg.scel.knowledge.ts;
 
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.cmg.scel.knowledge.Knowledge;
+import org.cmg.scel.knowledge.Template;
+import org.cmg.scel.knowledge.Tuple;
 
 /**
  * @author loreti

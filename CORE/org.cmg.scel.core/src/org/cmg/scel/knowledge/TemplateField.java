@@ -13,12 +13,23 @@
 package org.cmg.scel.knowledge;
 
 /**
- * @author loreti
+ * Identifies a generic template field. Each implementation of
+ * interface <code>Knowedge</code> should provide specific
+ * implementation of <code>TemplateField</code>.
+ * 
+ * 
+ * @author Michele Loreti
  * 
  *
  */
 public interface TemplateField {
 
+	/**
+	 * Checks if the object <code>o</code> matches against this field.
+	 *
+	 * @param o a generic object
+	 * @return <code>true</code> if the object <code>o</code> matches against this field.
+	 */
 	public boolean match( Object o );	
 	
 }

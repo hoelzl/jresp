@@ -12,6 +12,10 @@
  */
 package org.cmg.scel.topology;
 
+import java.util.LinkedList;
+
+import org.cmg.scel.knowledge.Knowledge;
+import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 
 /**
@@ -19,71 +23,39 @@ import org.cmg.scel.knowledge.Tuple;
  * 
  *
  */
-public class Node implements ProcessContainer {
+public class Node implements AgentContext {
 
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#put(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void put(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#get(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void get(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#getp(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void getp(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#getAll(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void getAll(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#query(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void query(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#queryp(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void queryp(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.topology.ProcessContainer#queryAll(org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
-	 */
-	@Override
-	public void queryAll(Tuple t, Target l) {
-		// TODO Auto-generated method stub
-		
-	}
 	
+	protected Knowledge knowledge;
 	
+	protected Policy	policy;
+
+	public void put(Agent a, Tuple t, Target l) throws InterruptedException {
+		policy.put(a, t, l);
+	}
+
+	public Tuple get(Agent a, Template t, Target l) {
+		return policy.get(a, t, l);
+	}
+
+	public Tuple getp(Agent a, Template t, Target l) {
+		return policy.getp(a, t, l);
+	}
+
+	public LinkedList<Tuple> getAll(Agent a, Template t, Target l) {
+		return policy.getAll(a, t, l);
+	}
+
+	public Tuple query(Agent a, Template t, Target l) {
+		return policy.query(a, t, l);
+	}
+
+	public Tuple queryp(Agent a, Template t, Target l) {
+		return policy.queryp(a, t, l);
+	}
+
+	public LinkedList<Tuple> queryAll(Agent a, Template t, Target l) {
+		return policy.queryAll(a, t, l);
+	}
 
 }
