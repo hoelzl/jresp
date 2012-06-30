@@ -12,6 +12,8 @@
  */
 package org.cmg.scel.knowledge;
 
+import java.util.Arrays;
+
 
 /**
  * An instance of class <code>Template</code> is used as a pattern
@@ -64,6 +66,24 @@ public class Template {
 	 */
 	public int length() {
 		return fields.length;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Template) {
+			return Arrays.deepEquals(fields, ((Template) obj).fields);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(fields);
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.deepToString(fields);
 	}
 	
 }

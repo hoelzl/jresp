@@ -10,15 +10,22 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.protocol;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-public interface Target {
+public class UnknownMessageException extends Exception {
 
-	public boolean isSelf();
+	private Object o;
+
+	public UnknownMessageException(Object o) {
+		this.o = o;
+	}
 	
+	public Object getReceivedObject() {
+		return this.o;
+	}
+
 }

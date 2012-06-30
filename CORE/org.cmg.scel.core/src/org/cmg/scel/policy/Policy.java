@@ -10,15 +10,20 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.policy;
+
+import org.cmg.scel.behaviour.AgentContext;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-public interface Target {
+public abstract class Policy implements IPolicy {
 
-	public boolean isSelf();
+	protected AgentContext context;
 	
+	public Policy( AgentContext context ) {
+		this.context = context;
+	}
+
 }

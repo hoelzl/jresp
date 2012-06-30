@@ -10,15 +10,17 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
-
-import org.cmg.scel.knowledge.Tuple;
+package org.cmg.scel.behaviour;
 
 /**
  * @author Michele Loreti
  *
  */
-public interface Policy extends AgentContext {
+public interface AgentContainer extends AgentContext {
 
+	public void addAgent( Agent a );
+	public void start();
+	public void stop();
+	public int getAgentId();
 	
 }

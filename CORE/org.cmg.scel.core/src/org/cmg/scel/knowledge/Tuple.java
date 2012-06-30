@@ -12,6 +12,8 @@
  */
 package org.cmg.scel.knowledge;
 
+import java.util.Arrays;
+
 import org.cmg.scel.exceptions.IllegalTypeException;
 
 /**
@@ -28,7 +30,7 @@ public class Tuple {
 	/**
 	 * Tuple fields.
 	 */
-	protected Object[] fields;
+	protected SCELValue[] fields;
 	
 	
 	/**
@@ -36,7 +38,7 @@ public class Tuple {
 	 * 
 	 * @param fields fields of new created tuple.
 	 */
-	public Tuple( Object ... fields ) {
+	public Tuple( SCELValue ... fields ) {
 		this.fields = fields;
 	}
 	
@@ -56,41 +58,9 @@ public class Tuple {
 	 * @param i element index.
 	 * @return the element at index <code>i</code>.
 	 */
-	public Object getElementAt( int i ) {
+	public SCELValue getElementAt( int i ) {
 		return fields[i];
 	}
-	
-	/**
-	 * Checks if the element at index <code>i</code> is
-	 * instance of class <code>c</code>.
-	 * 
-	 * @param c a class
-	 * @param i index of element
-	 * @return if the element at index <code>i</code> is
-	 * instance of class <code>c</code>
-	 */
-	public <T> boolean instanceOf( Class<T> c , int i ) {
-		return c.isInstance(fields[i]);
-	}
-
-	/**
-	 * Returns the instance of class <code>c</code> at
-	 * index <code>i</code>. An <code>IllegalTypeException</code>
-	 * is raised if the element at index <code>i</code> is not
-	 * an isntance of <code>c</code>.
-	 * 
-	 * @param c a class
-	 * @param i index of element
-	 * @return the instance of class <code>c</code> at
-	 * index <code>i</code>
-	 */
-	public <T> T getElementAt( Class<T> c , int i) {
-		if (c.isInstance(fields[i])) {
-			return c.cast(fields[i]);
-		}
-		throw new IllegalTypeException(c,fields[i].getClass());
-	}
-	
 
 	/**
 	 * Returns the class <code>c</code> of the element with index <code>i</code>. 	
@@ -98,7 +68,26 @@ public class Tuple {
 	 * @param i element index
 	 * @return the class <code>c</code> of the element with index <code>i</code>. 	
 	 */
-	public Class<?> getTypeAt( int i ) {
-		return fields[i].getClass();
+	public SCELValue.SCELType getTypeAt( int i ) {
+		return fields[i].getType();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Tuple) {
+			return Arrays.deepEquals(fields, ((Tuple) obj).fields );
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(fields);
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.deepToString(fields);
+	}
+
 }

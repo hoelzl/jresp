@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.cmg.scel.exceptions.IllegalTypeException;
 import org.cmg.scel.knowledge.Tuple;
+import org.cmg.scel.knowledge.SCELValue;
 import org.junit.Test;
 
 /**
@@ -31,7 +32,7 @@ public class TestTuple {
 	 */
 	@Test
 	public void testTuple() {
-		Tuple t = new Tuple( 2 , 3 , 2 , 3 );
+		Tuple t = new Tuple( new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) , new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) );
 		assertNotNull(t);
 	}
 
@@ -40,7 +41,7 @@ public class TestTuple {
 	 */
 	@Test
 	public void testLength() {
-		Tuple t = new Tuple( 2 , 3 , 2 , 3 );
+		Tuple t = new Tuple( new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) , new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) );
 		assertEquals(4,t.length());
 	}
 
@@ -49,9 +50,9 @@ public class TestTuple {
 	 */
 	@Test
 	public void testGetElementAtInt() {
-		Tuple t = new Tuple( 0 , 1 , 2 , 3 );
+		Tuple t = new Tuple( new SCELValue.SCELInteger(1) , new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) , new SCELValue.SCELInteger(4) );
 		for( int i=0 ; i<t.length() ; i++ ) {
-			assertEquals(i,t.getElementAt(i));
+			assertEquals(new SCELValue.SCELInteger(i+1),t.getElementAt(i));
 		}
 	}
 
@@ -60,17 +61,8 @@ public class TestTuple {
 	 */
 	@Test
 	public void testGetElementAtClassOfTInt() {
-		Tuple t = new Tuple( 0 , 1 , 2 , 3 );
-		assertEquals(new Integer(2),t.getElementAt(Integer.class, 2));
-	}
-
-	/**
-	 * Test method for {@link org.cmg.scel.knowledge.Tuple#getElementAt(java.lang.Class, int)}.
-	 */
-	@Test(expected=IllegalTypeException.class)
-	public void testGetElementAtClassOfTIntFailure() {
-		Tuple t = new Tuple( 0 , 1 , 2 , 3 );
-		t.getElementAt(String.class, 2);
+		Tuple t = new Tuple( new SCELValue.SCELInteger(1) , new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) , new SCELValue.SCELInteger(4) );
+		assertEquals(new SCELValue.SCELInteger(3),t.getElementAt(2));
 	}
 
 	/**
@@ -78,8 +70,8 @@ public class TestTuple {
 	 */
 	@Test
 	public void testGetTypeAt() {
-		Tuple t = new Tuple( 0 , 1 , 2 , 3 );
-		assertEquals(Integer.class, t.getTypeAt(2));
+		Tuple t = new Tuple( new SCELValue.SCELInteger(1) , new SCELValue.SCELInteger(2) , new SCELValue.SCELInteger(3) , new SCELValue.SCELInteger(4) );
+		assertEquals(SCELValue.SCELType.INT, t.getTypeAt(2));
 	}
 
 }

@@ -13,12 +13,9 @@
 package org.cmg.scel.topology;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-public interface Target {
+public interface Port {
 
-	public boolean isSelf();
-	
 }

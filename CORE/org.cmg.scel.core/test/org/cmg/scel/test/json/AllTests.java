@@ -10,30 +10,18 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.knowledge.ts;
+package org.cmg.scel.test.json;
 
-import org.cmg.scel.knowledge.TemplateField;
-
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * @author loreti
  * 
  *
  */
-public class ActualTemplateField implements TemplateField {
-	
-	private Object formal;
-	
-	public ActualTemplateField( Object formal ) {
-		this.formal = formal;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.knowledge.TemplateField#match(java.lang.Object)
-	 */
-	@Override
-	public boolean match(Object o) {
-		return formal.equals(formal);
-	}
-
+@RunWith(Suite.class)
+@SuiteClasses({ ValueSerializationDeserialization.class, MessageSerializationDeserialization.class })
+public class AllTests {
 }

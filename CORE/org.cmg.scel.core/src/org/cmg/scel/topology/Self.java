@@ -13,12 +13,19 @@
 package org.cmg.scel.topology;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-public interface Target {
+public class Self implements Target {
 
-	public boolean isSelf();
+	public static Self SELF = new Self();
+	
+	private Self() {		
+	}
+	
+	@Override
+	public boolean isSelf() {
+		return true;
+	}
 	
 }

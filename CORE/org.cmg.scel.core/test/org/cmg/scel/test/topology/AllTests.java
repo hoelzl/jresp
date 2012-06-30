@@ -10,15 +10,18 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.test.topology;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * @author loreti
  * 
  *
  */
-public interface Target {
-
-	public boolean isSelf();
-	
+@RunWith(Suite.class)
+@SuiteClasses({ TestAgent.class })
+public class AllTests {
 }

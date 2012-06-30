@@ -16,9 +16,21 @@ package org.cmg.scel.topology;
  * @author Michele Loreti
  *
  */
-public interface AgentContainer extends AgentContext {
+public class Group implements Target {
 
-	public void addAgent( Agent a );
-	public void start();
+	private GroupPredicate predicate;
 	
+	public Group( GroupPredicate predicate ) {
+		this.predicate = predicate;
+	}
+	
+	@Override
+	public boolean isSelf() {
+		return false;
+	}
+	
+	public GroupPredicate getPredicate() {
+		return predicate;
+	}
+
 }

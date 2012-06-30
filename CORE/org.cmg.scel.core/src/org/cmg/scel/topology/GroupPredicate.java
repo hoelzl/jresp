@@ -10,31 +10,29 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.knowledge.ts;
-
-import org.cmg.scel.knowledge.TemplateField;
+package org.cmg.scel.topology;
 
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-public class ClassTemplateField implements TemplateField {
+public abstract class GroupPredicate {
 
-	private Class<?> c;
+	protected String[] parameters;
 	
-	public ClassTemplateField(Class<?> c) {
-		this.c = c;
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see org.cmg.scel.knowledge.TemplateField#match(java.lang.Object)
-	 */
-	@Override
-	public boolean match(Object o) {
-		return c.isInstance(o);
+	protected GroupPredicate( String ... parameters ) {
+		this.parameters = parameters;
 	}
 
+	public int size() {
+		return parameters.length;
+	}
+	
+	public String getParameterName( int i ) {
+		return parameters[i];
+	}
+	
+	public abstract boolean evaluate( Object[] data );
+	
 }
