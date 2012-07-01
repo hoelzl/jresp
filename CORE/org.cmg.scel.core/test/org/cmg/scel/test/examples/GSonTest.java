@@ -14,9 +14,8 @@ package org.cmg.scel.test.examples;
 
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Tuple;
+import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.MessageDeserializer;
-import org.cmg.scel.protocol.Protocol;
-import org.cmg.scel.protocol.Protocol.AttributeRequest;
 import org.cmg.scel.topology.Locality;
 
 import com.google.gson.Gson;
@@ -36,7 +35,7 @@ public class GSonTest {
 		
 //		Tuple t = new Tuple(3,2.4,"ciao",true);
 		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.registerTypeHierarchyAdapter(Protocol.Message.class, new MessageDeserializer());
+		gsonBuilder.registerTypeHierarchyAdapter(Message.class, new MessageDeserializer());
 		Gson gson = gsonBuilder.create();
 		String test = gson.toJson(value);
 		System.out.println(test);

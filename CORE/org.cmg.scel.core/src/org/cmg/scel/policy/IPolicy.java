@@ -12,14 +12,33 @@
  */
 package org.cmg.scel.policy;
 
-import org.cmg.scel.behaviour.AgentContext;
+import java.io.IOException;
+
+import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.knowledge.Template;
+import org.cmg.scel.knowledge.Tuple;
+import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.Target;
 
 
 /**
  * @author Michele Loreti
  *
  */
-public interface IPolicy extends AgentContext {
+public interface IPolicy {
 
+	void put(Locality source, Tuple tuple) throws InterruptedException;;
+
+	Tuple get(Locality source, Template template) throws InterruptedException;
+
+	Tuple query(Locality source, Template template) throws InterruptedException;
+
+	public void put( Agent a , Tuple t , Target l ) throws InterruptedException, IOException;
+	
+	public Tuple get( Agent a , Template t , Target l )  throws InterruptedException, IOException;;
+		
+	public Tuple query( Agent a , Template t , Target l )  throws InterruptedException, IOException;;
+		
+	public void exec( Agent a , Agent b) throws InterruptedException;
 	
 }

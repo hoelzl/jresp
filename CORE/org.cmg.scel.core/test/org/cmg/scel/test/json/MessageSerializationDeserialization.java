@@ -12,8 +12,16 @@ import org.cmg.scel.knowledge.TemplateField;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.knowledge.ValueDeserializer;
 import org.cmg.scel.knowledge.SCELValue.SCELType;
+import org.cmg.scel.protocol.Ack;
+import org.cmg.scel.protocol.AttributeReply;
+import org.cmg.scel.protocol.AttributeRequest;
+import org.cmg.scel.protocol.Fail;
+import org.cmg.scel.protocol.GetRequest;
+import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.MessageDeserializer;
-import org.cmg.scel.protocol.Protocol;
+import org.cmg.scel.protocol.PutRequest;
+import org.cmg.scel.protocol.QueryRequest;
+import org.cmg.scel.protocol.TupleReply;
 import org.cmg.scel.topology.Locality;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,47 +38,48 @@ public class MessageSerializationDeserialization {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeHierarchyAdapter(SCELValue.class, new ValueDeserializer());
 		builder.registerTypeHierarchyAdapter(TemplateField.class, new TemplateDeserializer());
-		builder.registerTypeHierarchyAdapter(Protocol.Message.class, new MessageDeserializer());
+		builder.registerTypeHierarchyAdapter(Message.class, new MessageDeserializer());
 		gson = builder.setPrettyPrinting().create();
 	}
 	
 	@Test
 	public void testSerializeDeserializeAck() {
-		Protocol.Ack ack = new Protocol.Ack(new Locality("test", 9999), 23);
+		Ack ack = new Ack(new Locality("test", 9999), 23,"pippo");
 		String txt = gson.toJson(ack);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(ack, msg);
 	}
 
 	@Test
 	public void testSerializeDeserializeFail() {
-		Protocol.Fail fail = new Protocol.Fail(new Locality("test", 9999), 23);
+		Fail fail = new Fail(new Locality("test", 9999), 23,"pippo");
 		String txt = gson.toJson(fail);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
 	}
 
 	@Test
 	public void testSerializeDeserializeAttributeRequest() {
-		Protocol.AttributeRequest fail = new Protocol.AttributeRequest(new Locality("test", 9999), 23, new String[] {"attr1","attr2"});
+		AttributeRequest fail = new AttributeRequest(new Locality("test", 9999), 23,"pippo", new String[] {"attr1","attr2"});
 		String txt = gson.toJson(fail);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
 	}
 
 	@Test
 	public void testSerializeDeserializeAttributeReply() {
-		Protocol.AttributeReply fail =
-				new Protocol.AttributeReply(
+		AttributeReply fail =
+				new AttributeReply(
 						new Locality("test", 9999), 
-						23, 
+						23,
+						"pippo", 
 						new Attribute[] {
 							new Attribute("attr1",SCELValue.getInteger(34)),
 							new Attribute("attr2",SCELValue.getBoolean(false))
 						}
 				);
 		String txt = gson.toJson(fail);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
 	}
 
@@ -86,37 +95,38 @@ public class MessageSerializationDeserialization {
 	
 	@Test
 	public void testSerializeDeserializePutRequest() {
-		Protocol.PutRequest request =
-				new Protocol.PutRequest(
+		PutRequest request =
+				new PutRequest(
 						new Locality("test",9999) , 
-						34 , 
+						34 ,
+						"pippo", 
 						new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)));
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(request, msg);
 	}
 
 	
 	@Test
 	public void testSerializeDeserializeTupleReply() {
-		Protocol.TupleReply request =
-				new Protocol.TupleReply(
+		TupleReply request =
+				new TupleReply(
 						new Locality("test",9999) , 
-						34 , 
+						34 ,"pippo", 
 						new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)));
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(request, msg);
 	}
 
 	@Test
 	public void testSerializeDeserializeGetRequest() {
-		Protocol.GetRequest request =
-			new Protocol.GetRequest(
+		GetRequest request =
+			new GetRequest(
 				new Locality("test",9999) , 
-				34 , 
+				34 ,"pippo", 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
 					new FormalTemplateField(SCELType.INT)
@@ -124,16 +134,16 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(request, msg);
 	}
 
 	@Test
 	public void testSerializeDeserializeQueryRequest() {
-		Protocol.QueryRequest request =
-			new Protocol.QueryRequest(
+		QueryRequest request =
+			new QueryRequest(
 				new Locality("test",9999) , 
-				34 , 
+				34 ,"pippo", 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
 					new FormalTemplateField(SCELType.INT)
@@ -141,7 +151,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Protocol.Message msg = gson.fromJson(txt, Protocol.Message.class);
+		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(request, msg);
 	}
 	

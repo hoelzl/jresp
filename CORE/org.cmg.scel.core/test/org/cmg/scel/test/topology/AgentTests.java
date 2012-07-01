@@ -10,20 +10,18 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.behaviour;
+package org.cmg.scel.test.topology;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * @author Michele Loreti
+ * @author loreti
+ * 
  *
  */
-public interface AgentContainer {
-
-	public void addAgent( Agent a );
-	
-	public void start();
-	
-	public void stop();
-	
-	public int getAgentId();
-	
+@RunWith(Suite.class)
+@SuiteClasses({ TestAgent.class })
+public class AgentTests {
 }

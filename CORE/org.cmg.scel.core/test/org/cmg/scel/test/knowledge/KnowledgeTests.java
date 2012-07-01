@@ -10,7 +10,7 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.test.topology;
+package org.cmg.scel.test.knowledge;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -22,6 +22,6 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestAgent.class })
-public class AllTests {
+@SuiteClasses({ TestTuple.class })
+public class KnowledgeTests {
 }

@@ -10,20 +10,32 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.behaviour;
+package org.cmg.scel.topology;
 
 /**
  * @author Michele Loreti
  *
  */
-public interface AgentContainer {
+public class Pending<T> {
 
-	public void addAgent( Agent a );
+	protected T value;
+	protected boolean error = false;
 	
-	public void start();
+	public synchronized T get() throws InterruptedException {
+		while ((value == null)&&(!error)) {
+			wait();
+		}
+		return value;
+	}
 	
-	public void stop();
+	public synchronized void set( T value ) {
+		this.value = value;
+		notify();
+	}
 	
-	public int getAgentId();
+	public synchronized void fail() {
+		this.error = true;
+		notify();
+	}
 	
 }

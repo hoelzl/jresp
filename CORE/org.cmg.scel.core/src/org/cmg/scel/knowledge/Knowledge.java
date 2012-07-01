@@ -32,9 +32,11 @@ public interface Knowledge {
 	 * and <code>false</code> otherwise.
 	 * 
 	 * @param element	the element to add to the knowledge.
+	 * @return returns <code>true</code> if the tuple has been correctly added to
+	 * the knowledge.
 	 * 
 	 */
-	public void put( Tuple t );
+	public boolean put( Tuple t );
 	
 	/**
 	 * Removes from the knowledge a tuple matching the template. This is a 

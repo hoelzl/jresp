@@ -10,18 +10,12 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.test.knowledge;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+package org.cmg.scel.exceptions;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-@RunWith(Suite.class)
-@SuiteClasses({ TestTuple.class })
-public class AllTests {
+public class DuplicateNameException extends RuntimeException {
+
 }

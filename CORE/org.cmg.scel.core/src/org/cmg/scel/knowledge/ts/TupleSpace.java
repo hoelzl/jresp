@@ -28,22 +28,20 @@ import org.cmg.scel.knowledge.Tuple;
  */
 public class TupleSpace implements Knowledge {
 	
-	Condition newTuple;
-	Lock lock;
 	LinkedList<Tuple> elements;
 	
 	public TupleSpace() {
 		elements = new LinkedList<Tuple>();
-		lock = new ReentrantLock(true);
-		newTuple = lock.newCondition();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.cmg.scel.knowledge.Knowledge#put(org.cmg.scel.knowledge.Tuple)
 	 */
 	@Override
-	public synchronized void put(Tuple t) {
-		elements.add(t);
+	public synchronized boolean put(Tuple t) {
+		boolean result = elements.add(t);
+		notifyAll();
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -60,13 +58,11 @@ public class TupleSpace implements Knowledge {
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	private Tuple _InRead(Template template, boolean isIn) throws InterruptedException {
+	private synchronized Tuple _InRead(Template template, boolean isIn) throws InterruptedException {
 		Tuple t;
-		lock.lock();
 		while (((t=_get(template,isIn))==null)) {
-			newTuple.await();
+			wait();
 		}
-		lock.unlock();
 		return t;
 	}
 
@@ -95,10 +91,8 @@ public class TupleSpace implements Knowledge {
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	private Tuple _InReadP(Template template, boolean remove) {
-		lock.lock();
-		Tuple t=_get(template,remove);
-		return t;
+	private synchronized Tuple _InReadP(Template template, boolean remove) {
+		return _get(template,remove);
 	}
 
 	/* (non-Javadoc)
@@ -106,11 +100,7 @@ public class TupleSpace implements Knowledge {
 	 */
 	@Override
 	public Tuple getp(Template template) {
-		Tuple t;
-		lock.lock();
-		t=_InReadP(template,true);
-		lock.unlock();
-		return t;
+		return _InReadP(template,true);
 	}
 
 	/* (non-Javadoc)
@@ -126,9 +116,8 @@ public class TupleSpace implements Knowledge {
 	 * @param b
 	 * @return
 	 */
-	private LinkedList<Tuple> _InReadAll(Template template, boolean remove) {
+	private synchronized LinkedList<Tuple> _InReadAll(Template template, boolean remove) {
 		LinkedList<Tuple> toReturn = new LinkedList<Tuple>();
-		lock.lock();
 		for( int i=0 ; i<elements.size() ; i++ ) {
 			Tuple t = elements.get(i);
 			if (template.match(t)) {
@@ -138,7 +127,6 @@ public class TupleSpace implements Knowledge {
 				toReturn.add(t);
 			}
 		}
-		lock.unlock();
 		return toReturn;
 	}
 

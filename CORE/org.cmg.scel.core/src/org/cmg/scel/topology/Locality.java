@@ -65,6 +65,10 @@ public class Locality implements Target {
 	public String toString() {
 		return name+"@"+address;
 	}
+
+	public String getName() {
+		return name;
+	}
 	
 	
 }

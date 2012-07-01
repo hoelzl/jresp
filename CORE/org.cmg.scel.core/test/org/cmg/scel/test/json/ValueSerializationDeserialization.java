@@ -15,8 +15,6 @@ import org.cmg.scel.knowledge.SCELValue.SCELString;
 import org.cmg.scel.knowledge.SCELValue.SCELTag;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.knowledge.ValueDeserializer;
-import org.cmg.scel.protocol.MessageDeserializer;
-import org.cmg.scel.protocol.Protocol;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -36,7 +36,7 @@ public class TestAgent {
 			
 		};
 		assertEquals(State.AWAIT,a.getState());
-		Node<TupleSpace> n = new Node<TupleSpace>("test", 9999, new TupleSpace());
+		Node<TupleSpace> n = new Node<TupleSpace>("test", new TupleSpace());
 		n.addAgent(a);
 		assertEquals(State.READY,a.getState());
 	}

@@ -12,6 +12,7 @@
  */
 package org.cmg.scel.behaviour;
 
+import java.io.IOException;
 import java.util.Observable;
 
 import org.cmg.scel.knowledge.Template;
@@ -78,7 +79,7 @@ public abstract class Agent extends Observable implements Runnable {
 	/**
 	 * Identifies the context where the agent is running.
 	 */
-	private AgentContext container;
+	private AgentContext context;
 	
 	/**
 	 * Agent name
@@ -114,6 +115,7 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	public final void run() {
 		try {
+			context.waitState(ContextState.RUNNING);
 			doStart();
 			doRun();
 			doClose();
@@ -138,7 +140,7 @@ public abstract class Agent extends Observable implements Runnable {
 	 * of this method that identifies agent behaviour.
 	 */
 	private synchronized void doStart() throws InterruptedException {
-		while (state != State.RUNNING) {
+		while ((state != State.RUNNING)) {
 			wait();
 		}
 	}
@@ -151,10 +153,11 @@ public abstract class Agent extends Observable implements Runnable {
 	 * @param l	target locality
 	 * @throws InterruptedException - when another thread interrupt agent
 	 * computation while action is under execution.
+	 * @throws IOException 
 	 */
-	protected void put(Tuple t, Target l) throws InterruptedException {
+	protected void put(Tuple t, Target l) throws InterruptedException, IOException {
 		doStep();
-		container.put(this, t, l);
+		context.put(this, t, l);
 	}
 
 	/**
@@ -166,9 +169,10 @@ public abstract class Agent extends Observable implements Runnable {
 	 * @return	a tuple matching template <code>t</code>
 	 * @throws InterruptedException - when another thread interrupt agent
 	 * computation while action is under execution.
+	 * @throws IOException 
 	 */
-	protected Tuple get(Template t, Target l)  throws InterruptedException {
-		return container.get(this, t, l);
+	protected Tuple get(Template t, Target l)  throws InterruptedException, IOException {
+		return context.get(this, t, l);
 	}
 
 	/**
@@ -180,9 +184,10 @@ public abstract class Agent extends Observable implements Runnable {
 	 * @return	a tuple matching template <code>t</code>
 	 * @throws InterruptedException - when another thread interrupt agent
 	 * computation while action is under execution.
+	 * @throws IOException 
 	 */
-	protected Tuple query(Template t, Target l)  throws InterruptedException {
-		return container.query(this, t, l);
+	protected Tuple query(Template t, Target l)  throws InterruptedException, IOException {
+		return context.query(this, t, l);
 	}
 
 	/**
@@ -207,7 +212,7 @@ public abstract class Agent extends Observable implements Runnable {
 	private synchronized void setState(State state) {
 		this.state = state;
 		notifyObservers();
-		notify();
+		notifyAll();
 	}
 	
 	/**
@@ -254,14 +259,14 @@ public abstract class Agent extends Observable implements Runnable {
 	 * Sets the container where agent is executed. This method can be invoked
 	 * only when the agent is in state <code>State.AWAIT</code>.
 	 * 
-	 * @param container the context where agent is executed.
+	 * @param context the context where agent is executed.
 	 */
-	public synchronized void setConteiner(AgentContainer container) {
+	public synchronized void setContext(int id , AgentContext context) {
 		if (state != State.AWAIT) {
 			throw new IllegalStateException();
 		}
-		this.container = container;
-		this.id = container.getAgentId();
+		this.context = context;
+		this.id = id;
 		setState(State.READY);
 	}
 
@@ -270,7 +275,7 @@ public abstract class Agent extends Observable implements Runnable {
 	 * is in state <code>State.READY</code> or <code>State.SLEEP</coode>.
 	 */
 	public synchronized void start() {
-		if ((state != State.READY)||(state != State.SLEEP)) {
+		if ((state != State.READY)&&(state != State.SLEEP)) {
 			throw new IllegalStateException();
 		}
 		setState(State.RUNNING);

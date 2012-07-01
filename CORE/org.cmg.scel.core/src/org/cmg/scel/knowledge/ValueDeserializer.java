@@ -14,9 +14,6 @@ package org.cmg.scel.knowledge;
 
 import java.lang.reflect.Type;
 
-import org.cmg.scel.protocol.Protocol;
-import org.cmg.scel.topology.Locality;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

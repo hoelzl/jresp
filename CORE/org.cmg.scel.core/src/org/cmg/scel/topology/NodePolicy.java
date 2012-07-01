@@ -12,6 +12,8 @@
  */
 package org.cmg.scel.topology;
 
+import java.io.IOException;
+
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
@@ -33,16 +35,16 @@ public class NodePolicy implements IPolicy {
 	 * @see org.cmg.scel.topology.AgentContext#put(org.cmg.scel.topology.Agent, org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
 	 */
 	@Override
-	public void put(Agent a, Tuple t, Target l) throws InterruptedException {
-		node.put(a, t, l);
+	public void put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
+		node.put(t, l);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.cmg.scel.topology.AgentContext#get(org.cmg.scel.topology.Agent, org.cmg.scel.knowledge.Template, org.cmg.scel.topology.Target)
 	 */
 	@Override
-	public Tuple get(Agent a, Template t, Target l) throws InterruptedException {
-		return node.get(a, t, l);
+	public Tuple get(Agent a, Template t, Target l) throws InterruptedException, IOException {
+		return node.get(t, l);
 	}
 
 	/* (non-Javadoc)
@@ -50,8 +52,8 @@ public class NodePolicy implements IPolicy {
 	 */
 	@Override
 	public Tuple query(Agent a, Template t, Target l)
-			throws InterruptedException {
-		return node.query(a, t, l);
+			throws InterruptedException, IOException {
+		return node.query(t, l);
 	}
 
 	/* (non-Javadoc)
@@ -59,7 +61,22 @@ public class NodePolicy implements IPolicy {
 	 */
 	@Override
 	public void exec(Agent a, Agent b) throws InterruptedException {
-		node.exec(a, b);
+		node.addAgent(b);
+	}
+
+	@Override
+	public void put(Locality source, Tuple tuple) {
+		node.put( tuple );
+	}
+
+	@Override
+	public Tuple get(Locality source, Template template) throws InterruptedException {
+		return node.get(template);
+	}
+
+	@Override
+	public Tuple query(Locality source, Template template) throws InterruptedException {
+		return node.query(template);
 	}
 
 }
