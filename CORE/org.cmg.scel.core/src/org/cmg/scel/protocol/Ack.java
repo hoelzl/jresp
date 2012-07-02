@@ -22,5 +22,5 @@ public class Ack extends Message {
 	public void accept(MessageHandler messageHandler) {
 		messageHandler.handle(this);
 	}
-	
+
 }

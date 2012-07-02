@@ -33,11 +33,24 @@ public abstract class MessageHandler {
 
 	public abstract void handle( TupleReply msg ) throws IOException;
 	
-	public abstract void handle( Ack msg );
+	public abstract void handle( Ack msg );	
+
+	public abstract void handle(GroupGetRequest msg) throws IOException;
+
+	public abstract void handle(GroupQueryRequest msg) throws IOException;
+
+	public abstract void handle(GroupPutRequest msg) throws IOException;
+
+	public abstract void handle(GroupGetReply msg) throws IOException;
+
+	public abstract void handle(GroupQueryReply msg) throws IOException;
+
+	public abstract void handle(GroupPutReply msg) throws IOException;
 	
 	public abstract void handle( Fail msg );
 	
 	public final void receive( Message msg ) throws IOException {
 		msg.accept(this);
 	}
+
 }

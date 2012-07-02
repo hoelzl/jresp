@@ -59,9 +59,74 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 			return doDeserializeQueryRequest(json,context);
 		case TUPLE_REPLY:
 			return doDeserializeTupleReply(json,context);
-		default:
+		case GROUP_GET_REPLY: 
+			return doDeserializeGroupGetReply(json,context);
+		case GROUP_GET_REQUEST:
+			return doDeserializeGroupGetRequest(json,context);
+		case GROUP_PUT_REPLY: 
+			return doDeserializeGroupPutReply(json,context);
+		case GROUP_PUT_REQUEST: 
+			return doDeserializeGroupPutRequest(json,context);
+		case GROUP_QUERY_REPLY:
+			return doDeserializeGroupQueryReply(json,context);
+		case GROUP_QUERY_REQUEST:
+			return doDeserializeGroupQueryRequest(json,context);
 		}
 		return null;
+	}
+
+	private Message doDeserializeGroupGetRequest(JsonObject json,
+			JsonDeserializationContext context) {
+		return new GroupGetRequest( 
+				(Locality) context.deserialize(json.get("source"), Locality.class),
+				json.get("session").getAsInt(),
+				json.get("target").getAsString(),
+				(Template) context.deserialize( json.get("template") , Template.class),				
+				(String[]) context.deserialize( json.get("attributes") , String[].class)
+			);
+	}
+
+	private Message doDeserializeGroupQueryRequest(JsonObject json,
+			JsonDeserializationContext context) {
+		return new GroupQueryRequest( 
+				(Locality) context.deserialize(json.get("source"), Locality.class),
+				json.get("session").getAsInt(),
+				json.get("target").getAsString(),
+				(Template) context.deserialize( json.get("template") , Template.class),				
+				(String[]) context.deserialize( json.get("attributes") , String[].class)
+			);
+	}
+
+	private Message doDeserializeGroupPutRequest(JsonObject json,
+			JsonDeserializationContext context) {
+		return new GroupPutRequest( 
+				(Locality) context.deserialize(json.get("source"), Locality.class),
+				json.get("session").getAsInt(),
+				json.get("target").getAsString(),
+				(String[]) context.deserialize( json.get("attributes") , String[].class)
+			);
+	}
+
+	private Message doDeserializeGroupGetReply(JsonObject json,
+			JsonDeserializationContext context) {
+		return new GroupGetReply( 
+				(Locality) context.deserialize(json.get("source"), Locality.class),
+				json.get("session").getAsInt(),
+				json.get("target").getAsString(),
+				(Tuple) context.deserialize( json.get("tuple") , Tuple.class),
+				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class)
+			);
+	}
+
+	private Message doDeserializeGroupQueryReply(JsonObject json,
+			JsonDeserializationContext context) {
+		return new GroupQueryReply( 
+				(Locality) context.deserialize(json.get("source"), Locality.class),
+				json.get("session").getAsInt(),
+				json.get("target").getAsString(),
+				(Tuple) context.deserialize( json.get("tuple") , Tuple.class),
+				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class)
+			);
 	}
 
 	private Message doDeserializeAck(JsonObject json,
@@ -83,9 +148,15 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeAttributeReply(JsonObject json,
 			JsonDeserializationContext context) {
 		return new AttributeReply((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString(),
-				(Attribute[]) context.deserialize( json.get("attributes") , Attribute[].class));
+				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class));
 	}
-	
+
+	private Message doDeserializeGroupPutReply(JsonObject json,
+			JsonDeserializationContext context) {
+		return new GroupPutReply((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString(),
+				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class));
+	}
+
 	private Message doDeserializePutRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new PutRequest(

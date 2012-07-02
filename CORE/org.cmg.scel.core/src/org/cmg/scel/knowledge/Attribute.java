@@ -35,6 +35,25 @@ public class Attribute {
 	public SCELValue getValue() {
 		return value;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Attribute) {
+			Attribute a = (Attribute) obj;
+			return name.equals(a.name)&&((value==a.value)||((value != null)&&(value.equals(a.value))));
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return (value==null?name.hashCode():name.hashCode()^value.hashCode());
+	}
+
+	@Override
+	public String toString() {
+		return name+"="+value;
+	}
 	
 	
 	

@@ -22,4 +22,22 @@ public class TupleReply extends Message {
 		messageHandler.handle(this);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (super.equals(obj)) {
+			return tuple.equals(((TupleReply) obj).tuple);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getType()+"["+super.toString()+","+tuple.toString()+"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode()^tuple.hashCode();
+	}
+	
 }

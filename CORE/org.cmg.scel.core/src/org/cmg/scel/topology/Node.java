@@ -34,6 +34,12 @@ import org.cmg.scel.protocol.AttributeReply;
 import org.cmg.scel.protocol.AttributeRequest;
 import org.cmg.scel.protocol.Fail;
 import org.cmg.scel.protocol.GetRequest;
+import org.cmg.scel.protocol.GroupGetReply;
+import org.cmg.scel.protocol.GroupGetRequest;
+import org.cmg.scel.protocol.GroupPutReply;
+import org.cmg.scel.protocol.GroupPutRequest;
+import org.cmg.scel.protocol.GroupQueryReply;
+import org.cmg.scel.protocol.GroupQueryRequest;
 import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.MessageHandler;
 import org.cmg.scel.protocol.PutRequest;
@@ -309,6 +315,42 @@ public class Node<T extends Knowledge> extends Observable {
 				// TODO Manage error handling!
 				e.printStackTrace();
 			}
+		}
+
+		@Override
+		public void handle(GroupGetRequest msg) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void handle(GroupQueryRequest msg) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void handle(GroupPutRequest msg) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void handle(GroupGetReply msg) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void handle(GroupQueryReply msg) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void handle(GroupPutReply msg) throws IOException {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}

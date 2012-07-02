@@ -6,12 +6,12 @@ import java.util.Arrays;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.topology.Locality;
 
-public class AttributeReply extends Message {
+public class GroupPutReply extends Message {
 	
 	private Attribute[] values;
 	
-	public AttributeReply(Locality source, int session, String target, Attribute[] values) {
-		super(MessageType.ATTRIBUTE_REPLY,source,session,target);
+	public GroupPutReply(Locality source, int session, String target, Attribute[] values) {
+		super(MessageType.GROUP_PUT_REPLY,source,session,target);
 		this.values = values;
 	}
 
@@ -27,7 +27,7 @@ public class AttributeReply extends Message {
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
-			return Arrays.deepEquals(values, ((AttributeReply) obj).values); 
+			return Arrays.deepEquals(values, ((GroupPutReply) obj).values); 
 		}
 		return false;
 	}

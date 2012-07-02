@@ -17,6 +17,12 @@ import org.cmg.scel.protocol.AttributeReply;
 import org.cmg.scel.protocol.AttributeRequest;
 import org.cmg.scel.protocol.Fail;
 import org.cmg.scel.protocol.GetRequest;
+import org.cmg.scel.protocol.GroupGetReply;
+import org.cmg.scel.protocol.GroupGetRequest;
+import org.cmg.scel.protocol.GroupPutReply;
+import org.cmg.scel.protocol.GroupPutRequest;
+import org.cmg.scel.protocol.GroupQueryReply;
+import org.cmg.scel.protocol.GroupQueryRequest;
 import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.MessageDeserializer;
 import org.cmg.scel.protocol.PutRequest;
@@ -154,7 +160,111 @@ public class MessageSerializationDeserialization {
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(request, msg);
 	}
-	
+
+	@Test
+	public void testSerializeDeserializeGroupQueryRequest() {
+		GroupQueryRequest request =
+			new GroupQueryRequest(
+				new Locality("test",9999) , 
+				34 ,"pippo", 
+				new Template( 
+					new ActualTemplateField(SCELValue.getBoolean(true)) , 
+					new FormalTemplateField(SCELType.INT)
+				),
+				new String[] { "attr1" , "attr2" }
+			);
+		String txt = gson.toJson(request);
+		System.out.println(txt);
+		Message msg = gson.fromJson(txt, Message.class);
+		assertEquals(request, msg);
+	}
+
+	@Test
+	public void testSerializeDeserializeGroupGetRequest() {
+		GroupGetRequest request =
+			new GroupGetRequest(
+				new Locality("test",9999) , 
+				34 ,"pippo", 
+				new Template( 
+					new ActualTemplateField(SCELValue.getBoolean(true)) , 
+					new FormalTemplateField(SCELType.INT)
+				),
+				new String[] { "attr1" , "attr2" }
+			);
+		String txt = gson.toJson(request);
+		System.out.println(txt);
+		Message msg = gson.fromJson(txt, Message.class);
+		assertEquals(request, msg);
+	}
+
+	@Test
+	public void testSerializeDeserializeGroupPutRequest() {
+		GroupPutRequest request =
+			new GroupPutRequest(
+				new Locality("test",9999) , 
+				34 ,"pippo", 
+				new String[] { "attr1" , "attr2" }
+			);
+		String txt = gson.toJson(request);
+		System.out.println(txt);
+		Message msg = gson.fromJson(txt, Message.class);
+		assertEquals(request, msg);
+	}
+
+	@Test
+	public void testSerializeDeserializeGroupGetReply() {
+		GroupGetReply request =
+			new GroupGetReply(
+				new Locality("test",9999) , 
+				34 ,"pippo", 
+				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)),
+				new Attribute[] {
+					new Attribute("attr1",SCELValue.getInteger(34)),
+					new Attribute("attr2",SCELValue.getBoolean(false))
+				}
+			);
+		String txt = gson.toJson(request);
+		System.out.println(txt);
+		Message msg = gson.fromJson(txt, Message.class);
+		assertEquals(request, msg);
+	}
+
+	@Test
+	public void testSerializeDeserializeGroupQueryReply() {
+		GroupQueryReply request =
+			new GroupQueryReply(
+				new Locality("test",9999) , 
+				34 ,"pippo", 
+				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)),
+				new Attribute[] {
+					new Attribute("attr1",SCELValue.getInteger(34)),
+					new Attribute("attr2",SCELValue.getBoolean(false))
+				}
+			);
+		String txt = gson.toJson(request);
+		System.out.println(txt);
+		Message msg = gson.fromJson(txt, Message.class);
+		assertEquals(request, msg);
+	}
+
+	@Test
+	public void testSerializeDeserializeGroupPutReply() {
+		GroupPutReply fail =
+				new GroupPutReply(
+						new Locality("test", 9999), 
+						23,
+						"pippo", 
+						new Attribute[] {
+							new Attribute("attr1",SCELValue.getInteger(34)),
+							new Attribute("attr2",SCELValue.getBoolean(false))
+						}
+				);
+		String txt = gson.toJson(fail);
+		Message msg = gson.fromJson(txt, Message.class);
+		assertEquals(fail, msg);
+	}
+
+
 	/*
 		GET_REQUEST(3,"G_REQUEST"),
 		QUERY_REQUEST(4,"Q_REQUEST"),

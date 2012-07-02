@@ -34,14 +34,12 @@ public abstract class Message {
 	public boolean equals(Object obj) {
 		if (obj instanceof Message) {
 			Message msg = (Message) obj;
-			return (type==msg.type)&&(source.equals(msg.source))&&(session==msg.session)&&(target.equals(msg.target));
+			return (type==msg.type)&&
+					(source.equals(msg.source))&&
+					(session==msg.session)&&
+					(target.equals(msg.target));
 		}
 		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return type.toString().hashCode()^source.hashCode()^session;
 	}
 
 	@Override
@@ -53,5 +51,10 @@ public abstract class Message {
 
 	public String getTarget() {
 		return target;
+	}
+
+	@Override
+	public int hashCode() {
+		return type.hashCode()^source.hashCode()^session;
 	}
 }
