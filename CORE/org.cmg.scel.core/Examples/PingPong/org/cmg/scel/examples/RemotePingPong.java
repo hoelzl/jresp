@@ -21,10 +21,11 @@ import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.knowledge.ts.TupleSpace;
-import org.cmg.scel.topology.InetPort;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.SocketPort;
+import org.cmg.scel.topology.PointToPoint;
 import org.cmg.scel.topology.Node;
 import org.cmg.scel.topology.Self;
+import org.cmg.scel.topology.SocketPortAddress;
 
 /**
  * @author Michele Loreti
@@ -33,8 +34,8 @@ import org.cmg.scel.topology.Self;
 public class RemotePingPong {
 
 	public static void main(String[] argv) throws IOException {
-		InetPort pingPort = new InetPort(9999);
-		InetPort pongPort = new InetPort(9998);
+		SocketPort pingPort = new SocketPort(9999);
+		SocketPort pongPort = new SocketPort(9998);
 		Node<TupleSpace> pingNode = new Node<TupleSpace>("ping", new TupleSpace());
 		pingNode.addPort(pingPort);
 		Agent ping = new PingAgent();
@@ -52,7 +53,7 @@ public class RemotePingPong {
 	
 	public static class PingAgent extends Agent {
 
-		Locality other = new Locality("pong", new InetSocketAddress(9998));
+		PointToPoint other = new PointToPoint("pong", new SocketPortAddress(9998));
 		
 		public PingAgent() {
 			super("PING");
@@ -78,7 +79,7 @@ public class RemotePingPong {
 
 	public static class PongAgent extends Agent {
 	
-		Locality other = new Locality("ping", new InetSocketAddress(9999));
+		PointToPoint other = new PointToPoint("ping", new SocketPortAddress(9999));
 
 		public PongAgent() {
 			super("PONG");

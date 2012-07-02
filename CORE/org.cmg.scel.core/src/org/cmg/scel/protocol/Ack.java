@@ -1,10 +1,10 @@
 package org.cmg.scel.protocol;
 
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public class Ack extends Message {
 
-	public Ack(Locality source, int session, String target) {
+	public Ack(PointToPoint source, int session, String target) {
 		super(MessageType.ACK,source,session, target);
 	}
 

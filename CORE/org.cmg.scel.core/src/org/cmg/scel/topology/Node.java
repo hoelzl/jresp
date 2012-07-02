@@ -267,6 +267,7 @@ public class Node<T extends Knowledge> extends Observable {
 					sendFail(msg.getSource(),msg.getSession());
 				} else {
 					pending.set(msg.getTuple());
+					sendAck(msg.getSource(), msg.getSession());
 				}
 			}
 		}
@@ -359,7 +360,7 @@ public class Node<T extends Knowledge> extends Observable {
 		return state==ContextState.RUNNING;
 	}
 
-	public void sendTuple(Locality to, int session, Tuple tuple) throws IOException {
+	public void sendTuple(PointToPoint to, int session, Tuple tuple) throws IOException {
 		for (Port p : ports) {
 			if (p.canDeliver(to)) {
 				p.sendTuple( to , getName() , session , tuple );
@@ -372,7 +373,7 @@ public class Node<T extends Knowledge> extends Observable {
 		return name;
 	}
 
-	public void sendAck(Locality to, int session) throws IOException {
+	public void sendAck(PointToPoint to, int session) throws IOException {
 		for (Port p : ports) {
 			if (p.canDeliver(to)) {
 				p.sendAck( to, getName() , session );
@@ -381,7 +382,7 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 	}
 
-	public void sendFail(Locality to, int session) throws IOException {
+	public void sendFail(PointToPoint to, int session) throws IOException {
 		for (Port p : ports) {
 			if (p.canDeliver(to)) {
 				p.sendFail( to, getName() , session );
@@ -390,7 +391,7 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 	}
 
-	public void sendAttibutes(Locality to, int session, String[] attributes) throws IOException {
+	public void sendAttibutes(PointToPoint to, int session, String[] attributes) throws IOException {
 		for (Port p : ports) {
 			if (p.canDeliver(to)) {
 				p.sendAttributes( to, getName() , session ,getAttributes(attributes));

@@ -65,17 +65,17 @@ public class NodePolicy implements IPolicy {
 	}
 
 	@Override
-	public void put(Locality source, Tuple tuple) {
+	public void put(PointToPoint source, Tuple tuple) {
 		node.put( tuple );
 	}
 
 	@Override
-	public Tuple get(Locality source, Template template) throws InterruptedException {
+	public Tuple get(PointToPoint source, Template template) throws InterruptedException {
 		return node.get(template);
 	}
 
 	@Override
-	public Tuple query(Locality source, Template template) throws InterruptedException {
+	public Tuple query(PointToPoint source, Template template) throws InterruptedException {
 		return node.query(template);
 	}
 

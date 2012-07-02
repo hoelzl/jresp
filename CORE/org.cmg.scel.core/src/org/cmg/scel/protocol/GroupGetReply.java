@@ -18,7 +18,7 @@ import java.util.Arrays;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 /**
  * @author Michele Loreti
@@ -30,7 +30,7 @@ public class GroupGetReply extends Message {
 	private Tuple tuple;
 	private Attribute[] values;
 
-	public GroupGetReply(Locality source, int session,
+	public GroupGetReply(PointToPoint source, int session,
 			String target, Tuple tuple, Attribute[] values) {
 		super(MessageType.GROUP_GET_REPLY, source, session, target);
 		this.tuple = tuple;

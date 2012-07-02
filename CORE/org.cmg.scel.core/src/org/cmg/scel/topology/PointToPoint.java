@@ -12,46 +12,36 @@
  */
 package org.cmg.scel.topology;
 
-import java.net.InetSocketAddress;
 
 /**
  * @author Michele Loreti
  *
  */
-public class Locality implements Target {
+public class PointToPoint implements Target {
 
 	protected String name;
-	protected InetSocketAddress address;
+	protected Address address;
 	
-	public Locality( String name , InetSocketAddress address ) {
+	public PointToPoint( String name , Address address ) {
 		this.name = name;
 		this.address = address;
 	}
-	
-	public Locality( String name , int port ) {
-		this( name , new InetSocketAddress(port) );
-	}
-	
-	public Locality( String name , String host , int port ) {
-		this( name , new InetSocketAddress(host, port) );
-	}
-	
+		
 	@Override
 	public boolean isSelf() {
 		return false;
 	}
 
-	public InetSocketAddress getAddress() {
+	public Address getAddress() {
 		return address;
 	}
 
 	@Override
 	public boolean equals(Object arg0) {
-		if (arg0 instanceof Locality) {
-			Locality t = (Locality) arg0;
+		if (arg0 instanceof PointToPoint) {
+			PointToPoint t = (PointToPoint) arg0;
 			return name.equals(t.name)&&
-					address.getHostName().equals(t.address.getHostName())
-					&&(address.getPort()==t.address.getPort());
+					address.equals(t.address);
 		}
 		return false;
 	}
@@ -63,7 +53,7 @@ public class Locality implements Target {
 
 	@Override
 	public String toString() {
-		return name+"@"+address;
+		return name+"@"+"["+address+"]";
 	}
 
 	public String getName() {

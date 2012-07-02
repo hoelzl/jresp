@@ -28,7 +28,9 @@ import org.cmg.scel.protocol.MessageDeserializer;
 import org.cmg.scel.protocol.PutRequest;
 import org.cmg.scel.protocol.QueryRequest;
 import org.cmg.scel.protocol.TupleReply;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
+import org.cmg.scel.topology.SCELFactory;
+import org.cmg.scel.topology.SocketPortAddress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,16 +43,12 @@ public class MessageSerializationDeserialization {
 
 	@Before
 	public void init() {
-		GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeHierarchyAdapter(SCELValue.class, new ValueDeserializer());
-		builder.registerTypeHierarchyAdapter(TemplateField.class, new TemplateDeserializer());
-		builder.registerTypeHierarchyAdapter(Message.class, new MessageDeserializer());
-		gson = builder.setPrettyPrinting().create();
+		gson = SCELFactory.getGSon();
 	}
 	
 	@Test
 	public void testSerializeDeserializeAck() {
-		Ack ack = new Ack(new Locality("test", 9999), 23,"pippo");
+		Ack ack = new Ack(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo");
 		String txt = gson.toJson(ack);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(ack, msg);
@@ -58,7 +56,7 @@ public class MessageSerializationDeserialization {
 
 	@Test
 	public void testSerializeDeserializeFail() {
-		Fail fail = new Fail(new Locality("test", 9999), 23,"pippo");
+		Fail fail = new Fail(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo");
 		String txt = gson.toJson(fail);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
@@ -66,7 +64,7 @@ public class MessageSerializationDeserialization {
 
 	@Test
 	public void testSerializeDeserializeAttributeRequest() {
-		AttributeRequest fail = new AttributeRequest(new Locality("test", 9999), 23,"pippo", new String[] {"attr1","attr2"});
+		AttributeRequest fail = new AttributeRequest(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo", new String[] {"attr1","attr2"});
 		String txt = gson.toJson(fail);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
@@ -76,7 +74,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeAttributeReply() {
 		AttributeReply fail =
 				new AttributeReply(
-						new Locality("test", 9999), 
+						new PointToPoint("test", new SocketPortAddress(9999)), 
 						23,
 						"pippo", 
 						new Attribute[] {
@@ -103,7 +101,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializePutRequest() {
 		PutRequest request =
 				new PutRequest(
-						new Locality("test",9999) , 
+						new PointToPoint("test",new SocketPortAddress(9999)) , 
 						34 ,
 						"pippo", 
 						new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)));
@@ -118,7 +116,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeTupleReply() {
 		TupleReply request =
 				new TupleReply(
-						new Locality("test",9999) , 
+						new PointToPoint("test",new SocketPortAddress(9999)) , 
 						34 ,"pippo", 
 						new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)));
 		String txt = gson.toJson(request);
@@ -131,7 +129,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGetRequest() {
 		GetRequest request =
 			new GetRequest(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
@@ -148,7 +146,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeQueryRequest() {
 		QueryRequest request =
 			new QueryRequest(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
@@ -165,7 +163,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGroupQueryRequest() {
 		GroupQueryRequest request =
 			new GroupQueryRequest(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
@@ -183,7 +181,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGroupGetRequest() {
 		GroupGetRequest request =
 			new GroupGetRequest(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
@@ -201,7 +199,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGroupPutRequest() {
 		GroupPutRequest request =
 			new GroupPutRequest(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new String[] { "attr1" , "attr2" }
 			);
@@ -215,7 +213,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGroupGetReply() {
 		GroupGetReply request =
 			new GroupGetReply(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)),
 				new Attribute[] {
@@ -233,7 +231,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGroupQueryReply() {
 		GroupQueryReply request =
 			new GroupQueryReply(
-				new Locality("test",9999) , 
+				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)),
 				new Attribute[] {
@@ -251,7 +249,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeGroupPutReply() {
 		GroupPutReply fail =
 				new GroupPutReply(
-						new Locality("test", 9999), 
+						new PointToPoint("test", new SocketPortAddress(9999)), 
 						23,
 						"pippo", 
 						new Attribute[] {

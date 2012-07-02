@@ -16,9 +16,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketPermission;
 import java.util.Hashtable;
 
 import org.cmg.scel.exceptions.DuplicateNameException;
@@ -40,42 +44,73 @@ import com.google.gson.Gson;
  * @author Michele Loreti
  *
  */
-public class InetPort implements Port {
+public class SocketPort implements Port {
+	
+	
+	public static int DEFAULT_TCP_PORT = 9999;
+	public static int DEFAULT_UDP_PORT = 9999;
+	public static String DEFAUL_MULTICAST_GROUP = "233.252.252.252";
 
 	
 	Hashtable<String, Node<?>> nodes;
-	private int port;
+	private int tcpPort;
+	private int udpPort;
 	private ServerSocket ssocket;
+	private MulticastSocket msocket;
+	private InetAddress group;
+	private String multicastGroup;
 	private Gson gson;
 
-	public InetPort(int port) throws IOException {
-		this.port = port;
-		this.ssocket = new ServerSocket(port);
+	
+	public SocketPort( ) throws IOException {
+		this(DEFAULT_TCP_PORT,DEFAULT_UDP_PORT,DEFAUL_MULTICAST_GROUP);
+	}
+	
+	public SocketPort( int tcpPort ) throws IOException {
+		this(tcpPort,DEFAULT_UDP_PORT,DEFAUL_MULTICAST_GROUP);
+	}
+	
+	public SocketPort( int tcpPort , int udpPort ) throws IOException {
+		this(tcpPort,udpPort,DEFAUL_MULTICAST_GROUP);
+	}
+	
+	public SocketPort(int tcpPort , int udpPort , String multicastGroup ) throws IOException {
+		this.tcpPort = tcpPort;
+		this.ssocket = new ServerSocket(tcpPort);
 		this.gson = SCELFactory.getGSon();
 		this.nodes = new Hashtable<String, Node<?>>();
+		this.udpPort = udpPort;
+		this.group =  InetAddress.getByName(multicastGroup);
+		this.msocket = new MulticastSocket(udpPort);
+		this.msocket.joinGroup(this.group);
 		Thread t = new Thread( new PortHandler() ); 
 		t.setDaemon(true);
 		t.start();
+		Thread t2 = new Thread( new GroupHandler() );
+		t2.setDaemon(true);
+		t2.start();
 	}
 
 
 	@Override
 	public boolean canDeliver(Target l) {		
-		return (l instanceof Locality);
+		return (l instanceof PointToPoint)&&(((PointToPoint) l).getAddress() instanceof SocketPortAddress);
 	}
 
 	@Override
 	public void sendTuple(Target to, String name, int session, Tuple tuple) throws IOException {
-		if (!(to instanceof Locality)) {
+		if ((!(to instanceof PointToPoint))||(!(((PointToPoint) to).getAddress() instanceof SocketPortAddress))) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
+		
 		send(target.getAddress(),new TupleReply(source, session, target.getName(), tuple));
 	}
 
-	private void send(InetSocketAddress address, Message message) throws IOException {
-		Socket socket = new Socket(address.getAddress(), address.getPort());
+	private void send(Address address, Message message) throws IOException {
+		InetSocketAddress isc = ((SocketPortAddress) address).getAddress();
+		Socket socket = new Socket(isc.getAddress(), isc.getPort());
 		PrintWriter writer = new PrintWriter(socket.getOutputStream());
 		writer.println(gson.toJson(message));
 		writer.close();
@@ -83,69 +118,69 @@ public class InetPort implements Port {
 	}
 
 
-	public InetSocketAddress getAddress() {
-		return new InetSocketAddress(ssocket.getInetAddress(),port);
+	public SocketPortAddress getAddress() {
+		return new SocketPortAddress(ssocket.getInetAddress(),tcpPort);
 	}
 
 
 	@Override
 	public void sendAck(Target to, String name, int session) throws IOException {
-		if (!(to instanceof Locality)) {
+		if (!(to instanceof PointToPoint)) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
 		send(target.getAddress(),new Ack(source, session, target.getName()));
 	}
 
 	@Override
 	public void sendFail(Target to, String name, int session) throws IOException {
-		if (!(to instanceof Locality)) {
+		if (!(to instanceof PointToPoint)) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
 		send(target.getAddress(),new Fail(source, session, target.getName()));
 	}
 
 	@Override
 	public void sendAttributes(Target to, String name, int session,
 			Attribute[] attributes) throws IOException {
-		if (!(to instanceof Locality)) {
+		if (!(to instanceof PointToPoint)) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
 		send(target.getAddress(),new AttributeReply(source, session, target.getName(),attributes));
 	}
 
 	@Override
 	public void sendPutRequest(Target to, String name, int session, Tuple t) throws IOException {
-		if (!(to instanceof Locality)) {
+		if (!(to instanceof PointToPoint)) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
 		send(target.getAddress(),new PutRequest(source, session, target.getName(),t));
 	}
 
 	@Override
 	public void sendGetRequest(Target to, String name, int session, Template t) throws IOException {
-		if (!(to instanceof Locality)) {
+		if (!(to instanceof PointToPoint)) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
 		send(target.getAddress(),new GetRequest(source, session, target.getName(),t));
 	}
 
 	@Override
 	public void sendQueryRequest(Target to, String name, int session, Template t) throws IOException {
-		if (!(to instanceof Locality)) {
+		if (!(to instanceof PointToPoint)) {
 			throw new IllegalArgumentException();
 		}
-		Locality target = (Locality) to;
-		Locality source = new Locality(name, getAddress());
+		PointToPoint target = (PointToPoint) to;
+		PointToPoint source = new PointToPoint(name, getAddress());
 		send(target.getAddress(),new QueryRequest(source, session, target.getName(),t));
 	}
 
@@ -183,6 +218,26 @@ public class InetPort implements Port {
 					Socket s = ssocket.accept();
 					BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
 					Message msg = gson.fromJson(reader, Message.class);
+					handleMessage(msg);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	public class GroupHandler implements Runnable {
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					DatagramPacket p = new DatagramPacket(new byte[5000], 5000);
+					msocket.receive(p);
+					String str = new String(p.getData(),p.getOffset(),p.getLength());
+					Message msg = gson.fromJson(str, Message.class);
 					handleMessage(msg);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

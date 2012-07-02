@@ -3,13 +3,13 @@ package org.cmg.scel.protocol;
 import java.io.IOException;
 
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public class PutRequest extends Message {
 	
 	private Tuple tuple;
 	
-	public PutRequest(Locality source, int session, String target, Tuple tuple) {
+	public PutRequest(PointToPoint source, int session, String target, Tuple tuple) {
 		super(MessageType.PUT_REQUEST,source,session,target);
 		this.tuple = tuple;
 	}

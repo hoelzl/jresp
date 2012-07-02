@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Attribute;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public class AttributeReply extends Message {
 	
 	private Attribute[] values;
 	
-	public AttributeReply(Locality source, int session, String target, Attribute[] values) {
+	public AttributeReply(PointToPoint source, int session, String target, Attribute[] values) {
 		super(MessageType.ATTRIBUTE_REPLY,source,session,target);
 		this.values = values;
 	}

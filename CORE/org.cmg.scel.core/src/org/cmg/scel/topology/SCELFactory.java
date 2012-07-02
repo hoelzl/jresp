@@ -30,6 +30,7 @@ public class SCELFactory {
 
 	public static Gson getGSon() {
 		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeHierarchyAdapter(Address.class, new AddressDeserializer());
 		builder.registerTypeHierarchyAdapter(SCELValue.class, new ValueDeserializer());
 		builder.registerTypeHierarchyAdapter(TemplateField.class, new TemplateDeserializer());
 		builder.registerTypeHierarchyAdapter(Message.class, new MessageDeserializer());

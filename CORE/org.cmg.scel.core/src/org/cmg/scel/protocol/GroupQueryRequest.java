@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 /**
  * @author Michele Loreti
@@ -28,7 +28,7 @@ public class GroupQueryRequest extends Message {
 	private Template template;
 	private String[] attributes;
 
-	public GroupQueryRequest(Locality source, int session,
+	public GroupQueryRequest(PointToPoint source, int session,
 			String target, Template template, String[] attributes) {
 		super(MessageType.GROUP_QUERY_REQUEST, source, session, target);
 		this.template = template;

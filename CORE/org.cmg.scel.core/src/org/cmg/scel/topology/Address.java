@@ -10,18 +10,24 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.test.json;
+package org.cmg.scel.topology;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * @author loreti
- * 
+ * @author Michele Loreti
  *
  */
-@RunWith(Suite.class)
-@SuiteClasses({ ValueSerializationDeserialization.class, MessageSerializationDeserialization.class , AddressSerializationDeserialization.class })
-public class JSonTests {
+public abstract class Address {
+
+	private String addressCode;
+		
+	public Address( String addressCode ) {
+		this.addressCode = addressCode;
+	}
+	
+	public String getAddressCode() {
+		return addressCode;
+	}
+	
+	
 }

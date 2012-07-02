@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Attribute;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public class GroupPutReply extends Message {
 	
 	private Attribute[] values;
 	
-	public GroupPutReply(Locality source, int session, String target, Attribute[] values) {
+	public GroupPutReply(PointToPoint source, int session, String target, Attribute[] values) {
 		super(MessageType.GROUP_PUT_REPLY,source,session,target);
 		this.values = values;
 	}

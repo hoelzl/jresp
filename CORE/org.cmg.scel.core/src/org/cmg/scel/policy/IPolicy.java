@@ -17,7 +17,7 @@ import java.io.IOException;
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 import org.cmg.scel.topology.Target;
 
 
@@ -27,11 +27,11 @@ import org.cmg.scel.topology.Target;
  */
 public interface IPolicy {
 
-	void put(Locality source, Tuple tuple) throws InterruptedException;;
+	void put(PointToPoint source, Tuple tuple) throws InterruptedException;;
 
-	Tuple get(Locality source, Template template) throws InterruptedException;
+	Tuple get(PointToPoint source, Template template) throws InterruptedException;
 
-	Tuple query(Locality source, Template template) throws InterruptedException;
+	Tuple query(PointToPoint source, Template template) throws InterruptedException;
 
 	public void put( Agent a , Tuple t , Target l ) throws InterruptedException, IOException;
 	

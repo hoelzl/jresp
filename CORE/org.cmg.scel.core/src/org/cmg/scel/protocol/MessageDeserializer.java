@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -78,7 +78,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeGroupGetRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new GroupGetRequest( 
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
 				(Template) context.deserialize( json.get("template") , Template.class),				
@@ -89,7 +89,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeGroupQueryRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new GroupQueryRequest( 
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
 				(Template) context.deserialize( json.get("template") , Template.class),				
@@ -100,7 +100,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeGroupPutRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new GroupPutRequest( 
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
 				(String[]) context.deserialize( json.get("attributes") , String[].class)
@@ -110,7 +110,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeGroupGetReply(JsonObject json,
 			JsonDeserializationContext context) {
 		return new GroupGetReply( 
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
 				(Tuple) context.deserialize( json.get("tuple") , Tuple.class),
@@ -121,7 +121,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeGroupQueryReply(JsonObject json,
 			JsonDeserializationContext context) {
 		return new GroupQueryReply( 
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
 				(Tuple) context.deserialize( json.get("tuple") , Tuple.class),
@@ -131,36 +131,36 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 
 	private Message doDeserializeAck(JsonObject json,
 			JsonDeserializationContext context) {
-		return new Ack((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString());
+		return new Ack((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString());
 	}
 	
 	private Message doDeserializeFail(JsonObject json,
 			JsonDeserializationContext context) {
-		return new Fail((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString());
+		return new Fail((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString());
 	}
 	
 	private Message doDeserializeAttributeRequests(JsonObject json,
 			JsonDeserializationContext context) {
-		return new AttributeRequest((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString(),
+		return new AttributeRequest((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString(),
 				(String[]) context.deserialize( json.get("attributes") , String[].class));
 	}
 
 	private Message doDeserializeAttributeReply(JsonObject json,
 			JsonDeserializationContext context) {
-		return new AttributeReply((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString(),
+		return new AttributeReply((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString(),
 				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class));
 	}
 
 	private Message doDeserializeGroupPutReply(JsonObject json,
 			JsonDeserializationContext context) {
-		return new GroupPutReply((Locality) context.deserialize(json.get("source"), Locality.class),json.get("session").getAsInt(),json.get("target").getAsString(),
+		return new GroupPutReply((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString(),
 				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class));
 	}
 
 	private Message doDeserializePutRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new PutRequest(
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),json.get("target").getAsString(),
 				(Tuple) context.deserialize( json.get("tuple") , Tuple.class));
 	}
@@ -168,7 +168,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeGetRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new GetRequest(
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),json.get("target").getAsString(),
 				(Template) context.deserialize( json.get("template") , Template.class));
 	}
@@ -176,7 +176,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeQueryRequest(JsonObject json,
 			JsonDeserializationContext context) {
 		return new QueryRequest(
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),json.get("target").getAsString(),
 				(Template) context.deserialize( json.get("template") , Template.class));
 	}
@@ -184,7 +184,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	private Message doDeserializeTupleReply(JsonObject json,
 			JsonDeserializationContext context) {
 		return new TupleReply(
-				(Locality) context.deserialize(json.get("source"), Locality.class),
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),json.get("target").getAsString(),
 				(Tuple) context.deserialize( json.get("tuple") , Tuple.class));
 	}

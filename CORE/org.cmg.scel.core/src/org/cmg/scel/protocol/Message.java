@@ -2,23 +2,23 @@ package org.cmg.scel.protocol;
 
 import java.io.IOException;
 
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public abstract class Message {
 	
-	private Locality source;
+	private PointToPoint source;
 	private int 	 session;
 	private MessageType type;
 	private String	 target;
 	
-	public Message( MessageType type , Locality source , int session , String target ) {
+	public Message( MessageType type , PointToPoint source , int session , String target ) {
 		this.source = source;
 		this.session = session;
 		this.type = type;
 		this.target = target;
 	}
 
-	public Locality getSource() {
+	public PointToPoint getSource() {
 		return source;
 	}
 

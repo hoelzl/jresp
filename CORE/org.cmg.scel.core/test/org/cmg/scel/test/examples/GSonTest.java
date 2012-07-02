@@ -16,7 +16,7 @@ import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.MessageDeserializer;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

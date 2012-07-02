@@ -3,13 +3,13 @@ package org.cmg.scel.protocol;
 import java.io.IOException;
 
 import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public class QueryRequest extends Message {
 
 	private Template template;
 	
-	public QueryRequest(Locality source, int session, String target, Template template) {
+	public QueryRequest(PointToPoint source, int session, String target, Template template) {
 		super(MessageType.QUERY_REQUEST,source,session,target);
 		this.template = template;
 	}

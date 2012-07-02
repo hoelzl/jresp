@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 /**
  * @author Michele Loreti
@@ -27,7 +27,7 @@ public class GroupPutRequest extends Message {
 	
 	private String[] attributes;
 
-	public GroupPutRequest(Locality source, int session,
+	public GroupPutRequest(PointToPoint source, int session,
 			String target, String[] attributes) {
 		super(MessageType.GROUP_PUT_REQUEST, source, session, target);
 		this.attributes = attributes;

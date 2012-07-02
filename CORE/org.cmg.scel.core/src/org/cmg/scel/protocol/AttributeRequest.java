@@ -3,13 +3,13 @@ package org.cmg.scel.protocol;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.cmg.scel.topology.Locality;
+import org.cmg.scel.topology.PointToPoint;
 
 public class AttributeRequest extends Message {
 	
 	private String[] attributes;
 	
-	public AttributeRequest(Locality source, int session, String target,
+	public AttributeRequest(PointToPoint source, int session, String target,
 			String[] attributes) {
 		super(MessageType.ATTRIBUTE_REQUEST,source,session,target);
 		this.attributes = attributes;
