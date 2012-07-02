@@ -32,8 +32,6 @@ import org.cmg.scel.topology.Self;
  */
 public class RemotePingPong {
 
-	
-	
 	public static void main(String[] argv) throws IOException {
 		InetPort pingPort = new InetPort(9999);
 		InetPort pongPort = new InetPort(9998);

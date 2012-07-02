@@ -25,6 +25,7 @@ import org.cmg.scel.behaviour.AgentContext;
 import org.cmg.scel.behaviour.ContextState;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Knowledge;
+import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.policy.IPolicy;
@@ -48,6 +49,8 @@ import org.cmg.scel.protocol.TupleReply;
  *
  */
 public class Node<T extends Knowledge> extends Observable {
+
+	private static final String ID_ATTRIBUTE_NAME = "ID";
 
 	/**
 	 * Local knowledge
@@ -81,6 +84,12 @@ public class Node<T extends Knowledge> extends Observable {
 	protected Hashtable<Integer, Pending<Tuple>> tuplePending = new Hashtable<Integer, Pending<Tuple>>();
 	
 	protected Hashtable<Integer, Pending<Boolean>> putPending = new Hashtable<Integer, Pending<Boolean>>();
+
+	protected LinkedList<Sensor> sensors = new LinkedList<Sensor>();
+	
+	protected LinkedList<Actuator> actuators = new LinkedList<Actuator>();
+	
+	protected Hashtable<String,AttributeCollector> attributes = new Hashtable<String, AttributeCollector>();
 	
 	protected LinkedList<Agent> agents;
 	
@@ -348,11 +357,6 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 	}
 
-	private Attribute[] getAttributes(String[] attributes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public synchronized Message getNextMessage() throws InterruptedException {
 		while (pendingMessages.isEmpty()) {
 			wait();
@@ -366,7 +370,20 @@ public class Node<T extends Knowledge> extends Observable {
 	}
 
 	public void put(Tuple tuple) {
+		if (putToActuators(tuple)) {
+			return ;
+		}
 		knowledge.put(tuple);
+	}
+
+	private boolean putToActuators(Tuple tuple) {
+		for (Actuator a : actuators) {
+			if (a.getTemplate().match(tuple)) {
+				a.send(tuple);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Tuple get(Template template) throws InterruptedException {
@@ -374,7 +391,21 @@ public class Node<T extends Knowledge> extends Observable {
 	}
 
 	public Tuple query(Template template) throws InterruptedException {
+		Tuple t = queryFromSensors(template);
+		if (t!=null) {
+			return t;
+		}
 		return knowledge.query(template);
+	}
+
+	private synchronized Tuple queryFromSensors(Template template) {
+		for (Sensor s : sensors) {
+			Tuple t = s.getValue();
+			if (template.match(t)) {
+				return t;
+			}
+		}
+		return null;
 	}
 
 	public void put(Tuple t, Target l) throws InterruptedException, IOException {
@@ -454,5 +485,57 @@ public class Node<T extends Knowledge> extends Observable {
 		p.register(this);
 		ports.add(p);
 	}
+	
+	public Sensor[] getSensors() {
+		return sensors.toArray(new Sensor[sensors.size()]);
+	}
 
+	public Actuator[] getActuators() {
+		return actuators.toArray(new Actuator[sensors.size()]);
+	}
+	
+	public synchronized void addSensor(Sensor sensor) {
+		sensors.add(sensor);
+	}
+	
+	public synchronized void addActuator( Actuator actuator ) {
+		actuators.add(actuator);
+	}
+	
+	public synchronized Attribute getAttribute( String name ) {
+		AttributeCollector ac = attributes.get(name);
+		if (ac == null) {
+			return new Attribute(name, null);
+		}
+		if (ID_ATTRIBUTE_NAME.equals(name)) {
+			return new Attribute(name, SCELValue.getString(getName()));
+		}
+		return ac.eval();
+	}
+
+	public Tuple queryp(Template template) {
+		return knowledge.queryp(template);
+	}
+
+	public synchronized void addAttributeCollector( AttributeCollector ac ) {
+		attributes.put(ac.getName(), ac);
+	}
+	
+	public synchronized Hashtable<String, Attribute> getNodeInterface() {
+		Hashtable<String, Attribute> toReturn = new Hashtable<String, Attribute>();
+		for (String a : attributes.keySet()) {
+			toReturn.put(a, attributes.get(a).eval());
+		}
+		toReturn.put(ID_ATTRIBUTE_NAME,new Attribute(ID_ATTRIBUTE_NAME, SCELValue.getString(getName())));
+		return toReturn;
+	}
+	
+	public synchronized Attribute[] getAttributes(String[] attributes) {
+		Attribute[] toReturn = new Attribute[attributes.length];
+		for( int i=0 ; i<attributes.length ; i++ ) {
+			toReturn[i] = getAttribute(attributes[i]);
+		}
+		return toReturn;
+	}
+	
 }
