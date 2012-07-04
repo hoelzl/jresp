@@ -9,13 +9,11 @@ public abstract class Message {
 	private PointToPoint source;
 	private int 	 session;
 	private MessageType type;
-	private String	 target;
 	
-	public Message( MessageType type , PointToPoint source , int session , String target ) {
+	public Message( MessageType type , PointToPoint source , int session ) {
 		this.source = source;
 		this.session = session;
 		this.type = type;
-		this.target = target;
 	}
 
 	public PointToPoint getSource() {
@@ -36,8 +34,7 @@ public abstract class Message {
 			Message msg = (Message) obj;
 			return (type==msg.type)&&
 					(source.equals(msg.source))&&
-					(session==msg.session)&&
-					(target.equals(msg.target));
+					(session==msg.session);
 		}
 		return false;
 	}
@@ -47,11 +44,7 @@ public abstract class Message {
 		return source+":"+session;
 	}
 
-	public abstract void accept(MessageHandler messageHandler) throws IOException;
-
-	public String getTarget() {
-		return target;
-	}
+	public abstract void accept(MessageHandler messageHandler) throws IOException, InterruptedException;
 
 	@Override
 	public int hashCode() {

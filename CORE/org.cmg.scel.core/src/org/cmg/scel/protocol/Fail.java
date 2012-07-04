@@ -2,7 +2,7 @@ package org.cmg.scel.protocol;
 
 import org.cmg.scel.topology.PointToPoint;
 
-public class Fail extends Message {
+public class Fail extends UnicastMessage {
 
 	public Fail(PointToPoint source, int session, String target) {
 		super(MessageType.FAIL,source,session, target);

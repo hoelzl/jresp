@@ -16,26 +16,10 @@ package org.cmg.scel.topology;
  * @author Michele Loreti
  *
  */
-public class Group implements Target {
+public interface NodeConnection {
 
-	private GroupPredicate predicate;
-	
-	public Group( GroupPredicate predicate ) {
-		this.predicate = predicate;
-	}
-	
-	@Override
-	public boolean isSelf() {
-		return false;
-	}
-	
-	public GroupPredicate getPredicate() {
-		return predicate;
-	}
+	void waitInTouch(String src, String target) throws InterruptedException;
 
-	@Override
-	public boolean isAGroup() {
-		return true;
-	}
+	boolean areInTouch(String src, String target);
 
 }

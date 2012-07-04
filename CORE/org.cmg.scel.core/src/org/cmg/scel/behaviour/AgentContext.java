@@ -25,7 +25,7 @@ import org.cmg.scel.topology.Target;
  */
 public interface AgentContext {
 
-	public void put( Agent a , Tuple t , Target l ) throws InterruptedException, IOException;
+	public boolean put( Agent a , Tuple t , Target l ) throws InterruptedException, IOException;
 	
 	public Tuple get( Agent a , Template t , Target l )  throws InterruptedException, IOException;;
 		

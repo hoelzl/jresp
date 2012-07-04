@@ -13,12 +13,15 @@
 package org.cmg.scel.topology;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import javax.sql.rowset.spi.SyncResolver;
 
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.behaviour.AgentContext;
@@ -56,155 +59,7 @@ import org.cmg.scel.protocol.TupleReply;
  */
 public class Node<T extends Knowledge> extends Observable {
 
-	private static final String ID_ATTRIBUTE_NAME = "ID";
-
-	/**
-	 * Local knowledge
-	 */
-	protected T knowledge;
-
-	/**
-	 * Node policy
-	 */
-	protected IPolicy	policy;
-	
-	/**
-	 * Port used to perform group-based interactions
-	 */
-	protected LinkedList<Port> ports;
-
-	protected Queue<Message> pendingMessages = new LinkedList<Message>();
-	
-	/**
-	 * 
-	 */
-	protected int agentCounter = 0;
-
-	protected int sessionCounter = 0;
-	
-	protected String name;
-
-	
-	protected Hashtable<Integer, Pending<Attribute[]>> pendingAttributeRequests = new Hashtable<Integer, Pending<Attribute[]>>();
-	
-	protected Hashtable<Integer, Pending<Tuple>> tuplePending = new Hashtable<Integer, Pending<Tuple>>();
-	
-	protected Hashtable<Integer, Pending<Boolean>> putPending = new Hashtable<Integer, Pending<Boolean>>();
-
-	protected LinkedList<Sensor> sensors = new LinkedList<Sensor>();
-	
-	protected LinkedList<Actuator> actuators = new LinkedList<Actuator>();
-	
-	protected Hashtable<String,AttributeCollector> attributes = new Hashtable<String, AttributeCollector>();
-	
-	protected LinkedList<Agent> agents;
-	
-	private ContextState state;
-	
-	protected Executor executor = Executors.newCachedThreadPool();
-	
-	public Node( String name , T knowledge ) {
-		this.name = name;
-		this.knowledge = knowledge;
-		this.agents = new LinkedList<Agent>();
-		this.policy = new NodePolicy(this);
-		this.state = ContextState.READY;
-		this.ports = new LinkedList<Port>();
-	}
-	
-	public void addAgent(Agent a) {
-		a.setContext( 
-			getAgentId() , 
-			new AgentContext() {
-				
-				@Override
-				public void put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
-					policy.put(a, t, l);
-				}
-
-				@Override
-				public Tuple get(Agent a, Template t, Target l) throws InterruptedException, IOException {
-					return policy.get(a, t, l);
-				}
-
-				@Override
-				public Tuple query(Agent a, Template t, Target l) throws InterruptedException, IOException {
-					return policy.query(a, t, l);
-				}
-
-				@Override
-				public void exec(Agent a, Agent b) throws InterruptedException {
-					policy.exec(a, b);
-				}
-
-				@Override
-				public ContextState getState() {
-					return Node.this.getState();
-				}
-
-				@Override
-				public void waitState(ContextState state)
-						throws InterruptedException {
-					Node.this.waitState(state);
-				}
-
-			}
-		);
-		agents.add(a);
-		executor.execute(a);
-	}
-
-	protected synchronized void waitState(ContextState state) throws InterruptedException {
-		while (getState() != state) {
-			wait();
-		}
-	}
-
-	public synchronized ContextState getState() {
-		return state;
-	}
-
-	public synchronized void start() {
-		if (state != ContextState.READY) {
-			throw new IllegalStateException();
-		}
-		executor.execute(new NodeThread());
-		state = ContextState.RUNNING;
-		notifyAll();
-	}
-	
-	public synchronized void stop() {
-		if (state != ContextState.RUNNING) {
-			throw new IllegalStateException();
-		}
-		state = ContextState.HALT;
-		notifyAll();
-		doStop();
-	}
-
-	private void doStop() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected synchronized int getAgentId() {
-		return agentCounter++;
-	}
-	
-	public class NodeThread implements Runnable {
-
-		@Override
-		public void run() {
-			try {
-			while (isRunning()) {				
-				executor.execute( new NodeMessageHandler(getNextMessage()) );			
-			}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
+	protected int groupActionWaitingTime = 10000;
 	
 	public class NodeMessageHandler extends MessageHandler implements Runnable {
 		
@@ -215,12 +70,17 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 
 		@Override
-		public void handle(AttributeRequest msg) throws IOException {
-			sendAttibutes(msg.getSource(),msg.getSession(),msg.getAttributes());
+		public void handle(Ack msg) {
+			synchronized (putPending) {
+				Pending<Boolean> pending = putPending.get(msg.getSession());
+				if (pending != null) {
+					pending.set(true);
+				}
+			}
 		}
 
 		@Override
-		public void handle(AttributeReply msg) throws IOException {
+		public void handle(AttributeReply msg) throws IOException, InterruptedException {
 			synchronized (pendingAttributeRequests) {
 				Pending<Attribute[]> pending = pendingAttributeRequests.get(msg.getSession());
 				if (pending == null) {
@@ -232,54 +92,8 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 
 		@Override
-		public void handle(PutRequest msg) throws IOException {
-			try {
-				policy.put( msg.getSource() , msg.getTuple() );
-				sendAck( msg.getSource() , msg.getSession() );
-			} catch (Exception e) {
-				sendFail(msg.getSource(),msg.getSession());
-			}
-		}
-
-		@Override
-		public void handle(GetRequest msg) throws IOException {
-			try {
-				sendTuple( msg.getSource() , msg.getSession() , policy.get(msg.getSource() , msg.getTemplate() ));
-			} catch (Exception e) {
-				sendFail(msg.getSource(),msg.getSession());				
-			}
-		}
-
-		@Override
-		public void handle(QueryRequest msg) throws IOException {
-			try {
-				sendTuple( msg.getSource() , msg.getSession() , policy.query(msg.getSource() , msg.getTemplate() ));
-			} catch (Exception e) {
-				sendFail(msg.getSource(),msg.getSession());				
-			}
-		}
-
-		@Override
-		public void handle(TupleReply msg) throws IOException {
-			synchronized (tuplePending) {
-				Pending<Tuple> pending = tuplePending.get(msg.getSession());
-				if (pending == null) {
-					sendFail(msg.getSource(),msg.getSession());
-				} else {
-					pending.set(msg.getTuple());
-					sendAck(msg.getSource(), msg.getSession());
-				}
-			}
-		}
-
-		@Override
-		public void handle(Ack msg) {
-			synchronized (putPending) {
-				Pending<Boolean> pending = putPending.get(msg.getSession());
-				if (pending != null) {
-					pending.set(true);
-				}
-			}
+		public void handle(AttributeRequest msg) throws IOException, InterruptedException {
+			sendAttibutes(msg.getSource(),msg.getSession(),msg.getAttributes());
 		}
 
 		@Override
@@ -309,107 +123,329 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 
 		@Override
+		public void handle(GetRequest msg) throws IOException, InterruptedException {
+			try {
+				policy.acceptGet(msg.getSource() , msg.getSession() , msg.getTemplate() );
+			} catch (Exception e) {
+				sendFail(msg.getSource(),msg.getSession());				
+			}
+		}
+
+		@Override
+		public void handle(GroupGetReply msg) throws IOException, InterruptedException {
+			synchronized (pendigGroupGet) {
+				LinkedList<GroupGetReply> pending = pendigGroupGet.get(msg.getSession());
+				if (pending == null) {
+					sendFail(msg.getSource(), msg.getTupleSession());
+				} else {
+					pending.add(msg);
+				}
+			}
+		}
+
+		@Override
+		public void handle(GroupGetRequest msg) throws IOException, InterruptedException {
+			policy.acceptGroupGet(msg.getSource(), msg.getSession(), msg.getAttributes(), msg.getTemplate());
+		}
+
+		@Override
+		public void handle(GroupPutReply msg) throws IOException, InterruptedException {
+			synchronized (outGroupPutPending) {
+				LinkedList<GroupPutReply> pending = outGroupPutPending.get(msg.getSession());
+				if (pending == null) {
+					sendFail(msg.getSource(), msg.getTupleSession());
+				} else {
+					pending.add(msg);
+				}
+			}
+		}
+
+		@Override
+		public void handle(GroupPutRequest msg) throws IOException, InterruptedException {
+			policy.acceptGroupPut( msg.getSource() , msg.getSession() , msg.getAttributes() , msg.getTuple() );
+		}
+
+		@Override
+		public void handle(GroupQueryReply msg) throws IOException, InterruptedException {
+			synchronized (pendigGroupQuery) {
+				LinkedList<GroupQueryReply> pending = pendigGroupQuery.get(msg.getSession());
+				if (pending != null) {
+					pending.add(msg);
+				}
+			}
+		}
+
+		@Override
+		public void handle(GroupQueryRequest msg) throws IOException, InterruptedException {
+			policy.acceptGroupQuery(msg.getSource(), msg.getSession(), msg.getAttributes(), msg.getTemplate());
+		}
+
+		@Override
+		public void handle(PutRequest msg) throws IOException, InterruptedException {
+			try {
+				policy.acceptPut( msg.getSource() , msg.getSession() , msg.getTuple() );
+			} catch (Exception e) {
+				sendFail(msg.getSource(),msg.getSession());
+			}
+		}
+
+		@Override
+		public void handle(QueryRequest msg) throws IOException, InterruptedException {
+			policy.acceptGet(msg.getSource(), msg.getSession(), msg.getTemplate());
+		}
+
+		@Override
+		public void handle(TupleReply msg) throws IOException, InterruptedException {
+			synchronized (tuplePending) {
+				Pending<Tuple> pending = tuplePending.get(msg.getSession());
+				if (pending == null) {
+					sendFail(msg.getSource(),msg.getSession());
+				} else {
+					pending.set(msg.getTuple());
+					tuplePending.remove(msg.getSession());
+					sendAck(msg.getSource(), msg.getSession());
+				}
+			}
+		}
+
+		@Override
 		public void run() {
 			try {
 				m.accept(this);
 			} catch (IOException e) {
 				// TODO Manage error handling!
 				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		}
-
-		@Override
-		public void handle(GroupGetRequest msg) throws IOException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void handle(GroupQueryRequest msg) throws IOException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void handle(GroupPutRequest msg) throws IOException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void handle(GroupGetReply msg) throws IOException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void handle(GroupQueryReply msg) throws IOException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void handle(GroupPutReply msg) throws IOException {
-			// TODO Auto-generated method stub
-			
 		}
 		
 	}
 
-	public synchronized boolean isRunning() {
-		return state==ContextState.RUNNING;
-	}
+	public class NodeThread implements Runnable {
 
-	public void sendTuple(PointToPoint to, int session, Tuple tuple) throws IOException {
-		for (Port p : ports) {
-			if (p.canDeliver(to)) {
-				p.sendTuple( to , getName() , session , tuple );
-				return ;
+		@Override
+		public void run() {
+			try {
+			while (isRunning()) {				
+				executor.execute( new NodeMessageHandler(getNextMessage()) );			
+			}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
+
+	}
+
+	private static final String ID_ATTRIBUTE_NAME = "ID";
+	
+	/**
+	 * Local knowledge
+	 */
+	protected T knowledge;
+
+	/**
+	 * Node policy
+	 */
+	protected IPolicy	policy;
+	
+	/**
+	 * Port used to perform group-based interactions
+	 */
+	protected LinkedList<IPort> ports;
+
+	protected Queue<Message> pendingMessages = new LinkedList<Message>();
+	
+	/**
+	 * 
+	 */
+	protected int agentCounter = 0;
+
+	
+	protected int sessionCounter = 0;
+	
+	protected String name;
+	
+	protected Hashtable<Integer, Pending<Attribute[]>> pendingAttributeRequests = new Hashtable<Integer, Pending<Attribute[]>>();
+
+	protected Hashtable<Integer, Pending<Tuple>> tuplePending = new Hashtable<Integer, Pending<Tuple>>();
+	
+	protected Hashtable<Integer, Pending<Boolean>> putPending = new Hashtable<Integer, Pending<Boolean>>();
+
+	protected Hashtable<Integer, Pending<Boolean>> inGroupPutPending = new Hashtable<Integer, Pending<Boolean>>();
+	
+	protected LinkedList<Sensor> sensors = new LinkedList<Sensor>();
+	
+	protected LinkedList<Actuator> actuators = new LinkedList<Actuator>();
+	
+	protected Hashtable<String,AttributeCollector> attributes = new Hashtable<String, AttributeCollector>();
+	
+	protected LinkedList<Agent> agents;
+	
+	private ContextState state;
+	
+	protected Executor executor = Executors.newCachedThreadPool();
+
+	private Hashtable<Integer,LinkedList<GroupPutReply>> outGroupPutPending = new Hashtable<Integer, LinkedList<GroupPutReply>>();
+
+	private Hashtable<Integer,LinkedList<GroupGetReply>> pendigGroupGet = new Hashtable<Integer, LinkedList<GroupGetReply>>();
+
+	private Hashtable<Integer,LinkedList<GroupQueryReply>> pendigGroupQuery = new Hashtable<Integer, LinkedList<GroupQueryReply>>();
+
+	public Node( String name , T knowledge ) {
+		this.name = name;
+		this.knowledge = knowledge;
+		this.agents = new LinkedList<Agent>();
+		this.policy = new NodePolicy(this);
+		this.state = ContextState.READY;
+		this.ports = new LinkedList<IPort>();
+	}
+
+	public synchronized void addActuator( Actuator actuator ) {
+		actuators.add(actuator);
+	}
+
+	public void addAgent(Agent a) {
+		a.setContext( 
+			getAgentId() , 
+			new AgentContext() {
+				
+				@Override
+				public void exec(Agent a, Agent b) throws InterruptedException {
+					policy.exec(a, b);
+				}
+
+				@Override
+				public Tuple get(Agent a, Template t, Target l) throws InterruptedException, IOException {
+					return policy.get(a, t, l);
+				}
+
+				@Override
+				public ContextState getState() {
+					return Node.this.getState();
+				}
+
+				@Override
+				public boolean put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
+					return policy.put(a, t, l);
+				}
+
+				@Override
+				public Tuple query(Agent a, Template t, Target l) throws InterruptedException, IOException {
+					return policy.query(a, t, l);
+				}
+
+				@Override
+				public void waitState(ContextState state)
+						throws InterruptedException {
+					Node.this.waitState(state);
+				}
+
+			}
+		);
+		agents.add(a);
+		executor.execute(a);
+	}
+	
+	public synchronized void addAttributeCollector( AttributeCollector ac ) {
+		attributes.put(ac.getName(), ac);
+	}
+
+	public synchronized void addMessage( Message msg ) {
+		pendingMessages.add(msg);
+		notifyAll();
+	}
+
+	public synchronized void addPort( IPort p ) {
+		p.register(this);
+		ports.add(p);
+	}
+	
+	public synchronized void addSensor(Sensor sensor) {
+		sensors.add(sensor);
+	}
+	
+	private void doStop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Tuple get(Template template) throws InterruptedException {
+		return knowledge.get(template);
+	}
+
+	public Tuple get(Template t, Target l) throws InterruptedException, IOException {
+		if (l.isSelf()) {
+			return get(t);
+		} 
+		if (l.isAGroup()) {
+			return sendGroupGetRequest( (Group) l , t );
+		}
+		return sendGetRequest( (PointToPoint) l , t);
+	}
+
+	public Actuator[] getActuators() {
+		return actuators.toArray(new Actuator[sensors.size()]);
+	}
+
+	protected synchronized int getAgentId() {
+		return agentCounter++;
+	}
+
+	public synchronized Attribute getAttribute( String name ) {
+		AttributeCollector ac = attributes.get(name);
+		if (ac == null) {
+			return new Attribute(name, null);
+		}
+		if (ID_ATTRIBUTE_NAME.equals(name)) {
+			return new Attribute(name, SCELValue.getString(getName()));
+		}
+		return ac.eval();
+	}
+
+	public synchronized Attribute[] getAttributes(String[] attributes) {
+		Attribute[] toReturn = new Attribute[attributes.length];
+		for( int i=0 ; i<attributes.length ; i++ ) {
+			toReturn[i] = getAttribute(attributes[i]);
+		}
+		return toReturn;
 	}
 
 	public String getName() {
 		return name;
 	}
-
-	public void sendAck(PointToPoint to, int session) throws IOException {
-		for (Port p : ports) {
-			if (p.canDeliver(to)) {
-				p.sendAck( to, getName() , session );
-				return ;
-			}
-		}
-	}
-
-	public void sendFail(PointToPoint to, int session) throws IOException {
-		for (Port p : ports) {
-			if (p.canDeliver(to)) {
-				p.sendFail( to, getName() , session );
-				return ;
-			}
-		}
-	}
-
-	public void sendAttibutes(PointToPoint to, int session, String[] attributes) throws IOException {
-		for (Port p : ports) {
-			if (p.canDeliver(to)) {
-				p.sendAttributes( to, getName() , session ,getAttributes(attributes));
-				return ;
-			}
-		}
-	}
-
+	
 	public synchronized Message getNextMessage() throws InterruptedException {
 		while (pendingMessages.isEmpty()) {
 			wait();
 		}
 		return pendingMessages.poll();
 	}
-	
-	public synchronized void addMessage( Message msg ) {
-		pendingMessages.add(msg);
-		notifyAll();
+
+	public synchronized Hashtable<String, Attribute> getNodeInterface() {
+		Hashtable<String, Attribute> toReturn = new Hashtable<String, Attribute>();
+		for (String a : attributes.keySet()) {
+			toReturn.put(a, attributes.get(a).eval());
+		}
+		toReturn.put(ID_ATTRIBUTE_NAME,new Attribute(ID_ATTRIBUTE_NAME, SCELValue.getString(getName())));
+		return toReturn;
+	}
+
+	public Sensor[] getSensors() {
+		return sensors.toArray(new Sensor[sensors.size()]);
+	}
+
+	private synchronized int getSession() {
+		return sessionCounter++;
+	}
+
+	public synchronized ContextState getState() {
+		return state;
+	}
+
+	public synchronized boolean isRunning() {
+		return state==ContextState.RUNNING;
 	}
 
 	public void put(Tuple tuple) {
@@ -417,6 +453,17 @@ public class Node<T extends Knowledge> extends Observable {
 			return ;
 		}
 		knowledge.put(tuple);
+	}
+
+	public boolean put(Tuple t, Target l) throws InterruptedException, IOException {
+		if (l.isSelf()) {
+			put(t);
+			return true;
+		}  
+		if (l.isAGroup()) {
+			return sendGroupPutRequest( (Group) l , t );
+		}
+		return sendPutRequest((PointToPoint) l , t );
 	}
 
 	private boolean putToActuators(Tuple tuple) {
@@ -429,16 +476,38 @@ public class Node<T extends Knowledge> extends Observable {
 		return false;
 	}
 
-	public Tuple get(Template template) throws InterruptedException {
-		return knowledge.get(template);
-	}
-
 	public Tuple query(Template template) throws InterruptedException {
 		Tuple t = queryFromSensors(template);
 		if (t!=null) {
 			return t;
 		}
 		return knowledge.query(template);
+	}
+
+	public Tuple query(Template t, Target l) throws InterruptedException, IOException {
+		if (l.isSelf()) {
+			return query(t);
+		} 
+		if (l.isAGroup()) {
+			return sendGroupQueryRequest( (Group) l , t );
+		}
+		return sendQueryRequest((PointToPoint) l , t);
+	}
+
+	private Tuple sendGroupQueryRequest(Group l, Template t) throws IOException, InterruptedException {
+		Tuple result = null;
+		while (result == null) {
+			int session = getSession();
+			LinkedList<GroupQueryReply> received = new LinkedList<GroupQueryReply>();
+			synchronized (pendigGroupQuery) {
+				pendigGroupQuery.put(session,received);				
+			}
+			broadCastQueryRequest(session, l.getPredicate().getParameters(), t);
+			Pending<Tuple> pending = new Pending<Tuple>();
+			executor.execute( new GroupQueryHandler( l , session , pending ) );		
+			result = pending.get();
+		}
+		return result;
 	}
 
 	private synchronized Tuple queryFromSensors(Template template) {
@@ -450,135 +519,420 @@ public class Node<T extends Knowledge> extends Observable {
 		}
 		return null;
 	}
-
-	public void put(Tuple t, Target l) throws InterruptedException, IOException {
-		if (l.isSelf()) {
-			put(t);
-		} else {
-			sendPutRequest( l , t );
+	
+	public Tuple queryp(Template template) {
+		return knowledge.queryp(template);
+	}
+	
+	public void sendAck(PointToPoint to, int session) throws IOException, InterruptedException {
+		for (IPort p : ports) {
+			if (p.canDeliver(to)) {
+				p.sendAck( to, getName() , session );
+				return ;
+			}
+		}
+	}
+	
+	public void sendAttibutes(PointToPoint to, int session, String[] attributes) throws IOException, InterruptedException {
+		for (IPort p : ports) {
+			if (p.canDeliver(to)) {
+				p.sendAttributes( to, getName() , session ,getAttributes(attributes));
+				return ;
+			}
 		}
 	}
 
-	private void sendPutRequest(Target l, Tuple t) throws InterruptedException, IOException {
-		for (Port p : ports) {
+	public void sendFail(PointToPoint to, int session) throws IOException, InterruptedException {
+		for (IPort p : ports) {
+			if (p.canDeliver(to)) {
+				p.sendFail( to, getName() , session );
+				return ;
+			}
+		}
+	}
+	
+	private Tuple sendGetRequest(PointToPoint l, Template t) throws InterruptedException, IOException {
+		for (IPort p : ports) {
+			if (p.canDeliver(l)) {
+				int session = getSession();
+				Pending<Tuple> pending = new Pending<Tuple>();
+				synchronized (tuplePending) {
+					tuplePending.put(session, pending);
+				}
+				Tuple result = null;
+				while (result != null) {
+					p.sendGetRequest( l , getName() , session , t );
+					result = pending.get();
+				}
+				return result;
+			}
+		}
+		//TODO: Handle the case when no port is able to deliver message at l!		
+		return null;
+	}
+	
+	private boolean sendGroupPutRequest(Group l, Tuple t) throws IOException, InterruptedException {
+		int session = getSession();
+		LinkedList<GroupPutReply> received = new LinkedList<GroupPutReply>();
+		outGroupPutPending.put(session,received);
+		for (IPort p : ports) {
+			p.sendGroupPutRequest(getName(), session, l.getPredicate().getParameters(), t);
+		}
+		executor.execute( new GroupPutHandler( l , session , t ) );		
+		return true;
+	}
+
+	private Tuple sendGroupGetRequest(Group l, Template t) throws IOException, InterruptedException {
+		Tuple result = null;
+		while (result == null) {
+			int session = getSession();
+			LinkedList<GroupGetReply> received = new LinkedList<GroupGetReply>();
+			synchronized (pendigGroupGet) {
+				pendigGroupGet.put(session,received);				
+			}
+			broadCastGetRequest(session, l.getPredicate().getParameters(), t);
+			Pending<Tuple> pending = new Pending<Tuple>();
+			executor.execute( new GroupGetHandler( l , session , pending ) );		
+			result = pending.get();
+		}
+		return result;
+	}
+	
+	private void broadCastGetRequest(int session, String[] parameters, Template t ) throws IOException, InterruptedException {
+		for (IPort p : ports) {
+			p.sendGroupGetRequest(getName(), session, parameters, t);
+		}		
+	}
+
+	private void broadCastQueryRequest(int session, String[] parameters, Template t ) throws IOException, InterruptedException {
+		for (IPort p : ports) {
+			p.sendGroupQueryRequest(getName(), session, parameters, t);
+		}		
+	}
+
+	
+	public void sendGroupPutReply(PointToPoint source, int session,
+			Attribute[] attributes2) {
+//		IPort p = getPort( source );
+	}
+
+	private boolean sendPutRequest(PointToPoint l, Tuple t) throws InterruptedException, IOException {
+		for (IPort p : ports) {
 			if (p.canDeliver(l)) {
 				int session = getSession();
 				Pending<Boolean> pending = new Pending<Boolean>();
 				putPending.put(session, pending);
 				p.sendPutRequest( l , getName() , session , t );
-				pending.get(); //TODO: Handle return value!
+				return pending.get(); 
 			}
 		}
-		//TODO: Handle the case when no port is able to deliver message at l!
+		return false;//TODO: Probably an exception should be raised here!
 	}
-
-	private synchronized int getSession() {
-		return sessionCounter++;
-	}
-
-	public Tuple get(Template t, Target l) throws InterruptedException, IOException {
-		if (l.isSelf()) {
-			return get(t);
-		} else {
-			return sendGetRequest( l , t);
-		}
-	}
-
-	private Tuple sendGetRequest(Target l, Template t) throws InterruptedException, IOException {
-		for (Port p : ports) {
+	
+	private Tuple sendQueryRequest(PointToPoint l, Template t) throws InterruptedException, IOException {
+		for (IPort p : ports) {
 			if (p.canDeliver(l)) {
 				int session = getSession();
 				Pending<Tuple> pending = new Pending<Tuple>();
 				synchronized (tuplePending) {
 					tuplePending.put(session, pending);
 				}
-				p.sendGetRequest( l , getName() , session , t );
-				return pending.get();
-			}
-		}
-		//TODO: Handle the case when no port is able to deliver message at l!		
-		return null;
-	}
-
-	public Tuple query(Template t, Target l) throws InterruptedException, IOException {
-		if (l.isSelf()) {
-			return query(t);
-		} else {
-			return sendQueryRequest( l , t);
-		}
-	}
-	
-	private Tuple sendQueryRequest(Target l, Template t) throws InterruptedException, IOException {
-		for (Port p : ports) {
-			if (p.canDeliver(l)) {
-				int session = getSession();
-				Pending<Tuple> pending = new Pending<Tuple>();
-				synchronized (tuplePending) {
-					tuplePending.put(session, pending);
+				Tuple result = null;
+				while (result != null) {
+					p.sendQueryRequest( l , getName() , session , t );
+					result = pending.get();
 				}
-				p.sendQueryRequest( l , getName() , session , t );
-				return pending.get();
+				return result;
 			}
 		}
 		//TODO: Handle the case when no port is able to deliver message at l!		
 		return null;
 	}
-	
-	public synchronized void addPort( Port p ) {
-		p.register(this);
-		ports.add(p);
-	}
-	
-	public Sensor[] getSensors() {
-		return sensors.toArray(new Sensor[sensors.size()]);
+
+	public void sendTuple(PointToPoint to, int session, Tuple tuple) throws IOException, InterruptedException {
+		for (IPort p : ports) {
+			if (p.canDeliver(to)) {
+				p.sendTuple( to , getName() , session , tuple );
+				return ;
+			}
+		}
 	}
 
-	public Actuator[] getActuators() {
-		return actuators.toArray(new Actuator[sensors.size()]);
-	}
-	
-	public synchronized void addSensor(Sensor sensor) {
-		sensors.add(sensor);
-	}
-	
-	public synchronized void addActuator( Actuator actuator ) {
-		actuators.add(actuator);
-	}
-	
-	public synchronized Attribute getAttribute( String name ) {
-		AttributeCollector ac = attributes.get(name);
-		if (ac == null) {
-			return new Attribute(name, null);
+	public synchronized void start() {
+		if (state != ContextState.READY) {
+			throw new IllegalStateException();
 		}
-		if (ID_ATTRIBUTE_NAME.equals(name)) {
-			return new Attribute(name, SCELValue.getString(getName()));
+		executor.execute(new NodeThread());
+		state = ContextState.RUNNING;
+		notifyAll();
+	}
+	
+	public synchronized void stop() {
+		if (state != ContextState.RUNNING) {
+			throw new IllegalStateException();
 		}
-		return ac.eval();
+		state = ContextState.HALT;
+		notifyAll();
+		doStop();
+	}
+	
+	protected synchronized void waitState(ContextState state) throws InterruptedException {
+		while (getState() != state) {
+			wait();
+		}
+	}
+	
+	public class GroupPutHandler implements Runnable {
+
+		private Group group;
+		private int session;
+		private Tuple tuple;
+
+		public GroupPutHandler(Group group, int session, Tuple tuple ) {
+			this.group = group;
+			this.session = session;
+			this.tuple = tuple;
+		}
+
+		@Override
+		public void run() {
+			LinkedList<GroupPutReply> received = null;
+			try {
+				long current = System.currentTimeMillis();
+				long deadline = current+groupActionWaitingTime;
+				while (current<deadline) {
+					Thread.sleep(deadline-current);
+					current = System.currentTimeMillis();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			synchronized (Node.this.outGroupPutPending) {
+				received = Node.this.outGroupPutPending.get(session);
+				Node.this.outGroupPutPending.remove(session);
+				if (received != null) {
+					try {
+						doGroupPut( group , received );
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}				
+		}
+		
 	}
 
-	public Tuple queryp(Template template) {
-		return knowledge.queryp(template);
+	public class GroupGetHandler implements Runnable {
+	
+		private Group group;
+		private int session;
+		private Pending<Tuple> pending;
+	
+		public GroupGetHandler(Group group, int session, Pending<Tuple> pending ) {
+			this.group = group;
+			this.session = session;
+			this.pending = pending;
+		}
+	
+		@Override
+		public void run() {
+			LinkedList<GroupGetReply> received = null;
+			try {
+				long current = System.currentTimeMillis();
+				long deadline = current+groupActionWaitingTime;
+				while (current<deadline) {
+					Thread.sleep(deadline-current);
+					current = System.currentTimeMillis();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			synchronized (Node.this.pendigGroupGet) {
+				received = Node.this.pendigGroupGet.get(session);
+				Node.this.outGroupPutPending.remove(session);
+				if (received != null) {
+					try {
+						doGroupGet( group , received , pending );
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}				
+		}
+		
 	}
 
-	public synchronized void addAttributeCollector( AttributeCollector ac ) {
-		attributes.put(ac.getName(), ac);
-	}
+	public class GroupQueryHandler implements Runnable {
 	
-	public synchronized Hashtable<String, Attribute> getNodeInterface() {
-		Hashtable<String, Attribute> toReturn = new Hashtable<String, Attribute>();
-		for (String a : attributes.keySet()) {
-			toReturn.put(a, attributes.get(a).eval());
-		}
-		toReturn.put(ID_ATTRIBUTE_NAME,new Attribute(ID_ATTRIBUTE_NAME, SCELValue.getString(getName())));
-		return toReturn;
-	}
+		private Group group;
+		private int session;
+		private Pending<Tuple> pending;
 	
-	public synchronized Attribute[] getAttributes(String[] attributes) {
-		Attribute[] toReturn = new Attribute[attributes.length];
-		for( int i=0 ; i<attributes.length ; i++ ) {
-			toReturn[i] = getAttribute(attributes[i]);
+		public GroupQueryHandler(Group group, int session, Pending<Tuple> pending ) {
+			this.group = group;
+			this.session = session;
+			this.pending = pending;
 		}
-		return toReturn;
+	
+		@Override
+		public void run() {
+			LinkedList<GroupQueryReply> received = null;
+			try {
+				long current = System.currentTimeMillis();
+				long deadline = current+groupActionWaitingTime;
+				while (current<deadline) {
+					Thread.sleep(deadline-current);
+					current = System.currentTimeMillis();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			synchronized (Node.this.pendigGroupQuery) {
+				received = Node.this.pendigGroupQuery.get(session);
+				Node.this.pendigGroupQuery.remove(session);
+				if (received != null) {
+					try {
+						doGroupQuery( group , received , pending );
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}				
+		}
+		
+	}
+
+	public int getGroupActionWaitingTime() {
+		return groupActionWaitingTime;
+	}
+
+	public void doGroupGet(Group group, LinkedList<GroupGetReply> received, Pending<Tuple> pending) throws InterruptedException {
+		boolean flag = true;
+
+		for (GroupGetReply reply : received) {
+			try {
+				if (flag&&group.getPredicate().evaluate(reply.getValues())) {
+					sendAck(reply.getSource(), reply.getTupleSession());
+					flag = false;
+					pending.set(reply.getTuple());
+				} else {
+					sendFail(reply.getSource(), reply.getTupleSession());
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if (flag) {
+			pending.fail();
+		}
+		
+	}
+
+	public void doGroupQuery(Group group, LinkedList<GroupQueryReply> received, Pending<Tuple> pending) throws InterruptedException {
+		boolean flag = true;
+
+		for (GroupQueryReply reply : received) {
+			if (flag&&group.getPredicate().evaluate(reply.getValues())) {
+				flag = false;
+				pending.set(reply.getTuple());
+			} 
+		}
+		
+		if (flag) {
+			pending.fail();
+		}
+		
+	}
+
+	public void doGroupPut(Group group, LinkedList<GroupPutReply> received) throws InterruptedException {
+		for (GroupPutReply reply : received) {
+			try {
+				if (group.getPredicate().evaluate(reply.getValues())) {
+					sendAck(reply.getSource(), reply.getTupleSession());
+				} else {
+					sendFail(reply.getSource(), reply.getTupleSession());
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void setGroupActionWaitingTime(int groupActionWaitingTime) {
+		this.groupActionWaitingTime = groupActionWaitingTime;
+	}
+
+	public void put(PointToPoint from, int session, Tuple tuple) throws IOException, InterruptedException {
+		put(tuple);
+		sendAck( from , session );
+	}
+
+	public void gPut(PointToPoint from, int session, String[] attributes,
+			Tuple tuple) throws IOException, InterruptedException {
+		IPort p = getPort(from);
+		if (p != null) {
+			int tupleSession = getSession();
+			Pending<Boolean> pending = new Pending<Boolean>();
+			putPending.put(tupleSession, pending);
+			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
+			if (pending.get()) {
+				knowledge.put(tuple);
+			}
+		}
+	}
+
+	private synchronized IPort getPort(Target l) {
+		for (IPort p : ports) {
+			if (p.canDeliver(l)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	public void gGet(PointToPoint from, int session, String[] attributes,
+			Template template) {
+		IPort p = getPort(from);
+		if (p != null) {
+			Tuple t = knowledge.getp(template);
+			if (t != null) {
+				int tupleSession = getSession();
+				Pending<Boolean> pending = new Pending<Boolean>();
+				putPending.put(tupleSession, pending);
+				try {
+					p.sendGroupGetReply(from, getName(), session, tupleSession, getAttributes(attributes), t);
+					if (pending.get()==null) {
+						knowledge.put(t);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					knowledge.put(t);
+				}
+			}
+//			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
+		}
+	}
+
+	public void gQuery(PointToPoint from, int session, String[] attributes,
+			Template template) {
+		IPort p = getPort(from);
+		if (p != null) {
+			Tuple t = knowledge.queryp(template);
+			if (t != null) {
+				try {
+					p.sendGroupQueryReply(from, getName(), session, getAttributes(attributes), t);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+//			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
+		}
 	}
 	
 }

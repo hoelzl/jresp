@@ -29,8 +29,8 @@ public class GroupQueryRequest extends Message {
 	private String[] attributes;
 
 	public GroupQueryRequest(PointToPoint source, int session,
-			String target, Template template, String[] attributes) {
-		super(MessageType.GROUP_QUERY_REQUEST, source, session, target);
+			Template template, String[] attributes) {
+		super(MessageType.GROUP_QUERY_REQUEST, source, session);
 		this.template = template;
 		this.attributes = attributes;
 
@@ -40,7 +40,7 @@ public class GroupQueryRequest extends Message {
 	 * @see org.cmg.scel.protocol.Message#accept(org.cmg.scel.protocol.MessageHandler)
 	 */
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 

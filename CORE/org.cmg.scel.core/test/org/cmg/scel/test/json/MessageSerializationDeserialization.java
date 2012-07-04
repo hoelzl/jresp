@@ -164,7 +164,7 @@ public class MessageSerializationDeserialization {
 		GroupQueryRequest request =
 			new GroupQueryRequest(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
-				34 ,"pippo", 
+				34 , 
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
 					new FormalTemplateField(SCELType.INT)
@@ -182,7 +182,7 @@ public class MessageSerializationDeserialization {
 		GroupGetRequest request =
 			new GroupGetRequest(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
-				34 ,"pippo", 
+				34 ,
 				new Template( 
 					new ActualTemplateField(SCELValue.getBoolean(true)) , 
 					new FormalTemplateField(SCELType.INT)
@@ -200,8 +200,9 @@ public class MessageSerializationDeserialization {
 		GroupPutRequest request =
 			new GroupPutRequest(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
-				34 ,"pippo", 
-				new String[] { "attr1" , "attr2" }
+				34 ,
+				new String[] { "attr1" , "attr2" },
+				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34))
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -215,11 +216,12 @@ public class MessageSerializationDeserialization {
 			new GroupGetReply(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
-				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)),
+				48,
 				new Attribute[] {
 					new Attribute("attr1",SCELValue.getInteger(34)),
 					new Attribute("attr2",SCELValue.getBoolean(false))
-				}
+				},
+				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34))
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -233,11 +235,11 @@ public class MessageSerializationDeserialization {
 			new GroupQueryReply(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
-				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)),
 				new Attribute[] {
 					new Attribute("attr1",SCELValue.getInteger(34)),
 					new Attribute("attr2",SCELValue.getBoolean(false))
-				}
+				},
+				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34))
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -252,12 +254,14 @@ public class MessageSerializationDeserialization {
 						new PointToPoint("test", new SocketPortAddress(9999)), 
 						23,
 						"pippo", 
+						34,
 						new Attribute[] {
 							new Attribute("attr1",SCELValue.getInteger(34)),
 							new Attribute("attr2",SCELValue.getBoolean(false))
 						}
 				);
 		String txt = gson.toJson(fail);
+		System.out.println(txt);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
 	}

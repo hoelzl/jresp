@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
-public class TupleReply extends Message {
+public class TupleReply extends UnicastMessage {
 	private Tuple tuple;
 	
 	public TupleReply(PointToPoint source, int session, String target, Tuple tuple) {
@@ -18,7 +18,7 @@ public class TupleReply extends Message {
 	}
 
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 	

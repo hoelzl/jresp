@@ -22,12 +22,16 @@ public class Pending<T> {
 	protected boolean error = false;
 	
 	public synchronized T get() throws InterruptedException {
-		while ((value == null)&&(!error)) {
+		return get(true);
+	}
+
+	public synchronized T get(boolean waiting) throws InterruptedException {
+		while (waiting&&(value == null)&&(!error)) {
 			wait();
 		}
 		return value;
 	}
-	
+
 	public synchronized void set( T value ) {
 		this.value = value;
 		notify();
@@ -36,6 +40,10 @@ public class Pending<T> {
 	public synchronized void fail() {
 		this.error = true;
 		notify();
+	}
+	
+	public boolean isError() {
+		return error;
 	}
 	
 }

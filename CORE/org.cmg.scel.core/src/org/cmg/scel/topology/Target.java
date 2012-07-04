@@ -20,5 +20,7 @@ package org.cmg.scel.topology;
 public interface Target {
 
 	public boolean isSelf();
+
+	public boolean isAGroup();
 	
 }

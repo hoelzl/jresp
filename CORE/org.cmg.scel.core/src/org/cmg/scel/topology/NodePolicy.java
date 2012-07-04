@@ -35,8 +35,8 @@ public class NodePolicy implements IPolicy {
 	 * @see org.cmg.scel.topology.AgentContext#put(org.cmg.scel.topology.Agent, org.cmg.scel.knowledge.Tuple, org.cmg.scel.topology.Target)
 	 */
 	@Override
-	public void put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
-		node.put(t, l);
+	public boolean put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
+		return node.put(t, l);
 	}
 
 	/* (non-Javadoc)
@@ -65,18 +65,48 @@ public class NodePolicy implements IPolicy {
 	}
 
 	@Override
-	public void put(PointToPoint source, Tuple tuple) {
-		node.put( tuple );
+	public void acceptPut(PointToPoint from, int session, Tuple tuple) throws IOException, InterruptedException {
+		node.put(from, session, tuple);
 	}
 
 	@Override
-	public Tuple get(PointToPoint source, Template template) throws InterruptedException {
-		return node.get(template);
+	public void acceptGet(PointToPoint source, int session , Template template) throws InterruptedException, IOException {
+		Tuple t = node.get(template);
+		if (t != null) {
+			node.sendTuple( source , session , t );
+		} else {
+			node.sendFail( source , session );				
+		}
 	}
 
 	@Override
-	public Tuple query(PointToPoint source, Template template) throws InterruptedException {
-		return node.query(template);
+	public void acceptQuery(PointToPoint source, int session , Template template) throws InterruptedException, IOException {
+		Tuple t = node.get(template);
+		if (t != null) {
+			node.sendTuple( source , session , t );
+		} else {
+			node.sendFail( source , session );				
+		}
+	}
+
+	@Override
+	public void acceptGroupPut(PointToPoint from, int session,
+			String[] attributes, Tuple tuple) throws IOException, InterruptedException {
+		node.gPut( from , session , attributes , tuple );
+	}
+
+	@Override
+	public void acceptGroupGet(PointToPoint from, int session,
+			String[] attributes, Template template) throws IOException,
+			InterruptedException {
+		node.gGet( from , session , attributes , template );
+	}
+
+	@Override
+	public void acceptGroupQuery(PointToPoint from, int session,
+			String[] attributes, Template template) throws IOException,
+			InterruptedException {
+		node.gQuery( from , session , attributes , template );
 	}
 
 }

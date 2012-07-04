@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import org.cmg.scel.topology.PointToPoint;
 
-public class AttributeRequest extends Message {
+public class AttributeRequest extends UnicastMessage {
 	
 	private String[] attributes;
 	
@@ -38,7 +38,7 @@ public class AttributeRequest extends Message {
 	}
 
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 	

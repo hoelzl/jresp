@@ -16,26 +16,33 @@ package org.cmg.scel.topology;
  * @author Michele Loreti
  *
  */
-public class Group implements Target {
+public class VirtualPortAddress extends Address {
 
-	private GroupPredicate predicate;
-	
-	public Group( GroupPredicate predicate ) {
-		this.predicate = predicate;
+	public static final String ADDRESS_CODE = "virtual";
+	private int id;
+
+	public VirtualPortAddress(int id) {
+		super(ADDRESS_CODE);
+		this.id = id;
 	}
-	
+
 	@Override
-	public boolean isSelf() {
+	public boolean equals(Object obj) {
+		if (obj instanceof VirtualPortAddress) {
+			VirtualPortAddress vpa = (VirtualPortAddress) obj;
+			return this.id == vpa.id;
+		}
 		return false;
 	}
-	
-	public GroupPredicate getPredicate() {
-		return predicate;
+
+	@Override
+	public int hashCode() {
+		return ADDRESS_CODE.hashCode()^id;
 	}
 
 	@Override
-	public boolean isAGroup() {
-		return true;
+	public String toString() {
+		return ADDRESS_CODE+":"+id;
 	}
 
 }

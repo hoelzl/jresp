@@ -24,17 +24,18 @@ import org.cmg.scel.topology.PointToPoint;
  * @author Michele Loreti
  *
  */
-public class GroupGetReply extends Message {
+public class GroupGetReply extends UnicastMessage {
 
-	
-	private Tuple tuple;
 	private Attribute[] values;
+	private int tupleSession;
+	private Tuple tuple;
 
 	public GroupGetReply(PointToPoint source, int session,
-			String target, Tuple tuple, Attribute[] values) {
+			String target, int tupleSession, Attribute[] values, Tuple tuple) {
 		super(MessageType.GROUP_GET_REPLY, source, session, target);
-		this.tuple = tuple;
+		this.tupleSession = tupleSession;
 		this.values = values;
+		this.tuple = tuple;
 
 	}
 
@@ -42,12 +43,12 @@ public class GroupGetReply extends Message {
 	 * @see org.cmg.scel.protocol.Message#accept(org.cmg.scel.protocol.MessageHandler)
 	 */
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 
-	public Tuple getTuple() {
-		return tuple;
+	public int getTupleSession() {
+		return tupleSession;
 	}
 
 	public Attribute[] getAttributes() {
@@ -58,19 +59,27 @@ public class GroupGetReply extends Message {
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			GroupGetReply ggr = (GroupGetReply) obj;
-			return tuple.equals(ggr.tuple)&&Arrays.deepEquals(values, ggr.values);
+			return (tupleSession == ggr.tupleSession)&&Arrays.deepEquals(values, ggr.values)&&tuple.equals(ggr.tuple);
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+","+tuple.toString()+" , "+Arrays.toString(values)+"]";
+		return getType()+"["+super.toString()+","+tupleSession+" , "+Arrays.toString(values)+" , "+tuple.toString()+"]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^tuple.hashCode()^Arrays.hashCode(values);
+		return super.hashCode()^tupleSession^Arrays.hashCode(values)^tuple.hashCode();
+	}
+
+	public Attribute[] getValues() {
+		return values;
+	}
+
+	public Tuple getTuple() {
+		return tuple;
 	}
 
 	

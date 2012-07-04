@@ -27,5 +27,10 @@ public class Self implements Target {
 	public boolean isSelf() {
 		return true;
 	}
+
+	@Override
+	public boolean isAGroup() {
+		return false;
+	}
 	
 }

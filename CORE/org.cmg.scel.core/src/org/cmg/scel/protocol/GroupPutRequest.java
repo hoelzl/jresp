@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Template;
+import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
 /**
@@ -24,13 +25,13 @@ import org.cmg.scel.topology.PointToPoint;
  */
 public class GroupPutRequest extends Message {
 
-	
+	private Tuple tuple;
 	private String[] attributes;
 
-	public GroupPutRequest(PointToPoint source, int session,
-			String target, String[] attributes) {
-		super(MessageType.GROUP_PUT_REQUEST, source, session, target);
+	public GroupPutRequest(PointToPoint source, int session, String[] attributes, Tuple tuple) {
+		super(MessageType.GROUP_PUT_REQUEST, source, session);
 		this.attributes = attributes;
+		this.tuple = tuple;
 
 	}
 
@@ -38,7 +39,7 @@ public class GroupPutRequest extends Message {
 	 * @see org.cmg.scel.protocol.Message#accept(org.cmg.scel.protocol.MessageHandler)
 	 */
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 
@@ -50,19 +51,23 @@ public class GroupPutRequest extends Message {
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			GroupPutRequest ggr = (GroupPutRequest) obj;
-			return Arrays.deepEquals(attributes, ggr.attributes);
+			return Arrays.deepEquals(attributes, ggr.attributes)&&tuple.equals(ggr.tuple);
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+" , "+Arrays.toString(attributes)+"]";
+		return getType()+"["+super.toString()+" , "+Arrays.toString(attributes)+" , "+tuple.toString()+" ]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^Arrays.hashCode(attributes);
+		return super.hashCode()^Arrays.hashCode(attributes)^tuple.hashCode();
+	}
+
+	public Tuple getTuple() {
+		return tuple;
 	}
 
 	

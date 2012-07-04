@@ -34,5 +34,9 @@ public abstract class GroupPredicate {
 	}
 	
 	public abstract boolean evaluate( Object[] data );
+
+	public String[] getParameters() {
+		return parameters;
+	}
 	
 }

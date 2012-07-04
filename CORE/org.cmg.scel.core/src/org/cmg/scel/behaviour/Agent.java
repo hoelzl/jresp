@@ -151,13 +151,14 @@ public abstract class Agent extends Observable implements Runnable {
 	 * 
 	 * @param t knowledge element
 	 * @param l	target locality
+	 * @return <code>true</code> if the tuple t has been successfully added to the knowledge located at l
 	 * @throws InterruptedException - when another thread interrupt agent
 	 * computation while action is under execution.
 	 * @throws IOException 
 	 */
-	protected void put(Tuple t, Target l) throws InterruptedException, IOException {
+	protected boolean put(Tuple t, Target l) throws InterruptedException, IOException {
 		doStep();
-		context.put(this, t, l);
+		return context.put(this, t, l);
 	}
 
 	/**

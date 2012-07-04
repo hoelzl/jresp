@@ -6,7 +6,7 @@ import java.util.Arrays;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.topology.PointToPoint;
 
-public class AttributeReply extends Message {
+public class AttributeReply extends UnicastMessage {
 	
 	private Attribute[] values;
 	
@@ -20,7 +20,7 @@ public class AttributeReply extends Message {
 	}
 
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 

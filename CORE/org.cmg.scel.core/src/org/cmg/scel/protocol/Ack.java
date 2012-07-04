@@ -2,7 +2,7 @@ package org.cmg.scel.protocol;
 
 import org.cmg.scel.topology.PointToPoint;
 
-public class Ack extends Message {
+public class Ack extends UnicastMessage {
 
 	public Ack(PointToPoint source, int session, String target) {
 		super(MessageType.ACK,source,session, target);

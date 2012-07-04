@@ -80,7 +80,6 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 		return new GroupGetRequest( 
 				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
-				json.get("target").getAsString(),
 				(Template) context.deserialize( json.get("template") , Template.class),				
 				(String[]) context.deserialize( json.get("attributes") , String[].class)
 			);
@@ -91,7 +90,6 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 		return new GroupQueryRequest( 
 				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
-				json.get("target").getAsString(),
 				(Template) context.deserialize( json.get("template") , Template.class),				
 				(String[]) context.deserialize( json.get("attributes") , String[].class)
 			);
@@ -102,8 +100,8 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 		return new GroupPutRequest( 
 				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
-				json.get("target").getAsString(),
-				(String[]) context.deserialize( json.get("attributes") , String[].class)
+				(String[]) context.deserialize( json.get("attributes") , String[].class),
+				(Tuple) context.deserialize( json.get("tuple") , Tuple.class)
 			);
 	}
 
@@ -113,8 +111,9 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
-				(Tuple) context.deserialize( json.get("tuple") , Tuple.class),
-				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class)
+				json.get("tupleSession").getAsInt(),
+				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class),
+				(Tuple) context.deserialize( json.get("tuple") , Tuple.class)
 			);
 	}
 
@@ -124,8 +123,8 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
 				json.get("session").getAsInt(),
 				json.get("target").getAsString(),
-				(Tuple) context.deserialize( json.get("tuple") , Tuple.class),
-				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class)
+				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class),
+				(Tuple) context.deserialize( json.get("tuple") , Tuple.class)
 			);
 	}
 
@@ -153,7 +152,11 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 
 	private Message doDeserializeGroupPutReply(JsonObject json,
 			JsonDeserializationContext context) {
-		return new GroupPutReply((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString(),
+		return new GroupPutReply(
+				(PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),
+				json.get("session").getAsInt(),
+				json.get("target").getAsString(),
+				json.get("tupleSession").getAsInt(),
 				(Attribute[]) context.deserialize( json.get("values") , Attribute[].class));
 	}
 

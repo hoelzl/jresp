@@ -33,10 +33,13 @@ import org.cmg.scel.protocol.Ack;
 import org.cmg.scel.protocol.AttributeReply;
 import org.cmg.scel.protocol.Fail;
 import org.cmg.scel.protocol.GetRequest;
+import org.cmg.scel.protocol.GroupPutReply;
+import org.cmg.scel.protocol.GroupPutRequest;
 import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.PutRequest;
 import org.cmg.scel.protocol.QueryRequest;
 import org.cmg.scel.protocol.TupleReply;
+import org.cmg.scel.protocol.UnicastMessage;
 
 import com.google.gson.Gson;
 
@@ -44,7 +47,7 @@ import com.google.gson.Gson;
  * @author Michele Loreti
  *
  */
-public class SocketPort implements Port {
+public class SocketPort extends AbstractPort {
 	
 	
 	public static int DEFAULT_TCP_PORT = 9999;
@@ -52,7 +55,6 @@ public class SocketPort implements Port {
 	public static String DEFAUL_MULTICAST_GROUP = "233.252.252.252";
 
 	
-	Hashtable<String, Node<?>> nodes;
 	private int tcpPort;
 	private int udpPort;
 	private ServerSocket ssocket;
@@ -75,10 +77,10 @@ public class SocketPort implements Port {
 	}
 	
 	public SocketPort(int tcpPort , int udpPort , String multicastGroup ) throws IOException {
+		super();
 		this.tcpPort = tcpPort;
 		this.ssocket = new ServerSocket(tcpPort);
 		this.gson = SCELFactory.getGSon();
-		this.nodes = new Hashtable<String, Node<?>>();
 		this.udpPort = udpPort;
 		this.group =  InetAddress.getByName(multicastGroup);
 		this.msocket = new MulticastSocket(udpPort);
@@ -98,23 +100,18 @@ public class SocketPort implements Port {
 	}
 
 	@Override
-	public void sendTuple(Target to, String name, int session, Tuple tuple) throws IOException {
-		if ((!(to instanceof PointToPoint))||(!(((PointToPoint) to).getAddress() instanceof SocketPortAddress))) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		
-		send(target.getAddress(),new TupleReply(source, session, target.getName(), tuple));
-	}
-
-	private void send(Address address, Message message) throws IOException {
+	protected void send(Address address, UnicastMessage message) throws IOException {
 		InetSocketAddress isc = ((SocketPortAddress) address).getAddress();
 		Socket socket = new Socket(isc.getAddress(), isc.getPort());
 		PrintWriter writer = new PrintWriter(socket.getOutputStream());
 		writer.println(gson.toJson(message));
 		writer.close();
 		socket.close();
+	}
+	
+	@Override
+	protected void send( Message m ) {
+		
 	}
 
 
@@ -123,91 +120,8 @@ public class SocketPort implements Port {
 	}
 
 
-	@Override
-	public void sendAck(Target to, String name, int session) throws IOException {
-		if (!(to instanceof PointToPoint)) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new Ack(source, session, target.getName()));
-	}
-
-	@Override
-	public void sendFail(Target to, String name, int session) throws IOException {
-		if (!(to instanceof PointToPoint)) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new Fail(source, session, target.getName()));
-	}
-
-	@Override
-	public void sendAttributes(Target to, String name, int session,
-			Attribute[] attributes) throws IOException {
-		if (!(to instanceof PointToPoint)) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new AttributeReply(source, session, target.getName(),attributes));
-	}
-
-	@Override
-	public void sendPutRequest(Target to, String name, int session, Tuple t) throws IOException {
-		if (!(to instanceof PointToPoint)) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new PutRequest(source, session, target.getName(),t));
-	}
-
-	@Override
-	public void sendGetRequest(Target to, String name, int session, Template t) throws IOException {
-		if (!(to instanceof PointToPoint)) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new GetRequest(source, session, target.getName(),t));
-	}
-
-	@Override
-	public void sendQueryRequest(Target to, String name, int session, Template t) throws IOException {
-		if (!(to instanceof PointToPoint)) {
-			throw new IllegalArgumentException();
-		}
-		PointToPoint target = (PointToPoint) to;
-		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new QueryRequest(source, session, target.getName(),t));
-	}
 
 
-	@Override
-	public synchronized void register(Node<?> n) {
-		if (nodes.contains(n.getName())) {
-			throw new DuplicateNameException();
-		}
-		nodes.put(n.name, n);
-	}
-
-	protected synchronized void handleMessage( Message m ) {
-		String target = m.getTarget();
-		Node<?> targetNode = nodes.get(target);
-		if (targetNode == null) {
-			try {
-				sendFail(m.getSource(), null, m.getSession());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return ;
-		} 
-		targetNode.addMessage(m);
-	}
-	
 	public class PortHandler implements Runnable {
 
 		@Override
@@ -220,6 +134,9 @@ public class SocketPort implements Port {
 					Message msg = gson.fromJson(reader, Message.class);
 					handleMessage(msg);
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -242,9 +159,13 @@ public class SocketPort implements Port {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
 		
 	}
+
 }

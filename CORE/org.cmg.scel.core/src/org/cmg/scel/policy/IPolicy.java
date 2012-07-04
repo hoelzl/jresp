@@ -27,18 +27,27 @@ import org.cmg.scel.topology.Target;
  */
 public interface IPolicy {
 
-	void put(PointToPoint source, Tuple tuple) throws InterruptedException;;
+	void acceptPut(PointToPoint from, int session , Tuple tuple) throws InterruptedException, IOException;;
 
-	Tuple get(PointToPoint source, Template template) throws InterruptedException;
+	void acceptGet(PointToPoint source, int session , Template template) throws InterruptedException, IOException;
 
-	Tuple query(PointToPoint source, Template template) throws InterruptedException;
+	void acceptQuery(PointToPoint source, int session , Template template) throws InterruptedException, IOException;
 
-	public void put( Agent a , Tuple t , Target l ) throws InterruptedException, IOException;
+	public boolean put( Agent a , Tuple t , Target l ) throws InterruptedException, IOException;
 	
 	public Tuple get( Agent a , Template t , Target l )  throws InterruptedException, IOException;;
 		
 	public Tuple query( Agent a , Template t , Target l )  throws InterruptedException, IOException;;
 		
 	public void exec( Agent a , Agent b) throws InterruptedException;
+
+	void acceptGroupPut(PointToPoint source, int session, String[] attributes,
+			Tuple tuple) throws IOException, InterruptedException;
 	
+	void acceptGroupGet(PointToPoint source, int session, String[] attributes,
+			Template template) throws IOException, InterruptedException;
+
+	void acceptGroupQuery(PointToPoint source, int session, String[] attributes,
+			Template template) throws IOException, InterruptedException;
+
 }

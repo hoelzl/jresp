@@ -24,17 +24,16 @@ import org.cmg.scel.topology.PointToPoint;
  * @author Michele Loreti
  *
  */
-public class GroupQueryReply extends Message {
+public class GroupQueryReply extends UnicastMessage {
 
-	
-	private Tuple tuple;
 	private Attribute[] values;
+	private Tuple tuple;
 
 	public GroupQueryReply(PointToPoint source, int session,
-			String target, Tuple tuple, Attribute[] values) {
+			String target, Attribute[] values, Tuple tuple) {
 		super(MessageType.GROUP_QUERY_REPLY, source, session, target);
-		this.tuple = tuple;
 		this.values = values;
+		this.tuple = tuple;
 
 	}
 
@@ -42,36 +41,35 @@ public class GroupQueryReply extends Message {
 	 * @see org.cmg.scel.protocol.Message#accept(org.cmg.scel.protocol.MessageHandler)
 	 */
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
+	}
+
+	public Attribute[] getValues() {
+		return values;
 	}
 
 	public Tuple getTuple() {
 		return tuple;
 	}
-
-	public Attribute[] getAttributes() {
-		return values;
-	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
-			GroupQueryReply ggr = (GroupQueryReply) obj;
-			return tuple.equals(ggr.tuple)&&Arrays.deepEquals(values, ggr.values);
+			GroupQueryReply gqr = (GroupQueryReply) obj;
+			return Arrays.deepEquals(values, gqr.values)&&tuple.equals(gqr.tuple);
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+","+tuple.toString()+" , "+Arrays.toString(values)+"]";
+		return getType()+"["+super.toString()+","+Arrays.toString(values)+" , "+tuple.toString()+"]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^tuple.hashCode()^Arrays.hashCode(values);
+		return super.hashCode()^Arrays.hashCode(values)^tuple.hashCode();
 	}
-
 	
 }

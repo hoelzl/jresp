@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.topology.PointToPoint;
 
-public class GetRequest extends Message {
+public class GetRequest extends UnicastMessage {
 
 	private Template template;
 	
@@ -19,7 +19,7 @@ public class GetRequest extends Message {
 	}
 
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 

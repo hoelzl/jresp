@@ -59,6 +59,11 @@ public class PointToPoint implements Target {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public boolean isAGroup() {
+		return false;
+	}
 	
 	
 }

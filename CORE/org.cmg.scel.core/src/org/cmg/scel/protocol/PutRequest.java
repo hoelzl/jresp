@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
-public class PutRequest extends Message {
+public class PutRequest extends UnicastMessage {
 	
 	private Tuple tuple;
 	
@@ -19,7 +19,7 @@ public class PutRequest extends Message {
 	}
 
 	@Override
-	public void accept(MessageHandler messageHandler) throws IOException {
+	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
 	}
 
