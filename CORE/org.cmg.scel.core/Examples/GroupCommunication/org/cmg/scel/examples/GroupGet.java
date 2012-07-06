@@ -15,6 +15,7 @@ package org.cmg.scel.examples;
 import java.io.IOException;
 
 import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
 import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
@@ -37,7 +38,7 @@ public class GroupGet {
 
 	public static GroupPredicate any = new GroupPredicate() {		
 		@Override
-		public boolean evaluate(Object[] data) {
+		public boolean evaluate(Attribute[] data) {
 			return true;
 		}
 	};

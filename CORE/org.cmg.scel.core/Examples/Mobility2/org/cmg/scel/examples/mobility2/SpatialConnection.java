@@ -10,7 +10,7 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.examples;
+package org.cmg.scel.examples.mobility2;
 
 import java.awt.geom.Point2D;
 import java.util.Hashtable;
@@ -38,18 +38,21 @@ public class SpatialConnection extends Observable implements NodeConnection {
 	protected Random r = new Random();
 	protected Hashtable<String, Point2D.Double> locations;	
 	
+	protected Hashtable<String, Boolean> green;
 	protected Hashtable<String, Boolean> moving;
 	protected Hashtable<String, Double> directions;
-	protected double maxX = 1024;
-	protected double maxY = 768;
+	protected double maxX = 640;
+	protected double maxY = 480;
 	
 	
 	public static String NODE_PREFIX = "n";
 	
-	protected double speed = 0.01;
+	protected double speed = 10;
 	protected double range = 100;
-	protected double targetX;
-	protected double targetY;
+	protected double greenTargetX;
+	protected double greenTargetY;
+	protected double redTargetX;
+	protected double redTargetY;
 	protected double targetSize = 100;
 	
 	public SpatialConnection( int size , double range ) {
@@ -57,8 +60,11 @@ public class SpatialConnection extends Observable implements NodeConnection {
 		this.locations = new Hashtable<String, Point2D.Double>();
 		this.directions = new Hashtable<String, Double>();
 		this.moving = new Hashtable<String, Boolean>();
-		this.targetX = 75+(maxX-150)*r.nextDouble();
-		this.targetY = 75+(maxY-150)*r.nextDouble();
+		this.greenTargetX = 75+(maxX/2-150)*r.nextDouble();
+		this.greenTargetY = 75+(maxY-150)*r.nextDouble();
+		this.redTargetX = 75+maxX/2+(maxX/2-150)*r.nextDouble();
+		this.redTargetY = 75+(maxY-150)*r.nextDouble();
+		this.green = new Hashtable<String, Boolean>();
 		this.init(size);
 	}
 	
@@ -68,6 +74,7 @@ public class SpatialConnection extends Observable implements NodeConnection {
 			this.locations.put(node, new Point2D.Double(maxX*r.nextDouble(),maxY*r.nextDouble()));	
 			this.directions.put(node, r.nextDouble()*Math.PI*2);
 			this.moving.put(node, true);
+			this.green.put(node,i%2==0);
 		}
 	}
 	
@@ -85,11 +92,12 @@ public class SpatialConnection extends Observable implements NodeConnection {
 		if (pSrc == null) {
 			return false;
 		}
-		Point2D.Double pTrg = locations.get(src);
+		Point2D.Double pTrg = locations.get(target);
 		if (pTrg == null) {
 			return false;
 		}
-		return pSrc.distance(pTrg)<=range;
+		boolean result = pSrc.distance(pTrg)<=range;
+		return result;
 	}
 
 	public synchronized void move( ) {
@@ -147,10 +155,14 @@ public class SpatialConnection extends Observable implements NodeConnection {
 		return locations.get(node);
 	}
 	
-	public Point2D.Double getTargetLocation( ) {
-		return new Point2D.Double(targetX,targetY);
+	public Point2D.Double getGreenTargetLocation( ) {
+		return new Point2D.Double(greenTargetX,greenTargetY);
 	}
-	
+
+	public Point2D.Double getRedTargetLocation( ) {
+		return new Point2D.Double(redTargetX,redTargetY);
+	}
+
 	public Sensor getLocationSensor( final String n ) {
 		return new Sensor("location") {
 			
@@ -181,7 +193,12 @@ public class SpatialConnection extends Observable implements NodeConnection {
 				}
 				return new Tuple( 
 					SCELValue.getString("TARGET"),
-					SCELValue.getBoolean(p.distance(targetX, targetY)<targetSize/2-5)
+					SCELValue.getBoolean(
+						(isGreen(n)?
+							p.distance(greenTargetX, greenTargetY)<targetSize/2-5:
+							p.distance(redTargetX, redTargetY)<targetSize/2-5
+						)
+					)
 				);
 			}
 			
@@ -222,7 +239,26 @@ public class SpatialConnection extends Observable implements NodeConnection {
 			}
 		};
 	}
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(double speed) {
+		this.speed = speed;
+	}
+
+	public double getRange() {
+		return range;
+	}
+
+	public void setRange(double range) {
+		this.range = range;
+	}
 	
+	public boolean isGreen( String n ) {
+		return this.green.get(n);
+	}
 	
 	
 }

@@ -10,13 +10,14 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.examples;
+package org.cmg.scel.examples.mobility2;
 
 import java.io.IOException;
 import java.util.Random;
 
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.knowledge.ActualTemplateField;
+import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
 import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.SCELValue.SCELBoolean;
@@ -34,10 +35,13 @@ import org.cmg.scel.topology.Self;
  */
 public class CommunicationAgent extends Agent {
 
-	public static GroupPredicate any = new GroupPredicate() {		
+	public GroupPredicate color = new GroupPredicate( "isgreen" ) {		
 		@Override
-		public boolean evaluate(Object[] data) {
-			return true;
+		public boolean evaluate(Attribute[] data) {
+			if (data.length<1) {
+				return false;
+			}
+			return ((SCELBoolean) data[0].getValue()).getValue()==CommunicationAgent.this.isGreen;
 		}
 	};
 	
@@ -69,9 +73,13 @@ public class CommunicationAgent extends Agent {
 			new FormalTemplateField(SCELType.DOUBLE)				
 		);
 
+
+	private boolean isGreen;
+
 	
-	public CommunicationAgent(String name) {
+	public CommunicationAgent(String name, boolean isGreen) {
 		super(name);
+		this.isGreen = isGreen;
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +88,8 @@ public class CommunicationAgent extends Agent {
 	@Override
 	protected void doRun() {
 		try {
-			Tuple t = query(directionTemplate, new Group(any));
+			Tuple t = query(directionTemplate, new Group(color));
+			put( t , Self.SELF );
 			get( informedTemplate , Self.SELF );
 			put( new Tuple( SCELValue.getString("INFORMED") , SCELValue.getBoolean(true)) , Self.SELF );
 			put( t , Self.SELF );

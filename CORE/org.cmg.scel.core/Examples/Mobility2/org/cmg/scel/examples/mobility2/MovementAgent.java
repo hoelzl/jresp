@@ -10,7 +10,7 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.examples;
+package org.cmg.scel.examples.mobility2;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
@@ -66,12 +66,13 @@ public class MovementAgent extends Agent {
 	private double maxY;
 	
 	private Random r = new Random();
-	
+
 	public MovementAgent(String name, double maxX , double maxY ) {
 		super(name);
 		this.maxX = maxX;
 		this.maxY = maxY;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see org.cmg.scel.behaviour.Agent#doRun()
@@ -115,6 +116,7 @@ public class MovementAgent extends Agent {
 				found = ((SCELBoolean) t.getElementAt(1)).getValue();
 				t = query( informedTemplate , Self.SELF );
 				informed = ((SCELBoolean) t.getElementAt(1)).getValue();
+				Thread.sleep(100);
 		} 
 		return found;
 	}

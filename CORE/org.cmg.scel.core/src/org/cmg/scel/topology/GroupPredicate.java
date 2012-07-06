@@ -12,6 +12,9 @@
  */
 package org.cmg.scel.topology;
 
+import org.cmg.scel.knowledge.Attribute;
+
+
 
 /**
  * @author Michele Loreti
@@ -33,7 +36,7 @@ public abstract class GroupPredicate {
 		return parameters[i];
 	}
 	
-	public abstract boolean evaluate( Object[] data );
+	public abstract boolean evaluate( Attribute[] data );
 
 	public String[] getParameters() {
 		return parameters;

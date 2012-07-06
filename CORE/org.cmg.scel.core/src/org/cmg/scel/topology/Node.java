@@ -349,6 +349,7 @@ public class Node<T extends Knowledge> extends Observable {
 	}
 	
 	public synchronized void addAttributeCollector( AttributeCollector ac ) {
+		ac.setNode(this);
 		attributes.put(ac.getName(), ac);
 	}
 
