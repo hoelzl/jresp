@@ -22,6 +22,6 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestAgent.class })
+@SuiteClasses({ TestAgent.class , TestVirtualPort.class })
 public class AgentTests {
 }

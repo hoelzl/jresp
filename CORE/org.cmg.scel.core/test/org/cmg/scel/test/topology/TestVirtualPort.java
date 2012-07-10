@@ -114,7 +114,7 @@ public class TestVirtualPort {
 	public void testSendAckFail() throws IOException, InterruptedException {
 		port.sendAck(new PointToPoint(NODE3, ADDRESS), NODE1, 0);
 		assertNull(receivedAtTwo);
-		assertEquals( new Fail(new PointToPoint(NODE1, ADDRESS), 0, NODE1), receivedAtOne);
+		assertEquals( new Fail(new PointToPoint(NODE1, ADDRESS), 0, NODE1,"Node "+NODE3+" is unknown at "+ADDRESS), receivedAtOne);
 	}
 
 	@Test
@@ -125,9 +125,9 @@ public class TestVirtualPort {
 
 	@Test
 	public void testSendFail() throws IOException, InterruptedException {
-		port.sendFail(new PointToPoint(NODE2, ADDRESS), NODE1, 0);
+		port.sendFail(new PointToPoint(NODE2, ADDRESS), NODE1, 0,"error");
 		assertNull(receivedAtOne);
-		assertEquals( new Fail(new PointToPoint(NODE1, ADDRESS), 0, NODE2), receivedAtTwo);
+		assertEquals( new Fail(new PointToPoint(NODE1, ADDRESS), 0, NODE2,"error"), receivedAtTwo);
 	}
 
 	@Test

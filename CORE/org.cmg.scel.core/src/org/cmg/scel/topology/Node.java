@@ -84,7 +84,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			synchronized (pendingAttributeRequests) {
 				Pending<Attribute[]> pending = pendingAttributeRequests.get(msg.getSession());
 				if (pending == null) {
-					sendFail(msg.getSource(),msg.getSession());
+					sendFail(msg.getSource(),msg.getSession(),"Session "+msg.getSession()+" is uknown at "+getName());
 				} else {
 					pending.set(msg.getValues());
 				}
@@ -127,7 +127,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			try {
 				policy.acceptGet(msg.getSource() , msg.getSession() , msg.getTemplate() );
 			} catch (Exception e) {
-				sendFail(msg.getSource(),msg.getSession());				
+				sendFail(msg.getSource(),msg.getSession(),e.getMessage());				
 			}
 		}
 
@@ -136,7 +136,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			synchronized (pendigGroupGet) {
 				LinkedList<GroupGetReply> pending = pendigGroupGet.get(msg.getSession());
 				if (pending == null) {
-					sendFail(msg.getSource(), msg.getTupleSession());
+					sendFail(msg.getSource(), msg.getTupleSession(),"Session "+msg.getSession()+" is unknown at "+getName());
 				} else {
 					pending.add(msg);
 				}
@@ -153,7 +153,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			synchronized (outGroupPutPending) {
 				LinkedList<GroupPutReply> pending = outGroupPutPending.get(msg.getSession());
 				if (pending == null) {
-					sendFail(msg.getSource(), msg.getTupleSession());
+					sendFail(msg.getSource(), msg.getTupleSession(),"Session "+msg.getSession()+" is unknown at "+getName());
 				} else {
 					pending.add(msg);
 				}
@@ -185,7 +185,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			try {
 				policy.acceptPut( msg.getSource() , msg.getSession() , msg.getTuple() );
 			} catch (Exception e) {
-				sendFail(msg.getSource(),msg.getSession());
+				sendFail(msg.getSource(),msg.getSession(),"Session "+msg.getSession()+" is unknown at "+getName());
 			}
 		}
 
@@ -199,7 +199,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			synchronized (tuplePending) {
 				Pending<Tuple> pending = tuplePending.get(msg.getSession());
 				if (pending == null) {
-					sendFail(msg.getSource(),msg.getSession());
+					sendFail(msg.getSource(),msg.getSession(),"Session "+msg.getSession()+" is unknown at "+getName());
 				} else {
 					pending.set(msg.getTuple());
 					tuplePending.remove(msg.getSession());
@@ -551,10 +551,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		}
 	}
 
-	public void sendFail(PointToPoint to, int session) throws IOException, InterruptedException {
+	public void sendFail(PointToPoint to, int session, String message) throws IOException, InterruptedException {
 		for (IPort p : ports) {
 			if (p.canDeliver(to)) {
-				p.sendFail( to, getName() , session );
+				p.sendFail( to, getName() , session , message);
 				return ;
 			}
 		}
@@ -828,7 +828,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 					flag = false;
 					pending.set(reply.getTuple());
 				} else {
-					sendFail(reply.getSource(), reply.getTupleSession());
+					sendFail(reply.getSource(), reply.getTupleSession(), "Attribute predicate is not satisfied!");
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -864,7 +864,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 				if (group.getPredicate().evaluate(reply.getValues())) {
 					sendAck(reply.getSource(), reply.getTupleSession());
 				} else {
-					sendFail(reply.getSource(), reply.getTupleSession());
+					sendFail(reply.getSource(), reply.getTupleSession(),"Attribute predicate is not satisfied!");
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

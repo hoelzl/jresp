@@ -4,23 +4,30 @@ import org.cmg.scel.topology.PointToPoint;
 
 public class Fail extends UnicastMessage {
 
-	public Fail(PointToPoint source, int session, String target) {
+	private String message;
+
+	public Fail(PointToPoint source, int session, String target, String message) {
 		super(MessageType.FAIL,source,session, target);
+		this.message = message;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return super.equals(obj);
+		return super.equals(obj)&&message.equals(((Fail) obj).message);
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"[ "+super.toString()+" ]";
+		return getType()+"[ "+super.toString()+" , "+getMessage()+" ]";
 	}
 
 	@Override
 	public void accept(MessageHandler messageHandler) {
 		messageHandler.handle(this);
+	}
+
+	public String getMessage() {
+		return message;
 	}
 
 }

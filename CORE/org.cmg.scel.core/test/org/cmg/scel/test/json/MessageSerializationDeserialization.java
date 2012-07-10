@@ -56,7 +56,7 @@ public class MessageSerializationDeserialization {
 
 	@Test
 	public void testSerializeDeserializeFail() {
-		Fail fail = new Fail(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo");
+		Fail fail = new Fail(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo","error");
 		String txt = gson.toJson(fail);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);

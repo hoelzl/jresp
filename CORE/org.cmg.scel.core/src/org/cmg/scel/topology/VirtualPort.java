@@ -51,7 +51,7 @@ public class VirtualPort extends AbstractPort {
 				}
 				n.addMessage(message);
 			} else {
-				sendFail(message.getSource(), message.getSource().getName(), message.getSession());
+				sendFail(message.getSource(), message.getSource().getName(), message.getSession(),"Node "+message.getTarget()+" is unknown at "+getAddress());
 			}
 			
 		} else {

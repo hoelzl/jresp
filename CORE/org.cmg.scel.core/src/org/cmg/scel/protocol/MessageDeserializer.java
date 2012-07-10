@@ -135,7 +135,7 @@ public class MessageDeserializer implements JsonDeserializer<Message> {
 	
 	private Message doDeserializeFail(JsonObject json,
 			JsonDeserializationContext context) {
-		return new Fail((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString());
+		return new Fail((PointToPoint) context.deserialize(json.get("source"), PointToPoint.class),json.get("session").getAsInt(),json.get("target").getAsString(),json.get("message").getAsString());
 	}
 	
 	private Message doDeserializeAttributeRequests(JsonObject json,

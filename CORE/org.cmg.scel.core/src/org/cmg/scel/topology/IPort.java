@@ -32,7 +32,7 @@ public interface IPort {
 
 	void sendAck(PointToPoint to, String name, int session)  throws IOException, InterruptedException;
 
-	void sendFail(PointToPoint to, String name, int session)  throws IOException, InterruptedException;
+	void sendFail(PointToPoint to, String name, int session, String message)  throws IOException, InterruptedException;
 
 	void sendAttributes(PointToPoint to, String name, int session,
 			Attribute[] attributes)  throws IOException, InterruptedException;

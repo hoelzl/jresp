@@ -71,9 +71,9 @@ public abstract class AbstractPort implements IPort {
 	}
 
 	@Override
-	public void sendFail(PointToPoint target, String name, int session) throws IOException, InterruptedException {
+	public void sendFail(PointToPoint target, String name, int session, String message) throws IOException, InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
-		send(target.getAddress(),new Fail(source, session, target.getName()));
+		send(target.getAddress(),new Fail(source, session, target.getName(),message));
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public abstract class AbstractPort implements IPort {
 		MessageDispatcher targetNode = nodes.get(target);
 		if (targetNode == null) {
 			try {
-				sendFail(m.getSource(), null, m.getSession());
+				sendFail(m.getSource(), null, m.getSession(),"Node "+target+" is unknown at "+getAddress());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

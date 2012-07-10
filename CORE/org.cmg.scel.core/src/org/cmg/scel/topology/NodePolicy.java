@@ -75,7 +75,7 @@ public class NodePolicy implements IPolicy {
 		if (t != null) {
 			node.sendTuple( source , session , t );
 		} else {
-			node.sendFail( source , session );				
+			node.sendFail( source , session , "Tuple not found!");				
 		}
 	}
 
@@ -85,7 +85,7 @@ public class NodePolicy implements IPolicy {
 		if (t != null) {
 			node.sendTuple( source , session , t );
 		} else {
-			node.sendFail( source , session );				
+			node.sendFail( source , session , "Tuple not found!");				
 		}
 	}
 
