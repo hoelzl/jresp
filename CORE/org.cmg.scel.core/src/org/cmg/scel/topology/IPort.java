@@ -26,7 +26,7 @@ public interface IPort {
 
 	boolean canDeliver(Target l);
 
-	void register( Node<?> n );
+	void register( MessageDispatcher n );
 	
 	void sendTuple(PointToPoint to, String name, int session, Tuple tuple)  throws IOException, InterruptedException;
 

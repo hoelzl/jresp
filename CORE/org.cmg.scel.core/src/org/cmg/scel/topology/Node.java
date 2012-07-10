@@ -57,7 +57,7 @@ import org.cmg.scel.protocol.TupleReply;
  * 
  *
  */
-public class Node<T extends Knowledge> extends Observable {
+public class Node<T extends Knowledge> extends Observable implements MessageDispatcher {
 
 	protected int groupActionWaitingTime = 10000;
 	
@@ -353,6 +353,10 @@ public class Node<T extends Knowledge> extends Observable {
 		attributes.put(ac.getName(), ac);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.scel.topology.MessageDispatcher#addMessage(org.cmg.scel.protocol.Message)
+	 */
+	@Override
 	public synchronized void addMessage( Message msg ) {
 		pendingMessages.add(msg);
 		notifyAll();
@@ -413,6 +417,10 @@ public class Node<T extends Knowledge> extends Observable {
 		return toReturn;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.scel.topology.MessageDispatcher#getName()
+	 */
+	@Override
 	public String getName() {
 		return name;
 	}

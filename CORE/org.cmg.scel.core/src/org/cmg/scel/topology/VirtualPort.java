@@ -44,7 +44,7 @@ public class VirtualPort extends AbstractPort {
 	@Override
 	protected synchronized void send(Address address, UnicastMessage message) throws IOException, InterruptedException {
 		if (this.address.equals(address)) {
-			Node<?> n = nodes.get(message.getTarget());
+			MessageDispatcher n = nodes.get(message.getTarget());
 			if (n != null) {
 				if (connection != null) {
 					connection.waitInTouch(message.getSource().getName(),message.getTarget());
@@ -61,7 +61,7 @@ public class VirtualPort extends AbstractPort {
 
 	@Override
 	protected synchronized void send(Message m) {
-		for (Node<?> n: nodes.values()) {
+		for (MessageDispatcher n: nodes.values()) {
 			if ((connection == null)||(connection.areInTouch(m.getSource().getName(),n.getName()))) {
 				n.addMessage(m);
 			}

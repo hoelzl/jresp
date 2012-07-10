@@ -21,6 +21,7 @@ import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.protocol.Ack;
 import org.cmg.scel.protocol.AttributeReply;
+import org.cmg.scel.protocol.AttributeRequest;
 import org.cmg.scel.protocol.Fail;
 import org.cmg.scel.protocol.GetRequest;
 import org.cmg.scel.protocol.GroupGetReply;
@@ -42,10 +43,10 @@ import org.cmg.scel.protocol.UnicastMessage;
 public abstract class AbstractPort implements IPort {
 	
 	
-	Hashtable<String, Node<?>> nodes;
+	Hashtable<String, MessageDispatcher> nodes;
 	
 	public AbstractPort( ) {
-		this.nodes = new Hashtable<String, Node<?>>();
+		this.nodes = new Hashtable<String, MessageDispatcher>();
 	}
 
 
@@ -102,18 +103,18 @@ public abstract class AbstractPort implements IPort {
 
 
 	@Override
-	public synchronized void register(Node<?> n) {
+	public synchronized void register(MessageDispatcher n) {
 		if (nodes.contains(n.getName())) {
 			throw new DuplicateNameException();
 		}
-		nodes.put(n.name, n);
+		nodes.put(n.getName(), n);
 	}
 
 	protected synchronized void handleMessage( Message m ) throws InterruptedException {
 		if (m instanceof UnicastMessage) {
 			handleUnicastMessage((UnicastMessage) m) ;
 		} else {
-			for (Node<?> n : nodes.values()) {
+			for (MessageDispatcher n : nodes.values()) {
 				n.addMessage(m);
 			}
 		}
@@ -121,7 +122,7 @@ public abstract class AbstractPort implements IPort {
 
 	protected synchronized void handleUnicastMessage( UnicastMessage m ) throws InterruptedException {
 		String target = m.getTarget();
-		Node<?> targetNode = nodes.get(target);
+		MessageDispatcher targetNode = nodes.get(target);
 		if (targetNode == null) {
 			try {
 				sendFail(m.getSource(), null, m.getSession());
@@ -178,6 +179,12 @@ public abstract class AbstractPort implements IPort {
 			InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
 		send(l.getAddress(),new GroupQueryReply(source, session, l.getName(), attributes, t));		
+	}
+
+	public void sendAttributeRequest(PointToPoint l, String name,
+			int session, String[] attrs) throws IOException, InterruptedException {
+		PointToPoint source = new PointToPoint(name, getAddress());
+		send(l.getAddress(),new AttributeRequest(source, session, l.getName(), attrs));
 	}
 
 	
