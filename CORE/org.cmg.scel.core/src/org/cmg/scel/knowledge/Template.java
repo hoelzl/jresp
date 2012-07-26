@@ -13,6 +13,7 @@
 package org.cmg.scel.knowledge;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 
 /**
@@ -23,7 +24,7 @@ import java.util.Arrays;
  * 
  *
  */
-public class Template {
+public class Template implements Iterable<TemplateField> {
 
 	/**
 	 * A list of template fields. 
@@ -84,6 +85,27 @@ public class Template {
 	@Override
 	public String toString() {
 		return Arrays.deepToString(fields);
+	}
+
+	@Override
+	public Iterator<TemplateField> iterator() {
+		return new Iterator<TemplateField>() {
+			
+			private int current = 0;
+
+			@Override
+			public boolean hasNext() {
+				return (current < fields.length);
+			}
+
+			@Override
+			public TemplateField next() {
+				return fields[current++];
+			}
+
+			@Override
+			public void remove() {}
+		};
 	}
 	
 }

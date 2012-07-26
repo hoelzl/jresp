@@ -12,6 +12,8 @@
  */
 package org.cmg.scel.topology;
 
+import org.cmg.scel.connections.Address;
+
 
 /**
  * @author Michele Loreti

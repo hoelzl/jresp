@@ -13,21 +13,17 @@
 package org.cmg.scel.examples;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 
 import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.connections.VirtualPort;
+import org.cmg.scel.connections.VirtualPortAddress;
 import org.cmg.scel.knowledge.ActualTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.knowledge.ts.TupleSpace;
-import org.cmg.scel.topology.SocketPort;
-import org.cmg.scel.topology.PointToPoint;
 import org.cmg.scel.topology.Node;
+import org.cmg.scel.topology.PointToPoint;
 import org.cmg.scel.topology.Self;
-import org.cmg.scel.topology.SocketPortAddress;
-import org.cmg.scel.topology.VirtualPort;
-import org.cmg.scel.topology.VirtualPortAddress;
 
 /**
  * @author Michele Loreti
@@ -65,9 +61,9 @@ public class VirtualPingPong {
 			try {
 				while (true) {
 					System.out.println("PING!");
-					put(new Tuple(SCELValue.getString("PING") ) , other);
+					put(new Tuple( "PING" ) , other);
 					System.out.println("PING DONE!");
-					get(new Template(new ActualTemplateField(SCELValue.getString("PONG"))) , Self.SELF);
+					get(new Template(new ActualTemplateField( "PONG" )) , Self.SELF);
 					System.out.println("GET PONG!");
 				}
 			} catch (Exception e) {
@@ -90,9 +86,9 @@ public class VirtualPingPong {
 		protected void doRun() {
 			try {
 				while (true) {
-					get(new Template(new ActualTemplateField(SCELValue.getString("PING"))) , Self.SELF);
+					get(new Template(new ActualTemplateField( "PING" )) , Self.SELF);
 					System.out.println("PONG!");
-					put(new Tuple(SCELValue.getString("PONG") ) , other);
+					put(new Tuple( "PONG" ) , other);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

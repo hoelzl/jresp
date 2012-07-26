@@ -10,13 +10,29 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.protocol;
+package org.cmg.scel.json;
 
 import java.lang.reflect.Type;
 
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
+import org.cmg.scel.protocol.Ack;
+import org.cmg.scel.protocol.AttributeReply;
+import org.cmg.scel.protocol.AttributeRequest;
+import org.cmg.scel.protocol.Fail;
+import org.cmg.scel.protocol.GetRequest;
+import org.cmg.scel.protocol.GroupGetReply;
+import org.cmg.scel.protocol.GroupGetRequest;
+import org.cmg.scel.protocol.GroupPutReply;
+import org.cmg.scel.protocol.GroupPutRequest;
+import org.cmg.scel.protocol.GroupQueryReply;
+import org.cmg.scel.protocol.GroupQueryRequest;
+import org.cmg.scel.protocol.Message;
+import org.cmg.scel.protocol.MessageType;
+import org.cmg.scel.protocol.PutRequest;
+import org.cmg.scel.protocol.QueryRequest;
+import org.cmg.scel.protocol.TupleReply;
 import org.cmg.scel.topology.PointToPoint;
 
 import com.google.gson.JsonDeserializationContext;
@@ -26,6 +42,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
+ * This class is used to deserialize messages from {@link JsonElement}.
+ * 
  * @author Michele Loreti
  *
  */

@@ -10,7 +10,7 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,24 +22,12 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketPermission;
-import java.util.Hashtable;
 
-import org.cmg.scel.exceptions.DuplicateNameException;
-import org.cmg.scel.knowledge.Attribute;
-import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.protocol.Ack;
-import org.cmg.scel.protocol.AttributeReply;
-import org.cmg.scel.protocol.Fail;
-import org.cmg.scel.protocol.GetRequest;
-import org.cmg.scel.protocol.GroupPutReply;
-import org.cmg.scel.protocol.GroupPutRequest;
 import org.cmg.scel.protocol.Message;
-import org.cmg.scel.protocol.PutRequest;
-import org.cmg.scel.protocol.QueryRequest;
-import org.cmg.scel.protocol.TupleReply;
 import org.cmg.scel.protocol.UnicastMessage;
+import org.cmg.scel.topology.PointToPoint;
+import org.cmg.scel.topology.SCELFactory;
+import org.cmg.scel.topology.Target;
 
 import com.google.gson.Gson;
 
@@ -119,7 +107,13 @@ public class SocketPort extends AbstractPort {
 		return new SocketPortAddress(ssocket.getInetAddress(),tcpPort);
 	}
 
-
+	public int getUdpPort() {
+		return udpPort;
+	}
+	
+	public String getMulticastGroup() {
+		return multicastGroup;
+	}
 
 
 	public class PortHandler implements Runnable {

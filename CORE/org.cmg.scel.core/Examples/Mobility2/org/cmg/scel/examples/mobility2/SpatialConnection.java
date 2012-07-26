@@ -18,16 +18,13 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.Set;
 
+import org.cmg.scel.connections.Sensor;
 import org.cmg.scel.knowledge.ActualTemplateField;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.knowledge.SCELValue.SCELDouble;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.topology.Actuator;
 import org.cmg.scel.topology.NodeConnection;
-import org.cmg.scel.topology.Sensor;
 
 /**
  * @author Michele Loreti
@@ -173,9 +170,9 @@ public class SpatialConnection extends Observable implements NodeConnection {
 					return null;
 				}
 				return new Tuple( 
-					SCELValue.getString("GPS"),
-					SCELValue.getDouble(p.x),
-					SCELValue.getDouble(p.y)
+					("GPS"),
+					(p.x),
+					(p.y)
 				);
 			}
 			
@@ -192,8 +189,8 @@ public class SpatialConnection extends Observable implements NodeConnection {
 					return null;
 				}
 				return new Tuple( 
-					SCELValue.getString("TARGET"),
-					SCELValue.getBoolean(
+					("TARGET"),
+					(
 						(isGreen(n)?
 							p.distance(greenTargetX, greenTargetY)<targetSize/2-5:
 							p.distance(redTargetX, redTargetY)<targetSize/2-5
@@ -210,14 +207,14 @@ public class SpatialConnection extends Observable implements NodeConnection {
 			
 			@Override
 			public void send(Tuple t) {
-				directions.put(n, ((SCELDouble) t.getElementAt(1)).getValue() );
+				directions.put(n, (t.getElementAt(Double.class,1)) );
 			}
 			
 			@Override
 			public Template getTemplate() {
 				return new Template( 
-					new ActualTemplateField( SCELValue.getString("DIR") ) ,
-					new FormalTemplateField( SCELType.DOUBLE )
+					new ActualTemplateField( ("DIR") ) ,
+					new FormalTemplateField( Double.class )
 				);
 			}
 		};
@@ -234,7 +231,7 @@ public class SpatialConnection extends Observable implements NodeConnection {
 			@Override
 			public Template getTemplate() {
 				return new Template( 
-					new ActualTemplateField( SCELValue.getString("STOP") )
+					new ActualTemplateField( "STOP" )
 				);
 			}
 		};

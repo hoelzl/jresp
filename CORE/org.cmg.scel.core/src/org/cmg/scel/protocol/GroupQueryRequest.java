@@ -19,6 +19,9 @@ import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.topology.PointToPoint;
 
 /**
+ * This message is sent by a node that performs a query of on a group of
+ * nodes satisfying a given predicate on attributes.
+ * 
  * @author Michele Loreti
  *
  */
@@ -28,6 +31,15 @@ public class GroupQueryRequest extends Message {
 	private Template template;
 	private String[] attributes;
 
+	/**
+	 * 
+	 * Creates a new object instance.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param template query termplate
+	 * @param attributes attribute names
+	 */
 	public GroupQueryRequest(PointToPoint source, int session,
 			Template template, String[] attributes) {
 		super(MessageType.GROUP_QUERY_REQUEST, source, session);
@@ -44,10 +56,22 @@ public class GroupQueryRequest extends Message {
 		messageHandler.handle(this);
 	}
 
+	/**
+	 * Returns the template used to perform the query.
+	 * 
+	 * @return the template used to perform the query.
+	 */
 	public Template getTemplate() {
 		return template;
 	}
 
+	/**
+	 * Returns the attribute names used to evaluate if a node is involved
+	 * or not in the communication.
+	 * 
+	 * @return the attribute names used to evaluate if a node is involved
+	 * or not in the communication.
+	 */
 	public String[] getAttributes() {
 		return attributes;
 	}

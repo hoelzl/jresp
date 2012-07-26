@@ -16,6 +16,10 @@ import java.io.IOException;
 
 
 /**
+ * This is the abstract class that, imlementing pattern Visitor, defines
+ * the behaviour of a generic message handler.
+ * 
+ * 
  * @author Michele Loreti
  *
  */

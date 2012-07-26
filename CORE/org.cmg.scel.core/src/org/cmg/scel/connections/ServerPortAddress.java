@@ -1,7 +1,8 @@
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+
 
 public class ServerPortAddress extends Address {
 	

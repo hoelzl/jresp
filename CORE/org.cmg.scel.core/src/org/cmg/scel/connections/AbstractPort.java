@@ -10,7 +10,7 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
 
 import java.io.IOException;
 import java.util.Hashtable;
@@ -35,6 +35,8 @@ import org.cmg.scel.protocol.PutRequest;
 import org.cmg.scel.protocol.QueryRequest;
 import org.cmg.scel.protocol.TupleReply;
 import org.cmg.scel.protocol.UnicastMessage;
+import org.cmg.scel.topology.PointToPoint;
+import org.cmg.scel.topology.Target;
 
 /**
  * @author Michele Loreti
@@ -105,7 +107,7 @@ public abstract class AbstractPort implements IPort {
 	@Override
 	public synchronized void register(MessageDispatcher n) {
 		if (nodes.contains(n.getName())) {
-			throw new DuplicateNameException();
+			throw new DuplicateNameException(this,n.getName());
 		}
 		nodes.put(n.getName(), n);
 	}
@@ -185,6 +187,12 @@ public abstract class AbstractPort implements IPort {
 			int session, String[] attrs) throws IOException, InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
 		send(l.getAddress(),new AttributeRequest(source, session, l.getName(), attrs));
+	}
+
+
+	@Override
+	public String toString() {
+		return getAddress().toString();
 	}
 
 	

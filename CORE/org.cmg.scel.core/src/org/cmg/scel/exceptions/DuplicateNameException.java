@@ -10,12 +10,32 @@
  * Contributors:
  *      Michele Loreti
  */
+
 package org.cmg.scel.exceptions;
 
+import org.cmg.scel.connections.IPort;
+
 /**
+ * Thrown when a node with an already existing name is registered to a port.
+ * 
  * @author Michele Loreti
  *
  */
 public class DuplicateNameException extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Creates a new class instance.
+	 * 
+	 * @param port involved port
+	 * @param name duplcated name
+	 */
+	public DuplicateNameException( IPort port , String name ) {
+		super(" Name "+name+" is already used at port "+port);
+	}
+	
 }

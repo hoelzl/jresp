@@ -13,28 +13,31 @@
 package org.cmg.scel.knowledge.ts;
 
 import java.util.LinkedList;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.cmg.scel.knowledge.Knowledge;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 
 /**
- * @author loreti
+ * This class provides a tuple-base implementation of {@link Knowledge}. 
  * 
+ * @author Michele Loreti
  *
  */
 public class TupleSpace implements Knowledge {
 	
+	/**
+	 * Elements in the tuple space are arranged in a list. 
+	 */
 	LinkedList<Tuple> elements;
 	
 	public TupleSpace() {
 		elements = new LinkedList<Tuple>();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * Add tuple t to the tuple space.
+	 * 
 	 * @see org.cmg.scel.knowledge.Knowledge#put(org.cmg.scel.knowledge.Tuple)
 	 */
 	@Override
@@ -44,7 +47,10 @@ public class TupleSpace implements Knowledge {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/* 
+	 * Removes the first tuple matching template from the tuple space. 
+	 * 
+	 * @return retrieved tuple
 	 * @see org.cmg.scel.knowledge.Knowledge#get(org.cmg.scel.knowledge.Template)
 	 */
 	@Override
@@ -52,12 +58,6 @@ public class TupleSpace implements Knowledge {
 		return _InRead(template,true);
 	}
 
-	/**
-	 * @param template
-	 * @param b
-	 * @return
-	 * @throws InterruptedException 
-	 */
 	private synchronized Tuple _InRead(Template template, boolean isIn) throws InterruptedException {
 		Tuple t;
 		while (((t=_get(template,isIn))==null)) {
@@ -66,12 +66,6 @@ public class TupleSpace implements Knowledge {
 		return t;
 	}
 
-	/**
-	 * @param template
-	 * @param b
-	 * @return
-	 * @throws InterruptedException 
-	 */
 	private Tuple _get(Template template, boolean remove) {
 		for( int i=0 ; i<elements.size() ; i++ ) {
 			Tuple t = elements.get(i);
@@ -85,12 +79,6 @@ public class TupleSpace implements Knowledge {
 		return null;
 	}
 	
-	/**
-	 * @param template
-	 * @param b
-	 * @return
-	 * @throws InterruptedException 
-	 */
 	private synchronized Tuple _InReadP(Template template, boolean remove) {
 		return _get(template,remove);
 	}

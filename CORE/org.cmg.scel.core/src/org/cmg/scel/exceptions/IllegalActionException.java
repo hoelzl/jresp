@@ -13,7 +13,7 @@
 package org.cmg.scel.exceptions;
 
 /**
- * 
+ * Thrown when an action violating access rights is executed.
  * 
  * @author loreti
  * 
@@ -21,11 +21,18 @@ package org.cmg.scel.exceptions;
  */
 public class IllegalActionException extends Exception {
 
-	//FIXME: complete implementation of this exception,
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Creates a new object instance.
+	 * 
+	 * @param message a string describing the access violation.
+	 */
+	public IllegalActionException( String message ) {
+		super(message);
+	}
 	
 }

@@ -12,37 +12,46 @@
  */
 package org.cmg.scel.knowledge;
 
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 
 
 
 /**
- * @author loreti
+ * Identifies a formal template field. 
  * 
+ * @author Michele Loreti
  *
  */
 public class FormalTemplateField implements TemplateField {
 
-	private SCELType type;
+	/**
+	 * Type of mathcing value.
+	 */
+	private Class<?> type;
 	
-	public FormalTemplateField(SCELType type) {
+	/**
+	 * Creates a matching template field matching any value of type <code>type</code>.
+	 * @param type
+	 */
+	public FormalTemplateField(Class<?> type) {
 		this.type = type;
 	}
 	
 	
-	/* (non-Javadoc)
+	/***
+	 * A SCELValue o matches this formal field if and only if o has type <code>this.type</code>.
+	 * 
 	 * @see org.cmg.scel.knowledge.TemplateField#match(java.lang.Object)
 	 */
 	@Override
-	public boolean match(SCELValue o) {
-		return o.getType() == type;
+	public boolean match(Object o) {
+		return type.isInstance(o);
 	}
 
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof FormalTemplateField) {
-			return type == ((FormalTemplateField) obj).type;
+			return type.equals( ((FormalTemplateField) obj).type );
 		}
 		return false;
 	}
@@ -56,8 +65,12 @@ public class FormalTemplateField implements TemplateField {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+		return "{"+type.getName()+"}";
+	}
+
+
+	public Class<?> getFormalFieldType() {
+		return type;
 	}
 
 }

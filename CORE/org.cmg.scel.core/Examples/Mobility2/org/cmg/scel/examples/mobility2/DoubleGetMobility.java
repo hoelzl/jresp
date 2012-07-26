@@ -26,18 +26,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.connections.VirtualPort;
 import org.cmg.scel.knowledge.ActualTemplateField;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
-import org.cmg.scel.knowledge.SCELValue.SCELBoolean;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.knowledge.ts.TupleSpace;
 import org.cmg.scel.topology.AttributeCollector;
 import org.cmg.scel.topology.Node;
-import org.cmg.scel.topology.VirtualPort;
 
 /**
  * @author Michele Loreti
@@ -80,7 +77,7 @@ public class DoubleGetMobility extends JFrame implements Observer {
 	}
 	
 	
-	public class SpatialPanel extends JPanel {
+	public class SpatialPanel extends JPanel implements Observer {
 		
 		public SpatialPanel() {
 			super();
@@ -122,6 +119,11 @@ public class DoubleGetMobility extends JFrame implements Observer {
 				g2.fill(new Ellipse2D.Double(p.x-5, p.y-5, 10, 10));
 			}
 		}
+
+		@Override
+		public void update(Observable arg0, Object arg1) {
+			revalidate();
+		}
 		
 		
 	}
@@ -145,12 +147,12 @@ public class DoubleGetMobility extends JFrame implements Observer {
 			n.addSensor(sc.getLocationSensor(name));
 			n.addSensor(sc.getTargetSensor(name));
 			n.addActuator(sc.getStopActuator(name));
-			n.put(new Tuple(SCELValue.getString("ISGREEN"), SCELValue.getBoolean(sc.isGreen(name))));
+			n.put(new Tuple(("ISGREEN"), (sc.isGreen(name))));
 			n.addAttributeCollector(new AttributeCollector(
 						"isgreen",
 						new Template(
-								new ActualTemplateField(SCELValue.getString("ISGREEN")) ,
-								new FormalTemplateField(SCELType.BOOLEAN)
+								new ActualTemplateField(("ISGREEN")) ,
+								new FormalTemplateField(Boolean.class)
 						)
 					) {
 				

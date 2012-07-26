@@ -12,19 +12,13 @@
  */
 package org.cmg.scel.examples.mobility2;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.io.IOException;
 import java.util.Random;
 
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.knowledge.ActualTemplateField;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
-import org.cmg.scel.knowledge.SCELValue.SCELBoolean;
 import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.knowledge.SCELValue.SCELDouble;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.Self;
 
@@ -35,30 +29,30 @@ import org.cmg.scel.topology.Self;
 public class MovementAgent extends Agent {
 
 	private Template gpsTemplate = new Template(
-				new ActualTemplateField(SCELValue.getString("GPS")),
-				new FormalTemplateField(SCELType.DOUBLE),
-				new FormalTemplateField(SCELType.DOUBLE)				
+				new ActualTemplateField(("GPS")),
+				new FormalTemplateField(Double.class),
+				new FormalTemplateField(Double.class)				
 			);
 	
 	private Template targetTemplate = new Template( 
-				new ActualTemplateField(SCELValue.getString("TARGET")),
-				new FormalTemplateField(SCELType.BOOLEAN)
+				new ActualTemplateField(("TARGET")),
+				new FormalTemplateField(Boolean.class)
 			);
 
 	private Template foundTemplate = new Template( 
-			new ActualTemplateField(SCELValue.getString("FOUND")),
-			new FormalTemplateField(SCELType.BOOLEAN)
+			new ActualTemplateField(("FOUND")),
+			new FormalTemplateField(Boolean.class)
 		);
 
 	private Template informedTemplate = new Template( 
-			new ActualTemplateField(SCELValue.getString("INFORMED")),
-			new FormalTemplateField(SCELType.BOOLEAN)
+			new ActualTemplateField(("INFORMED")),
+			new FormalTemplateField(Boolean.class)
 		);
 
 	private Template directionTemplate = new Template(
-			new ActualTemplateField(SCELValue.getString("DIRECTION")),
-			new FormalTemplateField(SCELType.DOUBLE),
-			new FormalTemplateField(SCELType.DOUBLE)				
+			new ActualTemplateField(("DIRECTION")),
+			new FormalTemplateField(Double.class),
+			new FormalTemplateField(Double.class)				
 		);
 
 	private double maxX;
@@ -80,11 +74,11 @@ public class MovementAgent extends Agent {
 	@Override
 	protected void doRun() {
 		try {
-			put( new Tuple( SCELValue.getString("INFORMED") , SCELValue.getBoolean(false)) , Self.SELF );
+			put( new Tuple( ("INFORMED") , (false)) , Self.SELF );
 			if (!search()) {
 				moveTo( );
 			} 
-			put( new Tuple(SCELValue.getString("STOP")) , Self.SELF );
+			put( new Tuple(("STOP")) , Self.SELF );
 			publish();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -102,20 +96,20 @@ public class MovementAgent extends Agent {
 		double y = 0.0;
 		while (!found&&!informed) {
 				Tuple t = query( gpsTemplate , Self.SELF );
-				x = ((SCELDouble) t.getElementAt(1)).getValue();
-				y = ((SCELDouble) t.getElementAt(2)).getValue();
+				x = t.getElementAt(Double.class,1);
+				y = t.getElementAt(Double.class,2);
 				if ((x==0)||(y==0)||(x==maxX)||(y==maxY)) {
 					put( 
 						new Tuple( 
-							SCELValue.getString("DIR") ,
-							SCELValue.getDouble(r.nextDouble()*2*Math.PI)
+							("DIR") ,
+							r.nextDouble()*2*Math.PI
 						) , 
 						Self.SELF );
 				}
 				t = query( targetTemplate , Self.SELF ); 
-				found = ((SCELBoolean) t.getElementAt(1)).getValue();
+				found = t.getElementAt(Boolean.class, 1);
 				t = query( informedTemplate , Self.SELF );
-				informed = ((SCELBoolean) t.getElementAt(1)).getValue();
+				informed = t.getElementAt(Boolean.class,1);
 				Thread.sleep(100);
 		} 
 		return found;
@@ -123,13 +117,13 @@ public class MovementAgent extends Agent {
 	
 	protected void publish() throws InterruptedException, IOException {
 		Tuple t = query( gpsTemplate , Self.SELF );
-		double x = ((SCELDouble) t.getElementAt(1)).getValue();
-		double y = ((SCELDouble) t.getElementAt(2)).getValue();
+		double x = t.getElementAt(Double.class,1);
+		double y = t.getElementAt(Double.class,2);
 		put( 
 			new Tuple( 
-				SCELValue.getString("DIRECTION") ,
-				SCELValue.getDouble(x) ,
-				SCELValue.getDouble(y)
+				("DIRECTION") ,
+				x ,
+				y
 			) ,
 			Self.SELF		
 		);
@@ -138,22 +132,22 @@ public class MovementAgent extends Agent {
 	protected void moveTo() throws InterruptedException, IOException {
 		boolean found = false;
 		Tuple t = query( directionTemplate , Self.SELF );
-		double xTarget = ((SCELDouble) t.getElementAt(1)).getValue();
-		double yTarget = ((SCELDouble) t.getElementAt(2)).getValue();
+		double xTarget = t.getElementAt(Double.class,1);
+		double yTarget = t.getElementAt(Double.class,2);
 		t = query( gpsTemplate , Self.SELF );
-		double x = ((SCELDouble) t.getElementAt(1)).getValue();
-		double y = ((SCELDouble) t.getElementAt(2)).getValue();
+		double x = t.getElementAt(Double.class,1);
+		double y = t.getElementAt(Double.class,2);
 		double d = getAndle( x , y , xTarget, yTarget);
 		put( 
 			new Tuple( 
-				SCELValue.getString("DIR") ,
-				SCELValue.getDouble(d)
+				("DIR") ,
+				d
 			) , 
 			Self.SELF 
 		);
 		while (!found) {
 			t = query( targetTemplate , Self.SELF ); 
-			found = ((SCELBoolean) t.getElementAt(1)).getValue();
+			found = t.getElementAt(Boolean.class,1);
 		}
 	}
 

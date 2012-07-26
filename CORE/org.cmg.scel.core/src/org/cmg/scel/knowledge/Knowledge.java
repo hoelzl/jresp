@@ -14,8 +14,6 @@ package org.cmg.scel.knowledge;
 
 import java.util.LinkedList;
 
-import org.cmg.scel.exceptions.IllegalActionException;
-
 /**
  * This interface identifies a generic <em>knowledge</em> and provides the high 
  * level primitives to manage pieces of relevant information coming from different 

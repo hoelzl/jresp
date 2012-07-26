@@ -15,18 +15,16 @@ package org.cmg.scel.examples;
 import java.io.IOException;
 
 import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.connections.VirtualPort;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.knowledge.ts.TupleSpace;
 import org.cmg.scel.topology.Group;
 import org.cmg.scel.topology.GroupPredicate;
 import org.cmg.scel.topology.Node;
 import org.cmg.scel.topology.Self;
-import org.cmg.scel.topology.VirtualPort;
 
 /**
  * @author Michele Loreti
@@ -53,7 +51,7 @@ public class GroupPut {
 		@Override
 		protected void doRun() {
 			try {
-				put(new Tuple(SCELValue.getString("TEST")), new Group(any));
+				put(new Tuple(("TEST")), new Group(any));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -74,7 +72,7 @@ public class GroupPut {
 		@Override
 		protected void doRun() {
 			try {
-				get(new Template( new FormalTemplateField(SCELType.STRING) ) , Self.SELF);
+				get(new Template( new FormalTemplateField(String.class) ) , Self.SELF);
 				System.out.println("RECEIVED!");
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

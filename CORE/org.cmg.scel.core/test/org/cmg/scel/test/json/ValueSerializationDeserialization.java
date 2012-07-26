@@ -1,36 +1,19 @@
 package org.cmg.scel.test.json;
 
-import static org.junit.Assert.assertEquals;
-
-import org.cmg.scel.knowledge.SCELValue;
-import org.cmg.scel.knowledge.SCELValue.SCELBoolean;
-import org.cmg.scel.knowledge.SCELValue.SCELByte;
-import org.cmg.scel.knowledge.SCELValue.SCELChar;
-import org.cmg.scel.knowledge.SCELValue.SCELDouble;
-import org.cmg.scel.knowledge.SCELValue.SCELFloat;
-import org.cmg.scel.knowledge.SCELValue.SCELInteger;
-import org.cmg.scel.knowledge.SCELValue.SCELLong;
-import org.cmg.scel.knowledge.SCELValue.SCELShort;
-import org.cmg.scel.knowledge.SCELValue.SCELString;
-import org.cmg.scel.knowledge.SCELValue.SCELTag;
-import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.knowledge.ValueDeserializer;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class ValueSerializationDeserialization {
+}
 
-	protected Gson gson;
+//	protected Gson gson;
 
-	@Before
+//	@Before
 //	public void init() {
 //		GsonBuilder builder = new GsonBuilder();
 //		builder.registerTypeHierarchyAdapter(SCELValue.class, new ValueDeserializer());
 //		gson = builder.setPrettyPrinting().create();
 //	}
+	
+	/*
 	public void init() {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeHierarchyAdapter(SCELValue.class, new ValueDeserializer());
@@ -38,7 +21,7 @@ public class ValueSerializationDeserialization {
 		gson = builder.setPrettyPrinting().create();
 	}
 	
-	protected void doTest( SCELValue expected ) {
+	protected void doTest( Object expected ) {
 		String txt = gson.toJson(expected);
 		System.out.println(txt+"\n\n");
 		SCELValue v = gson.fromJson(txt, SCELValue.class);
@@ -128,10 +111,11 @@ public class ValueSerializationDeserialization {
 	}
 
 
-	
+}
+*/	
 	/*
 	STRING,
 	TAG;		
 	*/
 
-}
+

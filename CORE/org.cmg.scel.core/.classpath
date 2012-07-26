@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="Examples/Mobility3"/>
 	<classpathentry kind="src" path="Examples/Mobility2"/>
 	<classpathentry kind="src" path="Examples/Mobility"/>
 	<classpathentry kind="src" path="Examples/GroupCommunication"/>

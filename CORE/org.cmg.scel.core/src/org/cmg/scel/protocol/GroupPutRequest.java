@@ -15,19 +15,36 @@ package org.cmg.scel.protocol;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
 /**
+ * This message is sent when a node performs a put on a group of 
+ * nodes. 
+ * 
  * @author Michele Loreti
  *
  */
 public class GroupPutRequest extends Message {
 
+	/**
+	 * Tuple argument of put action
+	 */
 	private Tuple tuple;
+	
+	/**
+	 * Names of attributes used to select target nodes
+	 */
 	private String[] attributes;
 
+	/**
+	 * Creates a new object instance.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param attributes names of attributes used to select target nodes
+	 * @param tuple tuple to put
+	 */
 	public GroupPutRequest(PointToPoint source, int session, String[] attributes, Tuple tuple) {
 		super(MessageType.GROUP_PUT_REQUEST, source, session);
 		this.attributes = attributes;
@@ -43,6 +60,11 @@ public class GroupPutRequest extends Message {
 		messageHandler.handle(this);
 	}
 
+	/**
+	 * Returns the names of attributes used to select target nodes.
+	 * 
+	 * @return the names of attributes used to select target nodes.
+	 */
 	public String[] getAttributes() {
 		return attributes;
 	}
@@ -66,6 +88,11 @@ public class GroupPutRequest extends Message {
 		return super.hashCode()^Arrays.hashCode(attributes)^tuple.hashCode();
 	}
 
+	/**
+	 * Return the tuple argument of put action
+	 * 
+	 * @return 	the tuple argument of put action
+	 */
 	public Tuple getTuple() {
 		return tuple;
 	}

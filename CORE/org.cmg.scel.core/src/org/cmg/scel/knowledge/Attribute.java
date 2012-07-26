@@ -14,26 +14,61 @@ package org.cmg.scel.knowledge;
 
 
 /**
+ * Indicates a generic attribute. This is a named value that can be
+ * automatically extracted from knowledge or explicitly associated to
+ * a node.
+ * 
  * @author Michele Loreti
  *
  */
 public class Attribute {
 
+	/**
+	 * Attribute name
+	 */
 	private String name;
 	
-	private SCELValue value;
+	/**
+	 * Attribute value
+	 */
+	private Object value;
 	
-	public Attribute( String name , SCELValue value ) {
+	/**
+	 * Creates a new attribute with specific name and value.
+	 * 
+	 * @param name attribute name
+	 * @param value attribute value
+	 */
+	public Attribute( String name , Object value ) {
 		this.name = name;
 		this.value = value;
 	}
 
+	/**
+	 * Returns attribute name.
+	 * 
+	 * @return attribute name.
+	 */
 	public String getName() {
 		return name;
 	}
 
-	public SCELValue getValue() {
+	/**
+	 * Returns attribute value
+	 * 
+	 * @return attribute value
+	 */
+	public Object getValue() {
 		return value;
+	}
+	
+	/**
+	 * Returns attribute type
+	 * 
+	 * @return attribute type
+	 */
+	public Class<?> getType() {
+		return value.getClass();
 	}
 
 	@Override

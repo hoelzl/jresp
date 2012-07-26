@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Universitˆ di Firenze
+ *	
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *      Michele Loreti
+ */
 package org.cmg.scel.protocol;
 
 import java.io.IOException;
@@ -5,14 +17,34 @@ import java.io.IOException;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
+/**
+ * This message is a reply to either a {@link PutRequest} or to a {@link QueryRequest}.
+ * 
+ * @author Michele Loreti
+ *
+ */
 public class TupleReply extends UnicastMessage {
+
 	private Tuple tuple;
 	
+	/**
+	 * Creates a new object instance.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param target name of the target node
+	 * @param tuple returned tuple
+	 */
 	public TupleReply(PointToPoint source, int session, String target, Tuple tuple) {
 		super(MessageType.TUPLE_REPLY,source,session,target);
 		this.tuple = tuple;
 	}
 
+	/**
+	 * Returns the tuple enclosed in the message
+	 * 
+	 * @return the tuple enclosed in the message
+	 */
 	public Tuple getTuple() {
 		return tuple;
 	}

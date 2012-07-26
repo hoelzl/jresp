@@ -1,4 +1,4 @@
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
 
 import org.cmg.scel.protocol.Message;
 

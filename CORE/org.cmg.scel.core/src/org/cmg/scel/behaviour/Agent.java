@@ -131,6 +131,10 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	protected abstract void doRun();
 	
+	/**
+	 * This method is invoked when the agent computation is completed.
+	 * Subclasses should override this method to deallocated resources.
+	 */
 	protected void doClose() {
 		
 	}
@@ -282,6 +286,11 @@ public abstract class Agent extends Observable implements Runnable {
 		setState(State.RUNNING);
 	}
 
+	/**
+	 * Returns agent status
+	 * 
+	 * @return agent status
+	 */
 	public State getState() {
 		return state;
 	}

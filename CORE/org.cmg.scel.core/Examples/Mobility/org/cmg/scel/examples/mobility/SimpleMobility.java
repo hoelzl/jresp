@@ -26,9 +26,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.connections.VirtualPort;
 import org.cmg.scel.knowledge.ts.TupleSpace;
 import org.cmg.scel.topology.Node;
-import org.cmg.scel.topology.VirtualPort;
 
 /**
  * @author Michele Loreti

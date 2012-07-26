@@ -10,7 +10,8 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
+
 
 /**
  * @author Michele Loreti

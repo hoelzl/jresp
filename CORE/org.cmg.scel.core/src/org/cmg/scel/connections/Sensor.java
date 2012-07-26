@@ -10,22 +10,28 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.protocol;
+package org.cmg.scel.connections;
+
+import java.util.Observable;
+
+import org.cmg.scel.knowledge.Tuple;
 
 /**
  * @author Michele Loreti
  *
  */
-public class UnknownMessageException extends Exception {
-
-	private Object o;
-
-	public UnknownMessageException(Object o) {
-		this.o = o;
+public abstract class Sensor extends Observable {
+	
+	protected String name;
+	
+	public Sensor(String name) {
+		this.name = name;
 	}
 	
-	public Object getReceivedObject() {
-		return this.o;
+	public String getName() {
+		return name;
 	}
-
+	
+	public abstract Tuple getValue();
+	
 }

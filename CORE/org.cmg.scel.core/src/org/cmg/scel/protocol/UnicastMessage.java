@@ -15,6 +15,8 @@ package org.cmg.scel.protocol;
 import org.cmg.scel.topology.PointToPoint;
 
 /**
+ * Identifies a generic unicast message.
+ * 
  * @author Michele Loreti
  *
  */
@@ -22,11 +24,23 @@ public abstract class UnicastMessage extends Message {
 
 	private String target;
 	
+	/**
+	 * Creates a new object instance.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param target name of the target node
+	 */
 	public UnicastMessage(MessageType type, PointToPoint source, int session, String target) {
 		super(type, source, session);
 		this.target = target;
 	}
 
+	/**
+	 * Returns the name of the node that should receive the message.
+	 * 
+	 * @return the name of the node that should receive the message.
+	 */
 	public String getTarget() {
 		return target;
 	}

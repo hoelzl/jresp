@@ -10,13 +10,15 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
 
 import java.io.IOException;
 
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
+import org.cmg.scel.topology.PointToPoint;
+import org.cmg.scel.topology.Target;
 
 /**
  * @author Michele Loreti

@@ -10,12 +10,15 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.connections;
 
 import java.io.IOException;
 
 import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.UnicastMessage;
+import org.cmg.scel.topology.NodeConnection;
+import org.cmg.scel.topology.PointToPoint;
+import org.cmg.scel.topology.Target;
 
 /**
  * @author Michele Loreti

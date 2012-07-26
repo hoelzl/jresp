@@ -16,11 +16,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Attribute;
-import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
 /**
+ * This message identifies a reply to a {@ling GroupGetRequest}. 
+ * 
  * @author Michele Loreti
  *
  */
@@ -30,6 +31,17 @@ public class GroupGetReply extends UnicastMessage {
 	private int tupleSession;
 	private Tuple tuple;
 
+	/**
+	 * Creates a new message.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param target name of the target node
+	 * @param tupleSession an integer value that will be used to confirm the tuple
+	 * removement
+	 * @param values attribute values assoicated to the reply
+	 * @param tuple	available tuple
+	 */
 	public GroupGetReply(PointToPoint source, int session,
 			String target, int tupleSession, Attribute[] values, Tuple tuple) {
 		super(MessageType.GROUP_GET_REPLY, source, session, target);
@@ -47,10 +59,20 @@ public class GroupGetReply extends UnicastMessage {
 		messageHandler.handle(this);
 	}
 
+	/**
+	 * Return the session id that will be used to confirm tuple removement.
+	 * 
+	 * @return the session id that will be used to confirm tuple removement.
+	 */
 	public int getTupleSession() {
 		return tupleSession;
 	}
 
+	/**
+	 * Returns attributes values associated to the reply.
+	 * 
+	 * @return attributes values associated to the reply.
+	 */
 	public Attribute[] getAttributes() {
 		return values;
 	}
@@ -74,10 +96,11 @@ public class GroupGetReply extends UnicastMessage {
 		return super.hashCode()^tupleSession^Arrays.hashCode(values)^tuple.hashCode();
 	}
 
-	public Attribute[] getValues() {
-		return values;
-	}
-
+	/**
+	 * Returns the tuple that can be potentially retrieved with the get action.
+	 * 
+	 * @return the tuple that can be potentially retrieved with the get action.
+	 */
 	public Tuple getTuple() {
 		return tuple;
 	}

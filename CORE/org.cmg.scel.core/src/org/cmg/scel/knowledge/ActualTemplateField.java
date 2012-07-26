@@ -15,23 +15,31 @@ package org.cmg.scel.knowledge;
 
 
 /**
- * @author loreti
+ * Instances of this class identifies  actual template fields. 
  * 
+ * @author Michele Loreti
  *
  */
 public class ActualTemplateField implements TemplateField {
 	
-	private SCELValue value;
+	/**
+	 * Field value.
+	 */
+	private Object value;
 	
-	public ActualTemplateField( SCELValue formal ) {
-		this.value = formal;
+	/**
+	 * Create an actual field with value value
+	 * @param value field value
+	 */
+	public ActualTemplateField( Object value ) {
+		this.value = value;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.cmg.scel.knowledge.TemplateField#match(java.lang.Object)
 	 */
 	@Override
-	public boolean match(SCELValue o) {
+	public boolean match(Object o) {
 		return (value == o)||((value != null)&&value.equals(o));
 	}
 
@@ -51,6 +59,10 @@ public class ActualTemplateField implements TemplateField {
 	@Override
 	public String toString() {
 		return value.toString();
+	}
+
+	public Object getValue() {
+		return value;
 	}
 
 }

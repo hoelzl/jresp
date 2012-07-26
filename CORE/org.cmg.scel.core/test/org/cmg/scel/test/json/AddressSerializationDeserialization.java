@@ -2,10 +2,10 @@ package org.cmg.scel.test.json;
 
 import static org.junit.Assert.*;
 
-import org.cmg.scel.topology.Address;
+import org.cmg.scel.connections.Address;
+import org.cmg.scel.connections.ServerPortAddress;
+import org.cmg.scel.connections.SocketPortAddress;
 import org.cmg.scel.topology.SCELFactory;
-import org.cmg.scel.topology.ServerPortAddress;
-import org.cmg.scel.topology.SocketPortAddress;
 import org.junit.Test;
 
 import com.google.gson.Gson;

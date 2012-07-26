@@ -22,6 +22,9 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ ValueSerializationDeserialization.class, MessageSerializationDeserialization.class , AddressSerializationDeserialization.class })
+@SuiteClasses({ 
+	//ValueSerializationDeserialization.class, 
+	MessageSerializationDeserialization.class , 
+	AddressSerializationDeserialization.class })
 public class JSonTests {
 }

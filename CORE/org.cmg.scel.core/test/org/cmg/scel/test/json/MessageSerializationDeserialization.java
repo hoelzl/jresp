@@ -1,17 +1,13 @@
 package org.cmg.scel.test.json;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import org.cmg.scel.connections.SocketPortAddress;
 import org.cmg.scel.knowledge.ActualTemplateField;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.knowledge.TemplateDeserializer;
-import org.cmg.scel.knowledge.TemplateField;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.knowledge.ValueDeserializer;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.protocol.Ack;
 import org.cmg.scel.protocol.AttributeReply;
 import org.cmg.scel.protocol.AttributeRequest;
@@ -24,18 +20,15 @@ import org.cmg.scel.protocol.GroupPutRequest;
 import org.cmg.scel.protocol.GroupQueryReply;
 import org.cmg.scel.protocol.GroupQueryRequest;
 import org.cmg.scel.protocol.Message;
-import org.cmg.scel.protocol.MessageDeserializer;
 import org.cmg.scel.protocol.PutRequest;
 import org.cmg.scel.protocol.QueryRequest;
 import org.cmg.scel.protocol.TupleReply;
 import org.cmg.scel.topology.PointToPoint;
 import org.cmg.scel.topology.SCELFactory;
-import org.cmg.scel.topology.SocketPortAddress;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class MessageSerializationDeserialization {
 
@@ -78,8 +71,8 @@ public class MessageSerializationDeserialization {
 						23,
 						"pippo", 
 						new Attribute[] {
-							new Attribute("attr1",SCELValue.getInteger(34)),
-							new Attribute("attr2",SCELValue.getBoolean(false))
+							new Attribute("attr1",34),
+							new Attribute("attr2",false)
 						}
 				);
 		String txt = gson.toJson(fail);
@@ -89,7 +82,7 @@ public class MessageSerializationDeserialization {
 
 	@Test
 	public void testSerializeDeserializeTuple() {
-		Tuple t = new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34));
+		Tuple t = new Tuple( true , 34);
 		String txt = gson.toJson(t);
 		System.out.println(txt);
 		Tuple msg = gson.fromJson(txt, Tuple.class);
@@ -104,7 +97,7 @@ public class MessageSerializationDeserialization {
 						new PointToPoint("test",new SocketPortAddress(9999)) , 
 						34 ,
 						"pippo", 
-						new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)));
+						new Tuple( true ,  34 ));
 		String txt = gson.toJson(request);
 		System.out.println(txt);
 		Message msg = gson.fromJson(txt, Message.class);
@@ -118,7 +111,7 @@ public class MessageSerializationDeserialization {
 				new TupleReply(
 						new PointToPoint("test",new SocketPortAddress(9999)) , 
 						34 ,"pippo", 
-						new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34)));
+						new Tuple(  true ,  34 ));
 		String txt = gson.toJson(request);
 		System.out.println(txt);
 		Message msg = gson.fromJson(txt, Message.class);
@@ -132,8 +125,8 @@ public class MessageSerializationDeserialization {
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Template( 
-					new ActualTemplateField(SCELValue.getBoolean(true)) , 
-					new FormalTemplateField(SCELType.INT)
+					new ActualTemplateField( true ) , 
+					new FormalTemplateField( Integer.class )
 				)
 			);
 		String txt = gson.toJson(request);
@@ -149,8 +142,8 @@ public class MessageSerializationDeserialization {
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Template( 
-					new ActualTemplateField(SCELValue.getBoolean(true)) , 
-					new FormalTemplateField(SCELType.INT)
+					new ActualTemplateField( true ) , 
+					new FormalTemplateField( Integer.class )
 				)
 			);
 		String txt = gson.toJson(request);
@@ -166,8 +159,8 @@ public class MessageSerializationDeserialization {
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 , 
 				new Template( 
-					new ActualTemplateField(SCELValue.getBoolean(true)) , 
-					new FormalTemplateField(SCELType.INT)
+					new ActualTemplateField( true ) , 
+					new FormalTemplateField( Integer.class )
 				),
 				new String[] { "attr1" , "attr2" }
 			);
@@ -184,8 +177,8 @@ public class MessageSerializationDeserialization {
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,
 				new Template( 
-					new ActualTemplateField(SCELValue.getBoolean(true)) , 
-					new FormalTemplateField(SCELType.INT)
+					new ActualTemplateField( true ) , 
+					new FormalTemplateField( Integer.class )
 				),
 				new String[] { "attr1" , "attr2" }
 			);
@@ -202,7 +195,7 @@ public class MessageSerializationDeserialization {
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,
 				new String[] { "attr1" , "attr2" },
-				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34))
+				new Tuple(  true , 34 )
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -218,10 +211,10 @@ public class MessageSerializationDeserialization {
 				34 ,"pippo", 
 				48,
 				new Attribute[] {
-					new Attribute("attr1",SCELValue.getInteger(34)),
-					new Attribute("attr2",SCELValue.getBoolean(false))
+					new Attribute("attr1" , 34 ),
+					new Attribute("attr2" , false )
 				},
-				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34))
+				new Tuple( true , 34 )
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -236,10 +229,10 @@ public class MessageSerializationDeserialization {
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
 				new Attribute[] {
-					new Attribute("attr1",SCELValue.getInteger(34)),
-					new Attribute("attr2",SCELValue.getBoolean(false))
+					new Attribute("attr1" , 34 ),
+					new Attribute("attr2" , false )
 				},
-				new Tuple( SCELValue.getBoolean(true) , SCELValue.getInteger(34))
+				new Tuple( true , 34 )
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -256,8 +249,8 @@ public class MessageSerializationDeserialization {
 						"pippo", 
 						34,
 						new Attribute[] {
-							new Attribute("attr1",SCELValue.getInteger(34)),
-							new Attribute("attr2",SCELValue.getBoolean(false))
+							new Attribute("attr1",34),
+							new Attribute("attr2",false)
 						}
 				);
 		String txt = gson.toJson(fail);

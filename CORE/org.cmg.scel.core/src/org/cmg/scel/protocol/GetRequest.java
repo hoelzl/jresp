@@ -1,3 +1,16 @@
+/**
+ * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Universitˆ di Firenze
+ *	
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *      Michele Loreti
+ */
+
 package org.cmg.scel.protocol;
 
 import java.io.IOException;
@@ -5,15 +18,37 @@ import java.io.IOException;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.topology.PointToPoint;
 
+/**
+ * This message is sent when a node asks for the execution of a get action.
+ * 
+ * @author Michele Loreti
+ *
+ */
 public class GetRequest extends UnicastMessage {
 
+	/**
+	 * Template associated to the get.
+	 */
 	private Template template;
 	
+	/**
+	 * Creates a new message.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param target name of the target node
+	 * @param template get template
+	 */
 	public GetRequest(PointToPoint source, int session, String target, Template template) {
 		super(MessageType.GET_REQUEST,source,session,target);
 		this.template = template;
 	}
 
+	/**
+	 * Returns the template associated to the get.
+	 * 
+	 * @return the template associated to the get.
+	 */
 	public Template getTemplate() {
 		return template;
 	}

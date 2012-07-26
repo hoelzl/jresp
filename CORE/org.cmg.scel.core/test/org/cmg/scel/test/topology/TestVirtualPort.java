@@ -12,13 +12,16 @@
  */
 package org.cmg.scel.test.topology;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
+import org.cmg.scel.connections.MessageDispatcher;
+import org.cmg.scel.connections.VirtualPort;
+import org.cmg.scel.connections.VirtualPortAddress;
 import org.cmg.scel.knowledge.ActualTemplateField;
 import org.cmg.scel.knowledge.Attribute;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.protocol.Ack;
@@ -36,13 +39,7 @@ import org.cmg.scel.protocol.Message;
 import org.cmg.scel.protocol.PutRequest;
 import org.cmg.scel.protocol.QueryRequest;
 import org.cmg.scel.protocol.TupleReply;
-import org.cmg.scel.topology.Address;
-import org.cmg.scel.topology.MessageDispatcher;
 import org.cmg.scel.topology.PointToPoint;
-import org.cmg.scel.topology.SCELFactory;
-import org.cmg.scel.topology.Target;
-import org.cmg.scel.topology.VirtualPort;
-import org.cmg.scel.topology.VirtualPortAddress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,9 +51,9 @@ public class TestVirtualPort {
 
 	public static final String NODE3 = "node3";
 
-	public static final Tuple TUPLE = new Tuple(SCELValue.getString("test"));
+	public static final Tuple TUPLE = new Tuple("test");
 
-	public static final Template TEMPLATE = new Template( new ActualTemplateField(SCELValue.getString("test")));
+	public static final Template TEMPLATE = new Template( new ActualTemplateField("test"));
 
 	private static final String NODE2 = "node2";
 

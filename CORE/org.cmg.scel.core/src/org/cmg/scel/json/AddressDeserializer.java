@@ -10,10 +10,14 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.scel.topology;
+package org.cmg.scel.json;
 
 import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
+
+import org.cmg.scel.connections.Address;
+import org.cmg.scel.connections.ServerPortAddress;
+import org.cmg.scel.connections.SocketPortAddress;
 
 
 import com.google.gson.JsonDeserializationContext;

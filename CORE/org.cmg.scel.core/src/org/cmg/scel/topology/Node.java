@@ -13,7 +13,6 @@
 package org.cmg.scel.topology;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -21,14 +20,14 @@ import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import javax.sql.rowset.spi.SyncResolver;
-
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.behaviour.AgentContext;
 import org.cmg.scel.behaviour.ContextState;
+import org.cmg.scel.connections.IPort;
+import org.cmg.scel.connections.MessageDispatcher;
+import org.cmg.scel.connections.Sensor;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.Knowledge;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.policy.IPolicy;
@@ -404,7 +403,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			return new Attribute(name, null);
 		}
 		if (ID_ATTRIBUTE_NAME.equals(name)) {
-			return new Attribute(name, SCELValue.getString(getName()));
+			return new Attribute(name, getName());
 		}
 		return ac.eval();
 	}
@@ -437,7 +436,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		for (String a : attributes.keySet()) {
 			toReturn.put(a, attributes.get(a).eval());
 		}
-		toReturn.put(ID_ATTRIBUTE_NAME,new Attribute(ID_ATTRIBUTE_NAME, SCELValue.getString(getName())));
+		toReturn.put(ID_ATTRIBUTE_NAME,new Attribute(ID_ATTRIBUTE_NAME, getName()));
 		return toReturn;
 	}
 
@@ -695,12 +694,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 		private Group group;
 		private int session;
-		private Tuple tuple;
 
 		public GroupPutHandler(Group group, int session, Tuple tuple ) {
 			this.group = group;
 			this.session = session;
-			this.tuple = tuple;
 		}
 
 		@Override
@@ -823,7 +820,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 		for (GroupGetReply reply : received) {
 			try {
-				if (flag&&group.getPredicate().evaluate(reply.getValues())) {
+				if (flag&&group.getPredicate().evaluate(reply.getAttributes())) {
 					sendAck(reply.getSource(), reply.getTupleSession());
 					flag = false;
 					pending.set(reply.getTuple());
@@ -846,7 +843,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		boolean flag = true;
 
 		for (GroupQueryReply reply : received) {
-			if (flag&&group.getPredicate().evaluate(reply.getValues())) {
+			if (flag&&group.getPredicate().evaluate(reply.getAttributes())) {
 				flag = false;
 				pending.set(reply.getTuple());
 			} 

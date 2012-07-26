@@ -14,7 +14,6 @@ package org.cmg.scel.examples;
 
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.knowledge.ActualTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.knowledge.ts.TupleSpace;
@@ -52,10 +51,10 @@ public class LocalPingPong {
 			try {
 				while (true) {
 					System.out.println("PING!");
-					put(new Tuple(SCELValue.getString("PING") ) , Self.SELF);
-					query(new Template(new ActualTemplateField(SCELValue.getString("PONG"))) , Self.SELF);
+					put(new Tuple( "PING" ) , Self.SELF);
+					query(new Template(new ActualTemplateField( "PONG" )) , Self.SELF);
 					System.out.println("QUERY PONG!");
-					get(new Template(new ActualTemplateField(SCELValue.getString("PONG"))) , Self.SELF);
+					get(new Template(new ActualTemplateField( "PONG")) , Self.SELF);
 					System.out.println("GET PONG!");
 				}
 			} catch (Exception e) {
@@ -76,9 +75,9 @@ public class LocalPingPong {
 		protected void doRun() {
 			try {
 				while (true) {
-					get(new Template(new ActualTemplateField(SCELValue.getString("PING"))) , Self.SELF);
+					get(new Template(new ActualTemplateField( "PING" )) , Self.SELF);
 					System.out.println("PONG!");
-					put(new Tuple(SCELValue.getString("PONG") ) , Self.SELF);
+					put(new Tuple( "PONG" ) , Self.SELF);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

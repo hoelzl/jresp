@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Universitˆ di Firenze
+ *	
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *      Michele Loreti
+ */
 package org.cmg.scel.protocol;
 
 import java.io.IOException;
@@ -6,17 +18,38 @@ import java.util.Arrays;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.topology.PointToPoint;
 
+/**
+ * This is message identifies the replay to a {@link GroupPutRequest}.
+ * 
+ * @author Michele Loreti
+ *
+ */
 public class GroupPutReply extends UnicastMessage {
 	
 	private int tupleSession;
 	private Attribute[] values;
 	
+	/**
+	 * Creates a new object instance.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param target name of target node
+	 * @param tupleSession an integer value that will be used to confirm the execution
+	 * of put.
+	 * @param values values of attributes contained in the associated {@link GroupPutRequest}
+	 */
 	public GroupPutReply(PointToPoint source, int session, String target, int tupleSession , Attribute[] values) {
 		super(MessageType.GROUP_PUT_REPLY,source,session,target);
 		this.values = values;
 		this.tupleSession = tupleSession;
 	}
 
+	/**
+	 * Returns the values of attributes
+	 * 
+	 * @return values of attributes.
+	 */
 	public Attribute[] getValues() {
 		return values;
 	}

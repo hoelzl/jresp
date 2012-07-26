@@ -16,11 +16,12 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.scel.knowledge.Attribute;
-import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.PointToPoint;
 
 /**
+ * This is message identifies the replay to a {@link GroupQueryRequest}.
+ * 
  * @author Michele Loreti
  *
  */
@@ -29,6 +30,16 @@ public class GroupQueryReply extends UnicastMessage {
 	private Attribute[] values;
 	private Tuple tuple;
 
+	/**
+	 * Creates a new object instance.
+	 * 
+	 * @param source address of the node originating the message
+	 * @param session an integer used to relate this message to a conversation
+	 * @param target name of target node
+	 * @param tupleSession an integer value that will be used to confirm the execution
+	 * of put.
+	 * @param values values of attributes contained in the associated {@link GroupPutRequest}
+	 */
 	public GroupQueryReply(PointToPoint source, int session,
 			String target, Attribute[] values, Tuple tuple) {
 		super(MessageType.GROUP_QUERY_REPLY, source, session, target);
@@ -45,10 +56,20 @@ public class GroupQueryReply extends UnicastMessage {
 		messageHandler.handle(this);
 	}
 
-	public Attribute[] getValues() {
+	/**
+	 * Returns the values of attributes
+	 * 
+	 * @return values of attributes.
+	 */
+	public Attribute[] getAttributes() {
 		return values;
 	}
 
+	/**
+	 * Returns the result of the query.
+	 * 
+	 * @return the result of the query.
+	 */
 	public Tuple getTuple() {
 		return tuple;
 	}

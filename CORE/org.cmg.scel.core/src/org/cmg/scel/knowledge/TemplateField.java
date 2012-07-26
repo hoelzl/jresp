@@ -30,7 +30,7 @@ public interface TemplateField {
 	 * @param o a generic object
 	 * @return <code>true</code> if the object <code>o</code> matches against this field.
 	 */
-	public boolean match( SCELValue o );
+	public boolean match( Object o );
 
 	
 }

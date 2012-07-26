@@ -15,18 +15,15 @@ package org.cmg.scel.examples;
 import java.io.IOException;
 
 import org.cmg.scel.behaviour.Agent;
+import org.cmg.scel.connections.VirtualPort;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
 import org.cmg.scel.knowledge.Template;
 import org.cmg.scel.knowledge.Tuple;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.knowledge.ts.TupleSpace;
 import org.cmg.scel.topology.Group;
 import org.cmg.scel.topology.GroupPredicate;
 import org.cmg.scel.topology.Node;
-import org.cmg.scel.topology.Self;
-import org.cmg.scel.topology.VirtualPort;
 
 /**
  * @author Michele Loreti
@@ -54,7 +51,7 @@ public class GroupGet {
 		protected void doRun() {
 			try {
 				while (true) {
-					Template tmp = new Template( new FormalTemplateField(SCELType.STRING) );
+					Template tmp = new Template( new FormalTemplateField( String.class ) );
 					Group g = new Group(any);
 					Tuple t = get( tmp , g );
 					System.out.println("RECEIVED: "+t.toString());
@@ -73,10 +70,10 @@ public class GroupGet {
 	public static void main(String[] argv) {
 		Node<TupleSpace> node1 = new Node<TupleSpace>("node1", new TupleSpace());
 		TupleSpace ts2 =new TupleSpace();
-		ts2.put(new Tuple(SCELValue.getString("TEST_1") ) );
+		ts2.put(new Tuple(("TEST_1") ) );
 		Node<TupleSpace> node2 = new Node<TupleSpace>("node2", ts2 );
 		TupleSpace ts3 =new TupleSpace();
-		ts3.put(new Tuple(SCELValue.getString("TEST_2") ) );
+		ts3.put(new Tuple(("TEST_2") ) );
 		Node<TupleSpace> node3 = new Node<TupleSpace>("node3", ts3);
 		node1.addPort(vp);
 		node1.setGroupActionWaitingTime(100);

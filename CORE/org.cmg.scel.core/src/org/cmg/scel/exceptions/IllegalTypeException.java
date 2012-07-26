@@ -13,22 +13,24 @@
 package org.cmg.scel.exceptions;
 
 /**
- * @author loreti
+ * Thrown when a type error is caught.
  * 
+ * @author Michele Loroeti
  *
  */
 public class IllegalTypeException extends RuntimeException {
 
-	//FIXME: Complete class!
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @param c
-	 * @param class1
+	 * Creates a new instance identifying a wrong cast from class was to
+	 * class expected.
+	 * 
+	 * @param expected expected java type
+	 * @param was	current java type
 	 */
 	public IllegalTypeException(Class<?> expected, Class<?> was) {
 		super("Illegal type exception: expected "+expected.getName()+" was "+was.getName());

@@ -13,8 +13,7 @@
 package org.cmg.scel.knowledge;
 
 import java.util.Arrays;
-
-import org.cmg.scel.exceptions.IllegalTypeException;
+import java.util.Iterator;
 
 /**
  * A tuple identifies the basic information item. It consists
@@ -25,12 +24,12 @@ import org.cmg.scel.exceptions.IllegalTypeException;
  * 
  *
  */
-public class Tuple {
+public class Tuple implements Iterable<Object> {
 
 	/**
 	 * Tuple fields.
 	 */
-	protected SCELValue[] fields;
+	protected Object[] fields;
 	
 	
 	/**
@@ -38,7 +37,7 @@ public class Tuple {
 	 * 
 	 * @param fields fields of new created tuple.
 	 */
-	public Tuple( SCELValue ... fields ) {
+	public Tuple( Object ... fields ) {
 		this.fields = fields;
 	}
 	
@@ -58,7 +57,7 @@ public class Tuple {
 	 * @param i element index.
 	 * @return the element at index <code>i</code>.
 	 */
-	public SCELValue getElementAt( int i ) {
+	public Object getElementAt( int i ) {
 		return fields[i];
 	}
 
@@ -68,10 +67,32 @@ public class Tuple {
 	 * @param i element index
 	 * @return the class <code>c</code> of the element with index <code>i</code>. 	
 	 */
-	public SCELValue.SCELType getTypeAt( int i ) {
-		return fields[i].getType();
+	public Class<?> getTypeAt( int i ) {
+		return fields[i].getClass();
 	}
 	
+	/**
+	 * Returns the instance of class <code>c</code> at element <code>i</code>. This 
+	 * method is equivalent to <code>c.cast(getElementAt(i))</code>. A <code>ClassCastException</code>
+	 * is thrown if the <code>i</code>-th element of the tuple is not an instance if <code>c</code>.
+	 * 
+	 * @param c expected class 
+	 * @param i element index
+	 * @return the instance of class <code>c</code> at element <code>i</code>. 
+	 */
+	public <T> T getElementAt( Class<T> c , int i ) {
+		Object o = getElementAt(i);
+		if (c.isInstance(o)) {
+			return c.cast(o);
+		}
+		throw new ClassCastException();
+	}
+	
+	
+	public boolean hasType( Class<?> c , int i ) {
+		return c.isInstance( fields[i] );
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Tuple) {
@@ -88,6 +109,28 @@ public class Tuple {
 	@Override
 	public String toString() {
 		return Arrays.deepToString(fields);
+	}
+
+	@Override
+	public Iterator<Object> iterator() {
+		return new Iterator<Object>() {
+			
+			private int current = 0;
+			
+			@Override
+			public boolean hasNext() {
+				return current<fields.length;
+			}
+
+			@Override
+			public Object next() {
+				return fields[current++];
+			}
+
+			@Override
+			public void remove() {				
+			}
+		};
 	}
 
 }

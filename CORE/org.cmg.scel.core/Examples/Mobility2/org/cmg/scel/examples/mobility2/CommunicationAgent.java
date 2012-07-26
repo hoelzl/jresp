@@ -13,17 +13,12 @@
 package org.cmg.scel.examples.mobility2;
 
 import java.io.IOException;
-import java.util.Random;
 
 import org.cmg.scel.behaviour.Agent;
 import org.cmg.scel.knowledge.ActualTemplateField;
 import org.cmg.scel.knowledge.Attribute;
 import org.cmg.scel.knowledge.FormalTemplateField;
-import org.cmg.scel.knowledge.SCELValue;
-import org.cmg.scel.knowledge.SCELValue.SCELBoolean;
 import org.cmg.scel.knowledge.Template;
-import org.cmg.scel.knowledge.SCELValue.SCELDouble;
-import org.cmg.scel.knowledge.SCELValue.SCELType;
 import org.cmg.scel.knowledge.Tuple;
 import org.cmg.scel.topology.Group;
 import org.cmg.scel.topology.GroupPredicate;
@@ -41,36 +36,36 @@ public class CommunicationAgent extends Agent {
 			if (data.length<1) {
 				return false;
 			}
-			return ((SCELBoolean) data[0].getValue()).getValue()==CommunicationAgent.this.isGreen;
+			return data[0].getValue().equals(CommunicationAgent.this.isGreen);
 		}
 	};
 	
 	
 	private Template gpsTemplate = new Template(
-				new ActualTemplateField(SCELValue.getString("GPS")),
-				new FormalTemplateField(SCELType.DOUBLE),
-				new FormalTemplateField(SCELType.DOUBLE)				
+				new ActualTemplateField(("GPS")),
+				new FormalTemplateField(Double.class),
+				new FormalTemplateField(Double.class)				
 			);
 	
 	private Template targetTemplate = new Template( 
-				new ActualTemplateField(SCELValue.getString("TARGET")),
-				new FormalTemplateField(SCELType.BOOLEAN)
+				new ActualTemplateField(("TARGET")),
+				new FormalTemplateField(Boolean.class)
 			);
 
 	private Template foundTemplate = new Template( 
-			new ActualTemplateField(SCELValue.getString("FOUND")),
-			new FormalTemplateField(SCELType.BOOLEAN)
+			new ActualTemplateField(("FOUND")),
+			new FormalTemplateField(Boolean.class)
 		);
 
 	private Template informedTemplate = new Template( 
-			new ActualTemplateField(SCELValue.getString("INFORMED")),
-			new FormalTemplateField(SCELType.BOOLEAN)
+			new ActualTemplateField(("INFORMED")),
+			new FormalTemplateField(Boolean.class)
 		);
 
 	private Template directionTemplate = new Template(
-			new ActualTemplateField(SCELValue.getString("DIRECTION")),
-			new FormalTemplateField(SCELType.DOUBLE),
-			new FormalTemplateField(SCELType.DOUBLE)				
+			new ActualTemplateField(("DIRECTION")),
+			new FormalTemplateField(Double.class),
+			new FormalTemplateField(Double.class)				
 		);
 
 
@@ -91,8 +86,7 @@ public class CommunicationAgent extends Agent {
 			Tuple t = query(directionTemplate, new Group(color));
 			put( t , Self.SELF );
 			get( informedTemplate , Self.SELF );
-			put( new Tuple( SCELValue.getString("INFORMED") , SCELValue.getBoolean(true)) , Self.SELF );
-			put( t , Self.SELF );
+			put( new Tuple( ("INFORMED") , (true)) , Self.SELF );
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
