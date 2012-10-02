@@ -12,3 +12,10 @@ nbproject/private/
 *.DS_Store
 *.swp
 *.out
+*.bbl
+*.blg
+*.toc
+*.aux
+*.log
+*.synctex.gz
+

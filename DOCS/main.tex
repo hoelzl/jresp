@@ -1,0 +1,584 @@
+\documentclass[11pt]{article}
+
+\usepackage{etex}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows,shapes,chains,matrix,positioning,scopes,decorations.pathmorphing,shadows,fit,mindmap}
+
+\usepackage{amssymb}
+\input{macro/macroexpr}
+\input{macro/macros}
+\newtheorem{remark}{Remark}[section]
+%\usepackage{hyperref}
+
+
+\usepackage{hyperref}
+\usepackage{todonotes}
+\newcommand{\resp}{\textsf{RESP}}
+%\newcommand{\SCEL}{SCEL}
+
+\title{\resp{}:A runtime environment for \SCEL{} programs}
+\author{Michele Loreti}
+\date{\today}
+
+\newcommand{\java}{\textsf{Java}}
+\newcommand{\resppackage}[1]{\textsf{org.cmg.ml.resp.#1}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\SCEL\ is a new language specifically designed to model autonomic components and their interaction. It brings together various programming abstractions that permit to directly represent knowledge, behaviors and aggregations according to specific policies. It also supports naturally programming self-awareness, context-awareness, and adaptation. 
+%The solid semantic grounds of the language lay the basis for developing logics, tools and methodologies for formal reasoning about systems behavior in order to establish qualitative and quantitative properties of both the individual components and the overall systems. 
+In this paper, we present \resp{} a runtime environment that permits executing \SCEL{} programs. 
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\section{Introduction}
+
+The increasing complexity, heterogeneity and dynamism of current computational and information infrastructures is calling for new ways of designing and managing computer systems and applications. \emph{Adaptation}, namely ``the capability of a system to change its behavior according to new requirements or environment conditions'' \cite{HRW08}, has been largely proposed as a powerful means for taming the ever-increasing complexity of today's computer systems and applications. Besides, a new paradigm, named \emph{autonomic computing}~\cite{IBM05}, has been advocated that aims at making modern distributed IT systems \emph{self-manageable}, i.e.\ capable of continuously self-monitoring and selecting appropriate operations.
+%Adaptation has been proposed as the key for \emph{autonomic computing}~\cite{IBM05} (i.e. computer and software systems that can manage themselves in accordance with high-level guidance from humans by relying on strategies inspired by biological systems).
+
+More recently, to capture the relevant features and challenges, the `Interlink WG on software intensive systems and new computing paradigms' \cite{InterLink} has proposed to use the term \emph{ensembles} to refer to:
+\begin{quote}
+The future generation of software-intensive systems dealing with massive numbers of components, featuring complex interactions among components and with humans and other systems, operating in open and non-deterministic environments, and dynamically adapting to new requirements, technologies and environmental conditions.
+\end{quote}
+
+Systems partially satisfying the above definition of ensemble have been already built, e.g.\ national infrastructures such as power grids, or large online cloud systems such as Amazon or Google. But significant human intervention is needed to dynamically adapt them. Instead, one crucial requirement is to ensure that an ensemble continues to function reliably in spite of unforeseen changes and that adaptation does not render systems inoperable, unsafe or insecure.
+
+To move from the engineering of traditional systems to that of ensembles, an higher level of abstraction is needed. Many research efforts are  currently devoted to the search of  methodologies and tools to build ensembles by exploiting techniques developed in different research areas such as software engineering, artificial intelligence and formal methods. The aim is the definition of linguistic primitives and methodologies to program autonomic and adaptive systems while relying on rigorous foundations that support verification of their properties.
+
+The challenge for language designers is to devise appropriate abstractions and linguistic primitives to deal with the large dimension of systems, the need to adapt to evolving requirements and to changes in the working environment, and the emergent behaviors resulting from complex interactions.
+
+The notions of \emph{service components} (SCs) and \emph{service-component ensembles} (SCEs) have been put forward as a means to structure a system into well-understood, independent and distributed building blocks that interact in specified ways. SCs are autonomic entities that can cooperate, with different roles, in open and non-deterministic environments. SCEs are instead sets of SCs with dedicated knowledge units and resources, featuring goal-oriented execution. Most of the basic properties of SCs and SCEs are already guaranteed by current service-oriented architectures; the novelty lays in the notions of goal-oriented evolution and of self-awareness and context-awareness.
+
+A possible way to achieve awareness is to equip SCs and SCEs with information about their own state and behavior, to enable them to collect and store information about their working environment and to use this information for redirecting and adapting their behavior. A typical SCE is reported in Figure~\ref{ensemble}, which evidences that ensembles are structured sets of components, with dedicated \emph{knowledge units} to represent shared, local and global knowledge, that can be interconnected via highly dynamic \emph{infrastructures}.
+
+
+\begin{figure}[tp]
+\centering
+\includegraphics[width=8.2cm]{sce}
+\vspace*{-.4cm}
+\caption{A Service Component Ensemble}
+\vspace*{-.3cm}
+\label{ensemble}
+\end{figure}
+
+These notions of SCs and SCEs are the starting point of the EU project ASCENS~\cite{ascens,ASCENSatFMCO11} that aims at investigating different issues ranging from languages for modelling and programming SCEs to foundational models for adaptation, dynamic self-expression and reconfiguration, from formal methods for the design and verification of reliable SCEs to software infrastructures supporting deployment and execution of SCE-based applications. The aim is to develop formal tools and methodologies supporting the design of self-adaptive systems that can autonomously adapt to, also unexpected, changes in the operating environment, while keeping most of their complexity hidden from administrators and users.
+
+In~\cite{SCEL} \SCEL{} (Service Component Ensemble Language), a new language designed for  autonomic computing has been presented. \SCEL\ brings together different programming abstractions that permit to directly represent \emph{knowledge}, \emph{behaviors} and \emph{aggregations} according to specific \emph{policies}. It also supports naturally programming self-awareness, context-awareness and adaptation. \SCEL's solid semantic grounds lay the basis for developing logics, tools and methodologies for formal reasoning about system behavior to establish qualitative and quantitative properties of both the individual components and the ensembles.
+
+In this work we present \resp{} a Runtime Environment for \SCEL{} Programs that permits executing \SCEL{} programs. 
+Our aim is to provide programmers with a framework that permits developing of autonomic and adaptive
+systems according to the \SCEL{} paradigm. 
+
+\section{\SCEL: design principles}
+\label{sec:SCELtdesign}
+
+\SCEL\ provides abstractions explicitly supporting autonomic computing systems in terms of \emph{Behaviors}, \emph{Knowledge} and \emph{Aggregations}, according to specific \emph{Policies}.
+
+\emph{Behaviors} describe how computations progress. These abstractions are modelled as processes executing actions, in the style of standard process calculi. \emph{Interaction} comes in when components access data in the knowledge repositories of other components. \emph{Adaptation} emerges as the result of knowledge acquisition and manipulation.
+
+\emph{Knowledge} provide the high level primitives to manage pieces of relevant information coming from different sources. Knowledge is represented through items stored in repositories. Knowledge items contain either \emph{application data} or \emph{awareness data}. The former are used for determining the progress of component computations, while the latter provide information about the environment in which the different components are running (e.g. monitored data from sensors) or about the actual status of an autonomic component (e.g. about its current position or the remaining battery's charge level). We assume that each knowledge repository's handling mechanism provides three abstract operations that can be used by autonomic components for \emph{adding} new knowledge to the repository, for \emph{retrieving} knowledge  from the repository and for \emph{withdrawing} knowledge from it.
+
+\emph{Aggregations} describe how different entities are brought together to form \emph{components} and \emph{systems} and to offer the possibility to construct the \emph{software architecture} of autonomic systems. Composition of components and their interaction is implemented by exploiting the notion of \emph{interface} that can be queried to determine the attributes and the functionalities provided and/or required by components. \emph{Ensembles} are specific aggregations of components that represent \emph{social or technical networks} of autonomic components. The key point is that the formation rule is endogenous to components: components of an ensemble are connected by the interdependency relations established in their interfaces. Therefore, an ensemble is not a rigid fixed network but rather a dynamic graph-like structure where component linkages are dynamically established.
+
+\emph{Policies} control and adapt the actions of the different components in order to guarantee the achievement of specific goals or the satisfaction of specific properties. Since few assumptions can be made about the operational environment, that is frequently open, highly dynamic and possibly hostile, the ability of programming and enforcing a finer control on behavior is essential to assure that e.g. valuable information is not lost. Policies are the mean to guarantee such control. Interaction policies and Service Level Agreement (SLA) policies provide two standard examples of policy abstractions. Other examples are security properties maintaining the right linkage between data values and their associated usage policies (data-leakage policies) or limiting the flow of sensitive information to untrusted sources (access control and reputation policies).
+
+All these abstractions are aggregated by means of the notion of autonomic component. An \emph{autonomic component} $\loccomp{{\cal I}}{\knw,\pol,P}$ consists of:
+\begin{enumerate}
+\item an \emph{interface} \interf{I} publishing and making available structural and behavioral information about the component itself;
+\item a \emph{knowledge manager} $\knw$, managing both application data and awareness data, together with the specific handling mechanism;
+\item a set of \emph{policies} $\pol$ regulating the interaction between the different internal parts of the component and the interaction of the component with the others;
+\item a \emph{process} $P$ together with a set of process definitions that can be dynamically activated. Some of the processes in $P$ perform local computation, while others may coordinate processes interaction with the knowledge repository and deal with the issues related to adaptation and reconfiguration.
+\end{enumerate}
+
+A component's interface can be inquired to extract information about the component, its status or its execution environment, as well as the services offered by the component. %The interface in fact provides an \emph{attribute} for each kind of information or provided service.
+In fact, the interface provides a set of \emph{attributes} characterizing the component itself. Among these attributes, attribute $id$ is mandatory and is bound to the name of the component. Additional attributes might, e.g., indicate the battery's charge level and the component's GPS position. Suitable attributes are also used to indicate the provided services and their signature.
+%\todo{Ros: should we give more details on how "provided services" are specified?\\}
+Notably, the whole information provided by the component interface is stored in the local knowledge of the component and therefore can be dynamically manipulated by means of the operations provided by the knowledge repositories' handling mechanisms.
+
+%\begin{remark}[Ensembles]
+%Ensembles are sets of components characterized by means of suitable predicates over the attributes of components. Surprisingly (it might be), no specific syntactic category or operator for forming ensembles is provided by our language. Rather, to better capture their dynamicity, ensembles are `synthesized' dynamically by exploiting the values of the components attributes. This design choice guarantees high dynamicity and flexibility in forming, joining and leaving ensembles and does avoid resorting to structure ensembles through rigid syntactic constructs.
+%\end{remark} 
+
+\section{A runtime environment for \SCEL{} programs}
+\label{sec:resp}
+
+In this section we present \resp{}. This is a runtime environment that permits executing \SCEL{} programs. 
+Our aim is to provide programmers with a framework that permits developing of autonomic and adaptive
+systems according to the \SCEL{} paradigm. 
+
+\paragraph{Design principles}
+
+\SCEL{} aims at identifying linguistic constructs for uniformly modeling the control of computation, the interaction among possibly 
+heterogeneous components, and the architecture of systems and ensembles.
+%
+A \SCEL{} \emph{program} consists of a set of components, each of which is equipped with its own knowledge repository, that
+act and interact with each other. The number of components involved in the computation is not fixed but can change dynamically
+during the computation. 
+%
+ \SCEL{} \emph{program} can be composed by a set of heterogeneous components that, relying on an highly dynamic communication
+infrastructure,  concur  and cooperate to achieve a set of \emph{goals}.
+%
+That being on, a first principle that has driven the design and implementation of \resp{} has been to avoid \emph{centralised control}.
+%
+In particular, components can be able to interact with each other by simply relying on the available communication media.
+
+In the definition of \SCEL{}, some categories, like \emph{knowledge} and \emph{policy}, are not fixed but these have to be fixed 
+from time to time according to the specific application domain or to the taste of the language user. Other mechanisms, like for instance 
+the underlying communication infrastructure, are not considered at all and \emph{abstracted} in the operational semantics. 
+%
+For this reasons, all the framework is parametric with respect to specific implementations of above mentioned features. Design patterns 
+have been largely used in \resp{} to simplify development of specific implementations of knowledge, policies and underlying communication
+infrastructure.
+
+Finally, to simplify the integration with other tools/framework (like for instance Argos~\cite{??} and DEECo~\cite{??}), \resp{} relies on
+ \emph{open technologies} like, for instance, \textsf{json}~\cite{JSON}. Such tools, providing mechanisms for data-interchange format,
+simplify interactions between heterogeneous network components and provide the basis on which different runtime for 
+ \SCEL{} programs can cooperate.
+ 
+%\begin{enumerate}
+%\item no centralized control
+%\item heavy use of \emph{recurrent patterns} to simply 
+%the development of specific
+%\begin{itemize}
+%\item policies
+%\item knowledge
+%\item \ldots
+%\end{itemize} 
+%\item use of \emph{open technologies} to support the integration with other tools/frameworks
+%\begin{itemize}
+%\item Argos
+%\item DEECo
+%\item \ldots
+%\end{itemize}
+%\end{enumerate}
+%
+
+\subsection{Components}
+\label{sec:components}
+
+The central element of \resp{} is the class \textsf{Node}. This class provides the implementation for a generic \SCEL{} component\footnote{From now on we will
+use \emph{node} to refer to instances of class \textsf{Node}, while \emph{component} will indicate a \SCEL{} component.}.
+%
+The overall infrastructure of a generic node is reported in Figure~\ref{fig:respnode}. 
+
+We assume that each node is executed over a virtual machine or a physical device that provides the access to: input and output devices
+and network connections. 
+%
+Following the same structure considered in Section~\ref{sec:SCELtdesign}, each node contains:
+\begin{itemize}
+\item a \emph{knowledge}, described in Section~\ref{sec:knowledge};
+\item a set of running processes/threads, described in Section~\ref{sec:agents};
+\item a \emph{policy}, described in Section~\ref{sec:policies}.
+\end{itemize}
+
+Like for a \SCEL{} components, structural and behavioural information about a node 
+can be collected into an \emph{interface}. This is rendered in \resp{} via a set of \emph{attribute collectors} (see
+Section~\ref{sec:attributes}) that, reading values from the knowledge, publish and 
+and make available attribute values in the interface.
+
+Nodes interact with each other via \emph{ports} (Section~\ref{sec:ports}). These provide 
+mechanism for supporting both \emph{one-to-one} and \emph{gruop} communications.  
+
+%
+%\SCEL{} aims at identifying linguistic constructs for uniformly modeling the control of computation, the interaction among possibly heterogeneous components, and the architecture of systems and ensembles. Therefore, we have left open some syntactic categories, namely
+%%\textsc{Knowledge} (ranged over by $\knw$), \textsc{Policies} ($\pol$), \textsc{Templates} ($T$), and \textsc{Items} ($t$).
+%\textsc{Knowledge}, \textsc{Policies}, \textsc{Templates} and \textsc{Items} (the last two ones determine the part of \textsc{Knowledge} to be added, retrieved or removed). These represent additional language features that need to be introduced, e.g. to represent and store knowledge of different forms (e.g. clauses, constraints, records, tuples) or to express a variety of policies (e.g. to regulate knowledge handling, resource usage, process execution, process interaction, actions priority, security, trust, reputation). We don't want to take a definite standing about these categories and prefer they be fixed from time to time according to the specific application domain or to the taste of the language user. In the rest of this section, we consider one by one the explicitly defined categories and describe them in detail.
+
+
+\begin{figure}[tp]
+	\begin{center}
+	\begin{tikzpicture}[
+         scale=.8%,font=\footnotesize,node distance=1cm and .1cm,
+%      behavior/.style={rounded rectangle,thick,minimum size=.5cm,
+%        draw=ASCENSBlue!65, solid,
+%        top color=white, bottom color=ASCENSBlue!35,
+%        text width=3cm,fill=white,text centered,drop shadow},
+%      group/.style={fill=white,rotate=90,text width=6cm,text centered, draw,dashed,thick},
+%      device/.style={rotate=90,text=black,minimum size=.5cm,
+%        draw=ASCENSGrey1,very thick},    
+%      external/.style={text=black,minimum size=.5cm, 
+%        draw=ASCENSGrey1,very thick, left color=white,right color=rosso!40},
+%      gui/.style={text=black,minimum size=.5cm, text width=3cm,text centered,
+%        draw=ASCENSGrey1,very thick, left color=white,right color= dgreen!40},
+%      sensor/.style={device,left color=white,right color=ASCENSGrey2},
+%      actuator/.style={device,right color=white,left color=ASCENSGrey2},
+%      tip/.style={->,very thick,draw=ASCENSGrey1}
+      ]
+
+	      \draw[draw=yellow!50,fill=yellow!20] (-5.5,0) rectangle (5.5,1.5);
+	      \node[text centered] at (0,0.75) {Hardware/Virtual Machine};
+	
+	     \draw[draw=red!50,fill=red!20] (5.25,0.25) rectangle (5.75,.5);	
+	     \draw[draw=red!50,fill=red!20] (5.25,0.75) rectangle (5.75,1.0);	
+	     \node[text centered,rotate = -90] at (6.0,0.75) {Networks};
+
+	     \draw[draw=blue!50,fill=blue!20] (-5.25,-.25) rectangle (-5.0,.25);	
+	     \draw[draw=blue!50,fill=blue!20] (-4.75,-.25) rectangle (-4.5,.25);	
+	     \draw[draw=blue!50,fill=blue!20] (-4.25,-.25) rectangle (-4.0,.25);	
+	     \draw[draw=blue!50,fill=blue!20] (-3.95,-0.03) rectangle (-3.89,.03);	
+	     \draw[draw=blue!50,fill=blue!20] (-3.84,-0.03) rectangle (-3.78,.03);	
+	     \draw[draw=blue!50,fill=blue!20] (-3.73,-0.03) rectangle (-3.67,.03);	
+	     \draw[draw=blue!50,fill=blue!20] (-3.62,-.25) rectangle (-3.37,.25);	
+%	     \draw[draw=blue!50,fill=blue!20] (-4.25,-.25) rectangle (-4.0,.25);	
+%	     \draw[draw=blue!50,fill=blue!20] (-4.25,-.25) rectangle (-4.0,.25);	
+	      \node[text centered] at (-4,-0.75) {Input devices/Sensors};
+	      \node[text centered] at (-4,-1.25) {(GPS, Temperature, Battery level,CPU load\ldots)};
+
+	     \draw[draw=green!50,fill=green!20] (2.25,-.25) rectangle (2.5,.25);	
+	     \draw[draw=green!50,fill=green!20] (2.75,-.25) rectangle (3.0,.25);	
+	     \draw[draw=green!50,fill=green!20] (3.25,-.25) rectangle (3.5,.25);	
+	     \draw[draw=green!50,fill=green!20] (3.55,-0.03) rectangle (3.61,.03);	
+	     \draw[draw=green!50,fill=green!20] (3.66,-0.03) rectangle (3.72,.03);	
+	     \draw[draw=green!50,fill=green!20] (3.77,-0.03) rectangle (3.83,.03);	
+	     \draw[draw=green!50,fill=green!20] (3.88,-.25) rectangle (4.13,.25);	
+%%	     \draw[draw=green!50,fill=green!20] (-4.25,-.25) rectangle (-4.0,.25);	
+%%	     \draw[draw=green!50,fill=green!20] (-4.25,-.25) rectangle (-4.0,.25);	
+	      \node[text centered] at (3,-0.75) {Output devices/Actuators};
+%	      \node[text centered] at (-4,-1.25) {(GPS, Temperature, Battery level,CPU load\ldots)};
+
+
+	      \draw[draw=lightgray!50,fill=lightgray!20] (-5.5,1.5) rectangle (5.5,5.5);
+
+	      \draw[draw=gray!50,fill=gray!20] (-5.25,4.25) rectangle (3.25,5.25);
+	      \node[text centered] at (-1,4.75) {SCEL Processes (Threads)};
+
+	      \draw[draw=purple!50,fill=purple!20] (-5.25,3.0) rectangle (3.25,4.0);
+	      \node[text centered] at (-1,3.5) {Policies};
+
+	      \draw[draw=orange!50,fill=orange!20] (-5.25,1.75) rectangle (3.25,2.75);
+	      \node[text centered] at (-1,2.25) {Knowledge};
+
+	      \draw [draw=blue!20,line width=1pt] (-5.125,0.25) -- ( -4.375,1.75); 
+	      \draw [draw=blue!20,line width=1pt] (-4.625,0.25) -- ( -4.375,1.75); 
+	      \draw [draw=blue!20,line width=1pt] (-4.125,0.25) -- ( -4.375,1.75); 
+	      \draw [draw=blue!20,line width=1pt] (-3.495,0.25) -- ( -4.375,1.75); 
+
+	      \draw [draw=green!20,line width=1pt] (2.375,0.25) -- ( 2.875,1.75); 
+	      \draw [draw=green!20,line width=1pt] (2.875,0.25) -- ( 2.875,1.75); 
+	      \draw [draw=green!20,line width=1pt] (3.375,0.25) -- ( 2.875,1.75); 
+	      \draw [draw=green!20,line width=1pt] (4.005,0.25) -- ( 2.875,1.75); 
+	      
+	      \draw[draw=magenta!50,fill=magenta!20] (-6.25,1.75) rectangle (-5.75,2.75);
+	      \node[text centered,rotate=90] at (-6,2.25) {Attr.};
+	      \draw [draw=magenta!20,line width=1pt] (-5.75,2.5) -- ( -5.25,2.5); 
+	      \draw [draw=magenta!20,line width=1pt] (-5.75,2.25) -- ( -5.25,2.25); 
+	      \draw [draw=magenta!20,line width=1pt] (-5.75,2) -- ( -5.25,2.); 
+
+	      \draw[draw=red!50,fill=red!20] (3.5,1.75) rectangle (5.25,5.25);
+	      \node[text centered,rotate=90] at (4.375,3.5) {Ports};
+	
+	      \draw [draw=red!20,line width=1pt] (5,1.75) -- ( 5,.375); 
+	      \draw [draw=red!20,line width=1pt] ( 5,.375) -- ( 5.25,.375); 
+	      \draw [draw=red!20,line width=1pt] ( 5,.875) -- ( 5.25,.875); 
+	      
+	      \node at (5.5,5.5) {$\ $};
+	    
+	
+	\end{tikzpicture}
+    	\end{center}
+	\caption{Node architecture}
+	\label{fig:respnode}
+\end{figure}
+
+\subsection{Knowledge}
+\label{sec:knowledge}
+
+The interface \textsf{Knowledge}\footnote{All the classes considered in this section are part of package \resppackage{knowledge}.},
+identifies a generic \emph{knowledge repository} and provides the high level primitives to 
+manage pieces of relevant information coming from different sources. 
+%
+This interface is contains the following methods:
+\begin{itemize}
+\item \textsf{put( Tuple t ): boolean}
+\item \textsf{get( Template t ): Tuple}
+\item \textsf{getp( Template t ): Tuple}
+\item \textsf{query( Template t ): Tuple}
+\item \textsf{queryp( Template t ): Tuple}
+\end{itemize}
+
+Method \textsf{put} adds a tuple to the knowledge and returns a boolean value
+indicating if the operations has been successfully executed or not. 
+%
+Class \textsf{Tuple}, defined in the same package of \textsf{Knowledge}, identifies the basic information item. It consists
+of a sequence of values, i.e. \textsf{Objects}, that can be collected into a knowledge repository.
+
+The other methods, that can be used to retrieve knowledge items from a knowledge repository, 
+take as parameter an instance of \textsf{Template}. This is used to select elements in a knowledge repository
+and consists of is a sequence of \textsf{TemplateField}. 
+%
+A \textsf{TemplateField} is an interface containing 
+the following single method:
+\begin{itemize}
+\item \textsf{match( Object o ): boolean}
+\end{itemize}
+%
+Class \textsf{Template} relies on this method to verify if a \textsf{Tuple} can be selected or not. Indeed, a tuple
+matches a template if both the object have the same length and the corresponding element 
+matches.
+
+Let \textsf{k} be a \textsf{Knowledge}. Method \textsf{k.get( t )} is used to remove a tuple matching template \textsf{t} 
+from the knowledge \textsf{k}. This is a blocking operation. Indeed, the thread invoking the method is blocked
+until a tuple matching \textsf{t} is not found. Method \textsf{k.query(t)} is similar. However, while with \textsf{get}
+the matching tuple is physically removed from the knowledge, with \textsf{query} this is only read. Moreover,
+implementation of interface \textsf{Knowledge} can provide mechanisms to \emph{infer} tuples according to
+the actual value in knowledge. 
+
+Finally, methods \textsf{getp} and \textsf{queryp} are the predicative variants of \textsf{get} and \textsf{query}.
+Namely, \textsf{getp} and \textsf{queryp} are not blocking operations: if a \textsf{k.getp( t )} (respectively \textsf{k.queryp( t )}) is 
+executed when a tuple matching \textsf{t} is not in the knowledge, value \textsf{null} is returned.  
+
+Currently, a single implementation of interface \textsf{Knowledge} is available in \resp{}. Class
+\textsf{TupleSpace} in package \resppackage{knowledge.ts} provides an implementation
+for a Linda~\cite{Gel85} tuple space. 
+
+\subsection{Sensors} 
+\label{sec:sensors}
+
+To retrieve data from external input devices, nodes can be equipped with \emph{sensors}. These
+are instances of class \textsf{Sensor} that can be used to identify a generic source of information.
+%
+Each sensor can be associated to a logical or physical device providing data that
+can be used by processes and that can be the subject of adaptation.
+
+Each sensor exports data as a \emph{tuple}. We will see below that the same actions used 
+to retrieve values from knowledge, namely \textsf{query}, can be used to obtain data from a 
+sensor. In fact, each node \emph{hides} the real source of information to processes.
+
+%\begin{itemize}
+%\item it can be associated to a logical/physical sensor
+%\item values are exported as a \emph{tuple}, each implementation has to define the structure of the tuple containing
+%\begin{itemize}
+%\item \textsf{(``GPS", 45.8 , 37.2)}
+%\item \textsf{(``BATTERY" , \%87)}
+%\end{itemize}
+%\item \textsf{query} actions are used to \emph{retrieve} data from sensor
+%\end{itemize}
+
+\subsection{Actuators} 
+\label{sec:actuators}
+
+Instances of class \textsf{Actuator} can be used to send data to external components or devices.
+Similarly to \textsf{Sensor}, an instance of class \textsf{Actuator} can be used to \emph{control}
+an \emph{external} component  that identify a logical/physical actuator. 
+%
+Processes can pass values to actuators by relying on standard \SCEL{} operations.
+%
+%Abstract class \textsf{Actuator} is used to identify an external device that can be controlled
+%by SCEL processes:
+%\begin{itemize}
+%\item it can be associated to a logical/physical actuator
+%\item values are passed as a \emph{tuple}, each implementation has to define the structure of the tuple containing
+%\begin{itemize}
+%\item \textsf{(``DIRECTION", $\pi/3$)}
+%%\item \textsf{(``BATTERY" , \%87)}
+%\end{itemize}
+%\item values are passed to a actuator via \textsf{put} actions
+%\end{itemize}
+
+\subsection{Attributes and Atribute collectors} 
+\label{sec:attributes}
+
+An attribute is defined as a pair \emph{(name,value)}. Attributes can be published in a node
+interface via \emph{attribute collectors}. 
+%
+Attribute collectors can be implemented by extending abstract class \textsf{AttributeCollector}.
+%
+This class has \textsf{protected} fields:
+\begin{itemize}
+\item \textsf{name: String}, containing the name associated to the published attribute;
+\item \textsf{template: Template}, identifying the template used to retrieve the knowledge element
+that will be used to compute actual attribute value.
+\end{itemize}
+
+When a node receives a request for an attribute \emph{a}, a collector with the same name is
+selected. Hence, a tuple matching the template associated to the collector is retrieved from 
+the knowledge. If an attribute with name \emph{a} does not exists, or a tuple matching the
+collector template is not available in the knowledge, an attribute with value \textsf{null} is returned.
+Otherwise, the (abstract) method \textsf{doEval} is used to compute the actual 
+attribute value (subclasses of \textsf{AttributeCollector} has to provide an implementation for this method).
+
+\subsection{Ports and network infrastructure}
+\label{sec:ports}
+
+Each node is equipped with a set of \emph{ports} that are 
+able to handle both  \emph{point-to-point} interactions and \emph{group} interactions (\emph{ensemble} oriented).
+%
+Indeed, a port provides a generic communication channel that follow a specific communication protocol. 
+
+Currently the following ports have been developed:
+\begin{itemize}
+\item \textsf{InetPort}, this kind of ports uses TCP to \emph{point-to-point} interactions and UDP for the \emph{group} ones;
+\item \textsf{ServerPort}, in this case a centralized server is used to collect and dispatch nodes' actions;
+\item \textsf{VirtualPort}, this is used to \emph{simulate} nodes running on \emph{virutal} devices.
+\end{itemize} 
+
+To simplify interactions with other framework/tools, even developed in languages that are different from
+\java{}, messages are sent using a \textsf{json} format.
+
+Each port is identified by a physical address. For instance, in the case of \textsf{InetPort} this is the 
+\emph{inet-address} associated to the socket where a thread is waiting for incoming connections.
+
+%
+%\paragraph{Esempio:} $\acgetp T \enspred{P}$ 
+%\begin{enumerate}
+%\item A request message containing template $T$ and attribute names occurring in $\enspred{P}$ is sent
+%via a \emph{multicast} channel
+%\item All the components that receives the message reply with:
+%\begin{itemize}
+%\item a tuple $t$ matching template $T$
+%\item a list of requested attributes 
+%\end{itemize}
+%\item If the node originating the requests receives attributes that \emph{satisfies} predicate $\enspred{P}$, action is executed. Otherwise,
+%the request is sent again. 
+%\end{enumerate}
+
+
+\subsection{Agents}
+\label{sec:agents}
+
+Agents are the \resp{} active computational units and are threads used to program the behaviour of 
+\SCEL\  processes. Class \textsf{Agent} is an abstract class providing the following methods:
+\begin{itemize}
+\item \textsf{abstract doRun(): void}
+\item \textsf{put(Tuple, Target): boolean}
+\item \textsf{get(Template, Target): Tuple}
+\item \textsf{getp(Template, Target): Tuple}
+\item \textsf{query(Template, Target): Tuple}
+\item \textsf{queryp(Template, Target): Tuple}
+\item \textsf{exec( Agent a ): boolean}
+\end{itemize}
+
+%Each process is built up from the \emph{inert} process $\procnil$ via \emph{action prefixing} ($a.P$), 
+%\emph{nondeterministic choice} ($P_1 \choice P_2$), \emph{controlled composition} ($\auth {P_1} {P_2}$), 
+%\emph{process variable} ($X$), \emph{parameterised process invocation} ($A(\bar{p})$), and 
+%\emph{parameterised process definition} ($A(\bar{f}) \define P$). The construct $\auth {P_1} {P_2}$ abstracts the 
+%various forms of parallel composition commonly used in process calculi. Process variables are used to support 
+%higher-order communication, namely the capability to exchange (the code of) a process by first adding an item 
+%containing the process to a knowledge repository and then retrieving/withdrawing this item while binding the process to a process variable.
+
+The first method is the one subclasses has to implement in order to define agent behaviour. This method is invoked
+when the agent starts is computation. 
+%
+Methods \textsf{put}, \textsf{get}, \textsf{getp}, \textsf{query} and \textsf{query} are used to manage shared knowledge 
+repositories by withdrawing/retrieving/adding information items from/to a knowledge repository.
+These methods extend the one considered in Section~\ref{sec:knowledge} by with another parameter
+identifying the, possibly remote, node where the target knowledge repository is located.
+
+A target can be either a \emph{point-to-point} address, a \emph{group} or \emph{self}. 
+%
+A point-to-point address univocally identify the target of the considered action.  A \emph{group} 
+identifies all the nodes that satisfy a given predicate on nodes attributes. Special target \textsf{Self} 
+is used to refer to the node where an agent is running.
+%
+The classes implementing the possible target, in conned in package \resppackage{topology}, are \textsf{PointToPoint}, \textsf{Group} and 
+\textsf{Self}, respectively.
+
+%%. These operations exploit templates $T$ as patterns to select knowledge items $t$ in the repositories. They rely heavily on the used 
+%%knowledge repository and are implemented by invoking the handling operations it provides. Action $\acexecp P$ triggers a controlled (parallel) 
+%%execution of process $P$. Action $\acnewp {\interf{I},\knw,\pol,P}$ creates a new component $\loccomp{{\cal I}}{\knw,\pol,P}$.
+%
+%Action $\acget$ is a \emph{blocking} action, in the sense that the process executing it has to wait for the wanted element if it is not (yet) available in the knowledge repository. Action $\acread$, exactly like $\acget$, suspends the process executing it if the knowledge repository does not (yet) contain or cannot `produce' the wanted element. The two blocking actions differ also for the fact that $\acget$ removes the found item from the knowledge repository while $\acread$ leaves the target repository unchanged. Actions $\acput$, $\acexec$ and $\acnew$ are instead non-blocking and are immediately executed (provided that their execution is allowed by the policies in force).
+%
+%Component names are denoted by $\naddr$, $\naddr'$, \ldots, variables for names are denoted by $\vaddr$, $\vaddr'$, \ldots, while $\nvaddr$ stands for a name or a variable. The distinguished variable $\self$ can be used by processes to refer to the name of their hosting component. $\enspred{P}$ can be either a predicate over attributes or the name of a predicate; in the latter case, the association between the name and the predicate is stored as an attribute (defined in the interface) of the component.
+%%\todo{Is it useful having predicates with more than one argument as e.g. $\enspred{P}(I,J,...)$? If yes, it is reasonable to have arguments different from interfaces?\\}
+%
+%In actions of the form $\acputp t {\enspred{P}}$, predicate $\enspred{P}$ acts as a `guard' specifying \emph{all} the components that may be affected by the execution of the action, i.e. the target must satisfy the guard in order for the action to take place. Thus, actions $\acputp t n$ and $\acputp t {\enspred{P}}$ give rise to two different primitive communication forms: the former is a point-to-point communication, while the latter is a sort of group-oriented communication. The set of components satisfying $\enspred{P}$ can be considered as the \emph{ensemble} which the process performing the action is willing to interact with.
+%%
+%For example, the names of the components that can be members of an ensemble can be fixed via the predicate
+%\[
+%\enspred{P}(\interf{I})\defi\interf{I}.id \in \set{n,m,p}
+%\]
+%If the predicate above is used as the target of a communication action, then that action will act on those components whose name is $n$, $m$ or $p$, if any.
+%%
+%As another example, to dynamically characterize the members of an ensemble that are active and have a battery charge level greater than 30\%, the predicate
+%\[
+%\enspred{P}(\interf{I})\defi\interf{I}.active = yes \wedge {\cal I}.battery\_level > 30\%
+%\]
+%could be used. Here, we are assuming that the interface of each component willing to be part of the ensemble contains the attributes $active$ and $battery\_level$.
+
+\subsection{Policies}
+\label{sec:policies}
+
+\emph{Policies} are attached to a node in order to control and adapt the performed actions to guarantee the achievement of specific 
+goals or the satisfaction of specific properties. In particular, when an agent invokes a method, this is first delegated to the policy 
+associated to the associated policy. This guarantee that \SCEL{} action execution is appropriately regulated.
+
+The interface \textsf{Policy} provides methods of the form:
+\begin{itemize}
+\item \textsf{put(Agent a, Tuple t , Target l)}
+\item \textsf{acceptGet( Locality l , Template t )}
+\end{itemize}
+
+The first one is used when agent \textsf{a} executes an action (in this case a \textsf{put}). While the second one is
+used  to control the actions executed by remote components (in this case a \textsf{get}).
+
+Policies are organized in a \emph{stack}. The policy at one level relies on the one at the level below to
+actually execute \SCEL{} actions. The policy at the lower level is the one that allows any operation.
+
+
+\section{\resp{} at work}
+\label{sec:atwork}
+
+In this section we present a simple example that shows how \resp{} can be used to
+support development and execution of \SCEL{} systems.
+%
+We consider a set of robots have to reach a safe-area.  To discover the location of safe-area, 
+each robot follows a \emph{random walk}. As soon as a robot reach the area, it publishes locally its location 
+in the local knowledge repository. Thanks to By relying on \emph{group} queries, other robots can get informed 
+about the location of the safe-area and then can move directly to the target.
+
+We assume that each robot is equipped with  a GPS sensor, 
+a sensor to verify if the target are has been reached or not. Moreover, to control
+ movement, we assume that each robot is equipped with an actuator to change direction
+ and with an actuator to stop movement.
+ 
+ To implement this scenario we let each robot be implemented as a SCEL component. To
+ permits simulating the scenario we a virtual port to handle robot communication and
+ an ad-hoc data structure to take care of robot position and movement.
+ 
+\begin{center}
+%\begin{center}
+\includegraphics[scale=0.25]{img/scenariosimple}
+%\end{center}
+%\end{tabular}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.5]{img/pieceofcode}
+\end{center}
+
+\begin{center}
+%\begin{center}
+\includegraphics[scale=0.45]{img/doublemobility}
+%\end{center}
+%\end{tabular}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.45]{img/groupcode}
+\end{center}
+
+
+\section{Conclusions} 
+
+We have presented (first version of) a framework that permits developing and
+executing \SCEL{} oriented applications in \java{}.
+
+Considered framework should be now \emph{populated} with
+specific implementations for \emph{policies}, \emph{knowledge}. 
+
+Moreover, we plan to develop examples that, starting from Ascens case studies, can be used to \emph{validate}
+the proposed solutions.
+
+We are now working on a \emph{top-level} programming language that, enriching SCEL
+with standard programming primitives, permits simplifying development of SCEL programs.
+
+\bibliographystyle{splncs}
+\bibliography{biblio}
+
+\end{document}

@@ -1,0 +1,305 @@
+\newcommand{\modif}[1]{\begin{color}{red}#1\end{color}} % To highlight changes
+\newcommand{\modiff}[1]{\begin{color}{blue}#1\end{color}} % To highlight changes
+\newcommand{\remove}[1]{\begin{color}{green}#1\end{color}} % To highlight changes
+%\newcommand{\remove}[1]{} % To highlight changes
+
+\newcommand{\rulelabel}[1]{\textit{\small{(#1)}}} % label for operational semantics rules
+
+%%% Environments and theorems %%%
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{lemma}{Lemma}[section]
+%\newtheorem{corollary}{Corollary}[section]
+%\newtheorem{property}{Property}[section]
+%\newtheorem{definition}{Definition}[section]
+%\newtheorem{remark}{Remark}[section]
+
+%%% Colors %%%
+\definecolor{mygray}{rgb}{.90,.90,.90}
+\definecolor{myDarkGray}{rgb}{.75,.75,.75}
+\definecolor{myLightGray}{rgb}{.965,.965,.965}
+
+\newcommand{\graybg}[1]{\colorbox{mygray}{#1}} % To highlight some parts of a specification
+
+%%% Languges names
+
+\newcommand{\SCEL}{\textsc{SCEL}}
+\newcommand{\SCELt}{\textsc{SCEL2}}
+\newcommand{\Klaim}{\textsc{Klaim}}
+\newcommand{\MetaKlaim}{\textsc{MetaKlaim}}
+\newcommand{\kos}{$\mathcal{K}$oS}
+\newcommand{\kaos}{\textsc{Kaos}}
+\newcommand{\cows}{\textsc{COWS}}
+\newcommand{\ccpi}{\textsc{cc-pi}}
+\newcommand{\pic}{$\pi$-calculus}
+
+\newcommand{\xmltag}[1]{\mathtt{<\!#1\!>}}
+\newcommand{\und}{\_}                       % underscore
+\newcommand{\dontcare}{\mathtt{\und}}
+\newcommand{\arr}[1]{\langle #1 \rangle}    % for tuples of objects
+\newcommand{\arrcomp}{:}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\undef}{\mathbf{undef}} % denota undefined
+\newcommand{\false}{\mathbf{false}}
+\newcommand{\true}{\mathbf{true}}
+\newcommand{\assoc}[2]{#1 \mapsto #2} % associazione variabile-valore
+\newcommand{\substi}[1]{\{#1\}}
+
+\newcommand{\delimite}[1]{\mbox{$\overstackrel{\belowfill}{\mbox{$\overstackrel{#1}{\abovefill}$}}$}}
+\makeatletter
+\def \abovefill{
+  {\vrule width0.3mm height 1.8mm depth-0.3mm}
+  \leaders\hrule height1.8mm depth-1.5mm\hfill
+  {\vrule width0.3mm height 1.8mm depth-0.3mm}}
+\makeatother
+\makeatletter
+\def \belowfill{
+  {\vrule width0.3mm height1.5mm}
+  \leaders\hrule height0.3mm\hfill
+  {\vrule width0.3mm height1.5mm}}
+\makeatother
+
+%%% SYNTAX
+
+\newcommand{\actell}{\textbf{tell}}                           %output operation
+\newcommand{\acretract}{\textbf{retract}}
+\newcommand{\actellp}[4]{\ensuremath{\mathbf{tell}(#1,#2,#3)@#4}}
+\newcommand{\acretractp}[4]{\ensuremath{\mathbf{retract}(#1,#2,#3)@#4}}
+\newcommand{\acput}{\textbf{put}}                           %output operation
+\newcommand{\acout}{\textbf{out}}                           %output operation
+\newcommand{\acputp}[2]{\ensuremath{\mathbf{put}(#1)@#2}}   %output operation with parameters
+\newcommand{\acputpq}[3]{\ensuremath{\mathbf{put}(#1)@_{#3}#2}}   %output operation with parameters and quality level
+\newcommand{\acget}{\textbf{get}}
+\newcommand{\acin}{\textbf{in}}
+\newcommand{\acgetp}[2]{\ensuremath{\mathbf{get}(#1)@#2}}
+\newcommand{\acreadold}{\textbf{read}}
+%\newcommand{\acreadp}[2]{\ensuremath{\mathbf{read}(#1)@#2}}
+%\newcommand{\acread}{\textbf{rtv}}
+\newcommand{\acread}{\textbf{qry}}
+%\newcommand{\acreadp}[2]{\ensuremath{\mathbf{rtv}(#1)@#2}}
+\newcommand{\acreadp}[2]{\ensuremath{\mathbf{qry}(#1)@#2}}
+%\newcommand{\acmove}{\textbf{exec}}
+\newcommand{\acexec}{\textbf{exec}}
+\newcommand{\aceval}{\textbf{eval}}
+%\newcommand{\acmovep}[2]{\ensuremath{\mathbf{exec}(#1)@#2}}
+%\newcommand{\acexecp}[2]{\ensuremath{\mathbf{exec}(#1)@#2}}
+\newcommand{\acexecp}[1]{\ensuremath{\mathbf{exec}(#1)}}
+\newcommand{\acnewold}{\textbf{newloc}}
+\newcommand{\acnew}{\textbf{new}}
+\newcommand{\acnewp}[1]{\ensuremath{\mathbf{new}(#1)}}
+\newcommand{\acfresh}{\textbf{fresh}}
+\newcommand{\acfreshp}[1]{\ensuremath{\mathbf{fresh}(#1)}}
+
+\newcommand{\procnil}{\ensuremath{\textbf{nil}}}
+%\newcommand{\mmif}{\textbf{if}}
+%\newcommand{\mmthen}{\textbf{then}}
+%\newcommand{\mmelse}{\textbf{else}}
+%\newcommand{\mmfor}{\textbf{for}}
+%\newcommand{\mmforall}{\textbf{forall}}
+%\newcommand{\mmwhile}{\textbf{while}}
+%\newcommand{\mmdo}{\textbf{do}}
+
+\newcommand{\naddr}{n}              % network addresses
+\newcommand{\naddrbis}{m}              % network addresses
+\newcommand{\vaddr}{x}              % variable for network addresses
+\newcommand{\nvaddr}{c}          % network addresses or variable
+\newcommand{\self}{\mathsf{self}}   % local address
+\newcommand{\super}{\mathsf{super}}
+\newcommand{\predic}[1]{\mathsf{#1}}
+
+\newcommand{\pair}[1]{\langle #1 \rangle}
+
+\newcommand{\bexpr}{e}               % expressions for basic values
+
+%\newcommand{\conf}[1]{\langle {#1} \rangle}
+%\newcommand{\netconf}[2]{ #1 \vdash #2 }
+\newcommand{\tuplewp}[2]{#2 \triangleright \langle #1 \rangle}
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+%\newcommand{\pol}[2]{#2 \triangleright #1}
+\newcommand{\pol}{\Pi}          % policies
+\newcommand{\rules}{\rho}          % rules
+
+%\newcommand{\parcomp}{\mbox{$ \mid $}}          % parallel among components
+\newcommand{\parp}[1]{\parallel_{{}_{#1}}}          % parameterised parallel
+\newcommand{\parcompp}{\parp{\pol}}                 % generic policy parameterised parallel
+\newcommand{\parcomp}{\parallel}                    % parallel
+\newcommand{\choice}{\: + \:}
+
+\newcommand{\ecs}{ {\bf 0 } }                   % empty set of components
+\newcommand{\knw}{\mathcal{K}}                      % knowledge representation + management
+%\newcommand{\loccomp}[3]{ #1 ::_{{}_{#2}}^{{}_{#3}} }       % component
+\newcommand{\loccomp}[2]{ \interf{#1}[#2] }                  % component
+\newcommand{\ens}[3]{ #1 ::_{{}_{#2}}^{{}_{#3}} }  % ensemble
+%\newcommand{\ens}[2]{ #1[#2] }                      % ensemble
+\newcommand{\interf}[1]{\ensuremath{\mathbf{\cal #1}}}
+\newcommand{\interfm}[1]{\cal #1}
+
+\newcommand{\enspred}[1]{\mathsf{#1}}
+
+\newcommand{\res}[1]{(\nu #1)}                  % name anonymiser
+\newcommand{\reslab}[1]{\nu #1}                  % name anonymiser
+\newcommand{\ren}[1]{\{#1\}}                    % name renaming
+\newcommand{\penf}[1]{[#1]}                     % policy enforcement
+\newcommand{\broadc}[1]{(#1 \rightrightarrows)} % broadcast
+\newcommand{\auth}[2]{#1[\,#2\,]}                     % autonomic handling
+
+\newcommand{\defi}{\stackrel{def}{=}}
+\newcommand{\define}{\triangleq}
+\newcommand{\wt}{\widetilde}
+
+%\newcommand{\sep}{\ \big |\ }
+\newcommand{\sep}{\ \ \left|
+                      \begin{array}{l}
+                      \\
+                      \end{array}
+                   \right.}
+
+\newcommand{\Act}{{\cal L}}     % set of visible actions
+
+%%% OPERATIONAL SEMANTICS
+
+\newcommand{\valt}[2]{\mbox{${\mathcal E}[\![ \: #1 \: ]\!]_{#2}$}}
+%\newcommand{\sub}[2]{\{\raisebox{.5ex}{\small$#1$}\! / \!\mbox{\small$#2$}\}} % name substitution
+\newcommand{\sub}[3]{ #1 \{\raisebox{.1ex}{\small$#2$}\! / \!\mbox{\small $#3$}\}} % name substitution
+\newcommand{\mumatch}{match}
+
+\newcommand{\n}[1]{{\mathit{n}}(#1)}    % names
+\newcommand{\fn}[1]{{\mathit{fn}}(#1)}    % free names
+\newcommand{\bn}[1]{{\mathit{bn}}(#1)}    % bound names
+\newcommand{\var}[1]{{\mathit{v}}(#1)}    % variables
+\newcommand{\fv}[1]{{\mathit{fv}}(#1)}    % free variables
+\newcommand{\bv}[1]{{\mathit{bv}}(#1)}    % bound variables
+
+\newcommand{\alfaconv}{=_{\alpha}}
+\newcommand{\reduce}{\longmapsto}
+
+\newcommand{\thenstr}{\prlaw{Then}}
+\newcommand{\elsestr}{\prlaw{Else}}
+\newcommand{\alphastr}{\prlaw{Alpha}}
+\newcommand{\callstr}{\prlaw{Rec}}
+\newcommand{\defstr}{\prlaw{PDef}}
+\newcommand{\ridstr}{\prlaw{RNil}}
+\newcommand{\rnodestr}{\prlaw{RNode}}
+\newcommand{\rnodepstr}{\prlaw{RNode'}}
+\newcommand{\rcomstr}{\prlaw{RCom}}
+\newcommand{\pidstr}{\prlaw{PZero}}
+\newcommand{\pcomstr}{\prlaw{PCom}}
+\newcommand{\passstr}{\prlaw{PAss}}
+\newcommand{\absstr}{\prlaw{Abs}}
+\newcommand{\clonestr}{\prlaw{Clone}}
+\newcommand{\extstr}{\prlaw{Ext}}
+
+\newcommand{\prlaw}[1]{(\mbox{{\sc{#1}}})}  % to give names to rules
+
+
+%%%%%%%%%%%%% CC-PI %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \newcommand{\per}{\times} % operazione prodotto di un c-semiring
+    \newcommand{\zero}{0} % elemento 0 del c-semiring
+    \newcommand{\uno}{1} % elemento 1 del c-semiring
+    \newcommand{\isCons}[1]{isCons(#1)}     % consistency predicate
+    \newcommand{\entail}[2]{#1 \vdash #2}   % entailment predicate
+\newcommand{\getSol}[1]{getSol(#1)}
+\newcommand{\unitEl}{0} % elemento unita' del c-semiring
+\newcommand{\absEl}{1} % elemento assorbente  del c-semiring
+\newcommand{\noBlockTell}[3]{\ccaction{tell}\ #1\,\{#2\}\{#3\}}
+    \newcommand{\ccunion}{\uplus}
+\newcommand{\store}[1]{\sout{\single{c}}{\arr{#1}}} % store dei constraints
+\newcommand{\ps}{\partner_s} % partner dello store
+\newcommand{\opreq}{\op_{get}} % operation di request dello store
+\newcommand{\opres}{\op_{set}} % operation di response dello store
+    \newcommand{\ccaction}[1]{\mathtt{#1}} % font per le azioni cc-pi
+\newcommand{\ccenc}[1]{\encod{#1}} % encoding azioni
+\newcommand{\ccencServ}[1]{\encod{#1}} % encoding servizi
+\newcommand{\ccvar}[1]{\mathtt{#1}} %constrained variables
+    \newcommand{\cvar}[1]{cv(#1)} % constrained variables di un termine
+\newcommand{\ccmark}[1]{mark(#1)} % marca un vincolo con una tilde
+\newcommand{\ccmarked}[1]{#1^{\vdash}} % vincolo marchiato
+\newcommand{\ccunmark}[1]{unmark(#1)} % elimina la tilde
+\newcommand{\client}{\textsf{C}}
+\newcommand{\registry}{\textsf{R}}
+\newcommand{\provider}[1]{\textsf{P}_{#1}}
+\newcommand{\thirdparty}[1]{\textsf{T}_{#1}}
+
+%%% Arrows %%%
+\makeatletter
+\def \rightarrowfill{\m@th\mathord{\smash-}\mkern-6mu%
+  \cleaders\hbox{$\mkern-2mu\mathord{\smash-}\mkern-2mu$}\hfill
+  \mkern-6mu\mathord\rightarrow}
+\makeatother
+\newcommand{\transition}[1]{\overstackrel{\rightarrowfill}{\ \ #1\ \ \phantom{\dag}}} % labelled transition
+\newcommand{\redarrow}[1]{\succ\!\overstackrel{\rightarrowfill}{\ \ #1\ \ }} % reduction arrow
+
+\makeatletter
+\def \wrightarrowfill{\m@th\mathord{\smash=}\mkern-6mu%
+  \cleaders\hbox{$\mkern-2mu\mathord{\smash=}\mkern-2mu$}\hfill
+  \mkern-6mu\mathord\Rightarrow}
+\makeatother
+\newcommand{\weakTransition}[1]{\overstackrel{\wrightarrowfill}{\ \ #1\ \ \phantom{\dag}}} % weak labelled transition
+\newcommand{\weakRed}{\Longrightarrow} % weak reduction
+
+\makeatletter
+\def \nrightarrowfill{\m@th\mathord{\smash-}\mkern-6mu%
+  \cleaders\hbox{$\mkern-2mu\mathord{\smash-}\mkern-2mu$}\hfill
+  \mkern-6mu\mathord\nrightarrow}
+\makeatother
+\newcommand{\ntransitionShort}[1]{\overstackrel{\rightarrowfill}{\ \ #1\ \ \phantom{\dag}}
+            \!\!\!\!\!\!\!\!\! /} % negated labelled transition
+\newcommand{\ntransitionLong}[1]{\overstackrel{\rightarrowfill}{\ \ #1\ \ \phantom{\dag}}
+            \!\!\!\!\!\!\!\!\!\!\!\!\!\!\! /} % negated labelled transition
+
+
+\newcommand{\plabel}[2]{\left\langle~#1~,~#2~\right\rangle}
+\newcommand{\authl}[2]{#1[\,#2\,]}
+\newcommand{\punit}{\circ}
+\newcommand{\procarrow}[1]{\rMapsto{#1}}
+\newcommand{\doPutR}[3]{(#3)#1\triangleright #2}
+\newcommand{\docomm}[2]{#1 \diamond #2}
+\newcommand{\doPut}[2]{#1\triangleright #2}
+\newcommand{\doPutCS}[3]{#1\triangleright_{#3} #2}
+\newcommand{\doPutTauR}[2]{(#2)#1\triangleright \tau}
+\newcommand{\doPutTau}[1]{#1\triangleright \tau}
+\newcommand{\doGet}[2]{#1\triangleleft #2}
+\newcommand{\doRead}[2]{#1\blacktriangleleft #2}
+\newcommand{\doExec}[2]{#1\blacktriangleright #2}
+\newcommand{\acceptPut}[2]{#1\,\bar{\triangleright}\, #2}
+\newcommand{\acceptGet}[2]{#1\,\bar{\triangleleft}\, #2}
+\newcommand{\acceptRead}[2]{#1\,\bar{\blacktriangleleft}\, #2}
+\newcommand{\acceptExec}[2]{#1\otimes #2}
+\newcommand{\bit}[1]{[ #1 \rangle\!}
+\newcommand{\attrens}{\mathsf{ens}}
+\newcommand{\attrblg}{\mathsf{belong}}
+\newcommand{\ensarrow}[1]{\rTo{#1}}
+
+\def \overunderstackrel#1#2#3{\mathrel{\mathop{#1}\limits^{#2}_{#3}}}
+\def \overstackrel#1#2{\mathrel{\mathop{#1}\limits^{#2}}}
+\def \understackrel#1#2{\mathrel{\mathop{#1}\limits_{#2}}}
+\def\dlarrow#1#2{\overunderstackrel{\rightarrowfill}{#1}{#2}}
+\newcommand{\ensarrowcs}[2]{\dlarrow{#1}{#2}}
+%\newcommand{\partarrow}[2]{\overunderstackrel{\rightarrowfill}{\ \ \mbox{\scriptsize $#1$}\ \ }{\ \mbox{\scriptsize $#2$}\ }\!\!\!>}
+%\newcommand{\ensarrowcs}[2]{\partarrow{#1}{#2}}
+
+%\newcommand{\redarr}{\rightarrowtail}
+\newcommand{\redarr}{\succ\!\overstackrel{\rightarrowfill}{\ \ \ \ }} % reduction arrow
+\newcommand{\polren}{\succ}
+\newcommand{\polrenm}{\succ_{\mathsf{M}}}
+\newcommand{\allow}{\vdash}
+
+
+%%%%%%%%%%  LOGIC
+
+\newcommand{\ttact}{\textit{tt}}
+\newcommand{\ffact}{\textit{f\mbox{}f}}
+\newcommand{\ltrue}{\textit{true\/}}
+\newcommand{\lfalse}{\textit{false\/}}
+\newcommand{\dmnd}[1]{\mathrm{<}#1\mathrm{>}}
+\newcommand{\bx}[1]{\mathrm{[}#1\mathrm{]}}
+
+
+
+%%%%%%%%%% CONTROLLED ALGEBRA
+\newcommand{\ipred}{\pol_{\oplus}}
+\newcommand{\cpred}[2]{\pol_{\otimes}[#1,#2]}
+\newcommand{\ctpred}[3]{\pol_{#2}[#1,#3]}
+\newcommand{\spred}[2]{\pol_{S}[#1,#2]}
+\newcommand{\valn}[2]{\mbox{${\mathcal N}[\![ \: #1 \: ]\!]_{#2}$}}
+\newcommand{\valp}[2]{\mbox{${\mathcal P}[\![ \: #1 \: ]\!]_{#2}$}}
+\newcommand{\calt}{\mathcal{T}}
