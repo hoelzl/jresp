@@ -35,9 +35,9 @@ public class Forwarder implements MessageDispatcher,Runnable {
 	private LinkedList<Message> fromPortToRemote;
 	private int serverPort;
 	private Gson gson = RESPFactory.getGSon();
-	private IPort port;
+	private AbstractPort port;
 	
-	public Forwarder( String name , int serverPort , IPort port ) {
+	public Forwarder( String name , int serverPort , AbstractPort port ) {
 		this.name = name;
 		this.serverPort = serverPort;
 		this.port = port;

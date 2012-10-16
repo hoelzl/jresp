@@ -12,24 +12,31 @@
  */
 package org.cmg.resp.topology;
 
+import org.cmg.resp.knowledge.Attribute;
 
 /**
- * 
- * 
  * @author Michele Loreti
  *
  */
-public abstract class Address {
+public class HasValue extends GroupPredicate {
+	
+	private Object value;
 
-	private String addressCode;
-		
-	public Address( String addressCode ) {
-		this.addressCode = addressCode;
-	}
-	
-	public String getAddressCode() {
-		return addressCode;
+	public HasValue( String name , Object value ) {
+		super(name);
+		this.value = value;
 	}
 	
 	
+	@Override
+	public boolean evaluate(Attribute[] data) {
+		if (value == data[0].getValue()) {
+			return true;
+		}
+		if (value == null) {
+			return false;
+		}
+		return value.equals(data[0].getValue());
+	}
+
 }

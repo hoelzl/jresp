@@ -111,4 +111,9 @@ public class NodePolicy implements IPolicy {
 		node.gQuery( from , session , attributes , template );
 	}
 
+	@Override
+	public String fresh() {
+		return node.fresh();
+	}
+
 }

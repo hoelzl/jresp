@@ -48,7 +48,7 @@ public class PortForwarder extends AbstractPort {
 	
 	
 	@Override
-	public boolean canDeliver(Target l) {
+	public boolean canSendTo(Target l) {
 		return l.isAGroup()||((l instanceof PointToPoint)&&(((PointToPoint) l).getAddress().equals(getAddress())));
 	}
 

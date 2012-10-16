@@ -92,4 +92,11 @@ public interface AgentContext {
 	 */
 	public void waitState( ContextState state ) throws InterruptedException;
 
+	/**
+	 * This method is used to generate a new fresh identifier.
+	 * 
+	 * @return a new fresh identifier.
+	 */
+	public String fresh();
+
 }

@@ -12,7 +12,9 @@
  */
 package org.cmg.resp.topology;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -21,22 +23,8 @@ import java.util.HashMap;
 
 import org.cmg.resp.RESPFactory;
 import org.cmg.resp.exceptions.DuplicateNameException;
-import org.cmg.resp.protocol.Ack;
-import org.cmg.resp.protocol.AttributeReply;
-import org.cmg.resp.protocol.AttributeRequest;
-import org.cmg.resp.protocol.Fail;
-import org.cmg.resp.protocol.GetRequest;
-import org.cmg.resp.protocol.GroupGetReply;
-import org.cmg.resp.protocol.GroupGetRequest;
-import org.cmg.resp.protocol.GroupPutReply;
-import org.cmg.resp.protocol.GroupPutRequest;
-import org.cmg.resp.protocol.GroupQueryReply;
-import org.cmg.resp.protocol.GroupQueryRequest;
 import org.cmg.resp.protocol.Message;
-import org.cmg.resp.protocol.MessageHandler;
-import org.cmg.resp.protocol.PutRequest;
-import org.cmg.resp.protocol.QueryRequest;
-import org.cmg.resp.protocol.TupleReply;
+import org.cmg.resp.protocol.UnicastMessage;
 
 import com.google.gson.Gson;
 
@@ -44,7 +32,7 @@ import com.google.gson.Gson;
  * @author Michele Loreti
  *
  */
-public class ServerPort extends MessageHandler {
+public class ServerPort implements MessageReceiver {
 
 	private static final int DEFAULT_SUBSCRIBE_PORT = 9999;
 	private static final int DEFAULT_PROTOCOL_PORT = 9998;
@@ -68,6 +56,7 @@ public class ServerPort extends MessageHandler {
 		this.gson = RESPFactory.getGSon();
 		this.subribe_socket = new ServerSocket(subscribe_port);
 		this.protocol_socket = new ServerSocket(protocol_port);
+		new Thread( new SocketReceiver(protocol_socket, this)).start();
 	}
 	
 	public void register( String clientName , InetSocketAddress clientAddress ) {
@@ -102,82 +91,49 @@ public class ServerPort extends MessageHandler {
 	}
 
 	@Override
-	public void handle(AttributeRequest msg) throws IOException,
-			InterruptedException {
-		dispatch( msg.getTarget() , msg );
+	public void receiveMessage(Message m) throws InterruptedException, IOException {
+		if (m instanceof UnicastMessage) {
+			receiveUnicastMessage((UnicastMessage) m);
+		} else {
+			broadcast(m);
+		}
+		
 	}
 
 	@Override
-	public void handle(AttributeReply msg) throws IOException,
-			InterruptedException {
-		dispatch( msg.getTarget() , msg );
-	}
-
-	@Override
-	public void handle(PutRequest msg) throws IOException, InterruptedException {
-		dispatch( msg.getTarget() , msg );
-	}
-
-	@Override
-	public void handle(GetRequest msg) throws IOException, InterruptedException {
-		dispatch( msg.getTarget() , msg );
-	}
-
-	@Override
-	public void handle(QueryRequest msg) throws IOException,
-			InterruptedException {
-		dispatch( msg.getTarget() , msg );
-	}
-
-	@Override
-	public void handle(TupleReply msg) throws IOException, InterruptedException {
-		dispatch( msg.getTarget() , msg );
-	}
-
-	@Override
-	public void handle(Ack msg) throws IOException {
-		dispatch( msg.getTarget() , msg );
-	}
-
-	@Override
-	public void handle(GroupGetRequest msg) throws IOException,
-			InterruptedException {
-		broadcast(msg);
-	}
-
-	@Override
-	public void handle(GroupQueryRequest msg) throws IOException,
-			InterruptedException {
-		broadcast(msg);
-	}
-
-	@Override
-	public void handle(GroupPutRequest msg) throws IOException,
-			InterruptedException {
-		broadcast(msg);
-	}
-
-	@Override
-	public void handle(GroupGetReply msg) throws IOException,
-			InterruptedException {
-		dispatch(msg.getTarget(), msg);
-	}
-
-	@Override
-	public void handle(GroupQueryReply msg) throws IOException,
-			InterruptedException {
-		dispatch(msg.getTarget(), msg);
-	}
-
-	@Override
-	public void handle(GroupPutReply msg) throws IOException,
-			InterruptedException {
-		dispatch(msg.getTarget(), msg);
-	}
-
-	@Override
-	public void handle(Fail msg) throws IOException {
-		dispatch(msg.getTarget(), msg);
+	public void receiveUnicastMessage(UnicastMessage m)
+			throws InterruptedException, IOException {
+		dispatch(m.getTarget(), m);
 	}
 	
+	public class RegistrationHandler implements Runnable {
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Socket socket = subribe_socket.accept();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					String command = reader.readLine();
+					if ("REGISTER".equals(command)) {
+						String name = reader.readLine();
+						String host = reader.readLine();
+						int port = Integer.parseInt(reader.readLine());
+						register(name, new InetSocketAddress(host, port));
+					}
+					if ("UNREGISTER".equals(command)) {
+						String name = reader.readLine();
+						unregister(name);
+					}
+					reader.close();
+					socket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
+		
+	}
 }

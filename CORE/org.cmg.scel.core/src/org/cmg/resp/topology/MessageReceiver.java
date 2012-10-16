@@ -12,24 +12,19 @@
  */
 package org.cmg.resp.topology;
 
+import java.io.IOException;
+
+import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.UnicastMessage;
 
 /**
- * 
- * 
  * @author Michele Loreti
  *
  */
-public abstract class Address {
+public interface MessageReceiver {
 
-	private String addressCode;
-		
-	public Address( String addressCode ) {
-		this.addressCode = addressCode;
-	}
-	
-	public String getAddressCode() {
-		return addressCode;
-	}
-	
+	public void receiveMessage( Message m ) throws InterruptedException, IOException;
+
+	public void receiveUnicastMessage( UnicastMessage m ) throws InterruptedException, IOException;
 	
 }

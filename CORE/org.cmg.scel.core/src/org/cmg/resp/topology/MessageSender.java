@@ -23,11 +23,9 @@ import org.cmg.resp.protocol.Message;
  * @author Michele Loreti
  *
  */
-public interface IPort {
+public interface MessageSender {
 
-	boolean canDeliver(Target l);
-
-	void register( MessageDispatcher n );
+	boolean canSendTo(Target l);
 	
 	void sendTuple(PointToPoint to, String name, int session, Tuple tuple)  throws IOException, InterruptedException;
 

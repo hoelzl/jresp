@@ -12,7 +12,6 @@
  */
 package org.cmg.resp.knowledge.ts;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.cmg.resp.knowledge.Knowledge;

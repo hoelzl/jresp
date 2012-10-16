@@ -27,7 +27,7 @@ import org.cmg.resp.topology.PointToPoint;
 public class Ack extends UnicastMessage {
 
 	/**
-	 * Creates a new object instance.
+	 * Constructs an acknowledge message.
 	 * 
 	 * @param source address of the node originating the message
 	 * @param session an integer used to relate this message to a conversation

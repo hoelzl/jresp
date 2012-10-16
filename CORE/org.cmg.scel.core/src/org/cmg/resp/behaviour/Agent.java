@@ -119,17 +119,20 @@ public abstract class Agent extends Observable implements Runnable {
 			doStart();
 			doRun();
 			doClose();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			doHandle(e);
 		}
+	}
+	
+	protected void doHandle(Exception e) {
+		e.printStackTrace();//FIXME!!!!
 	}
 	
 	/**
 	 * A subclass of <code>Agent</code> has to provide an implementation 
 	 * of this method that identifies agent behaviour.
 	 */
-	protected abstract void doRun();
+	protected abstract void doRun() throws Exception;
 	
 	/**
 	 * This method is invoked when the agent computation is completed.
@@ -293,6 +296,23 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	public State getState() {
 		return state;
+	}
+
+	public void call() {
+		try {
+			doRun();
+		} catch (Exception e) {
+			doHandle(e);
+		}
+	}
+	
+	/**
+	 * This method is used to generate a new fresh identifier.
+	 * 
+	 * @return a new fresh identifier.
+	 */
+	public String fresh() {
+		return context.fresh();
 	}
 
 }

@@ -42,7 +42,7 @@ public class SocketPort extends AbstractPort {
 	private int tcpPort;
 	private int udpPort;
 	ServerSocket ssocket;
-	private MulticastSocket msocket;
+	MulticastSocket msocket;
 	private InetAddress group;
 	private String multicastGroup;
 	Gson gson;
@@ -69,17 +69,17 @@ public class SocketPort extends AbstractPort {
 		this.group =  InetAddress.getByName(multicastGroup);
 		this.msocket = new MulticastSocket(udpPort);
 		this.msocket.joinGroup(this.group);
-		Thread t = new Thread( new PortHandler(this) ); 
+		Thread t = new Thread( new SocketReceiver(this.ssocket,this) ); 
 		t.setDaemon(true);
 		t.start();
-		Thread t2 = new Thread( new GroupHandler() );
+		Thread t2 = new Thread( new DatagramReceiver(msocket,this) );
 		t2.setDaemon(true);
 		t2.start();
 	}
 
 
 	@Override
-	public boolean canDeliver(Target l) {		
+	public boolean canSendTo(Target l) {		
 		return (l instanceof PointToPoint)&&(((PointToPoint) l).getAddress() instanceof SocketPortAddress);
 	}
 
@@ -110,30 +110,6 @@ public class SocketPort extends AbstractPort {
 	
 	public String getMulticastGroup() {
 		return multicastGroup;
-	}
-
-
-	public class GroupHandler implements Runnable {
-
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					DatagramPacket p = new DatagramPacket(new byte[5000], 5000);
-					msocket.receive(p);
-					String str = new String(p.getData(),p.getOffset(),p.getLength());
-					Message msg = gson.fromJson(str, Message.class);
-					handleMessage(msg);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		
 	}
 
 }

@@ -44,8 +44,9 @@ import org.cmg.resp.protocol.MessageHandler;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
+import org.cmg.resp.topology.AbstractPort;
 import org.cmg.resp.topology.Group;
-import org.cmg.resp.topology.IPort;
+import org.cmg.resp.topology.MessageSender;
 import org.cmg.resp.topology.MessageDispatcher;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
@@ -278,7 +279,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	/**
 	 * Port used to perform group-based interactions
 	 */
-	protected LinkedList<IPort> ports;
+	protected LinkedList<AbstractPort> ports;
 
 	protected Queue<Message> pendingMessages = new LinkedList<Message>();
 	
@@ -370,6 +371,11 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	private Hashtable<Integer,LinkedList<GroupQueryReply>> pendigGroupQuery = new Hashtable<Integer, LinkedList<GroupQueryReply>>();
 
 	/**
+	 * Counts new generated names.
+	 */
+	private int nameCounter = 0;
+
+	/**
 	 * Creates a new instance of a nome named <code>name</code> with knowledge repository
 	 * <code>knowledge</code>.
 	 * 
@@ -382,7 +388,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		this.agents = new LinkedList<Agent>();
 		this.policy = new NodePolicy(this);
 		this.state = ContextState.READY;
-		this.ports = new LinkedList<IPort>();
+		this.ports = new LinkedList<AbstractPort>();
 	}
 
 	/**
@@ -435,12 +441,26 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 					Node.this.waitState(state);
 				}
 
+				@Override
+				public String fresh() {
+					return policy.fresh();
+				}
+
 			}
 		);
 		agents.add(a);
 		executor.execute(a);
 	}
 	
+	/**
+	 * This method is used to generate a new fresh identifier.
+	 * 
+	 * @return a new fresh identifier.
+	 */
+	protected synchronized String fresh() {		
+		return super.toString()+":"+name+":"+(nameCounter++);
+	}
+
 	/**
 	 * Adds an attribute collector to the node
 	 *  
@@ -465,7 +485,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * 
 	 * @param p the port to add 
 	 */
-	public synchronized void addPort( IPort p ) {
+	public synchronized void addPort( AbstractPort p ) {
 		p.register(this);
 		ports.add(p);
 	}
@@ -802,8 +822,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * computation while action is under execution.
 	 */
 	public void sendAck(PointToPoint to, int session) throws IOException, InterruptedException {
-		for (IPort p : ports) {
-			if (p.canDeliver(to)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(to)) {
 				p.sendAck( to, getName() , session );
 				return ;
 			}
@@ -819,8 +839,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @throws InterruptedException
 	 */
 	public void sendAttibutes(PointToPoint to, int session, String[] attributes) throws IOException, InterruptedException {
-		for (IPort p : ports) {
-			if (p.canDeliver(to)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(to)) {
 				p.sendAttributes( to, getName() , session ,getAttributes(attributes));
 				return ;
 			}
@@ -828,8 +848,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 
 	public void sendFail(PointToPoint to, int session, String message) throws IOException, InterruptedException {
-		for (IPort p : ports) {
-			if (p.canDeliver(to)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(to)) {
 				p.sendFail( to, getName() , session , message);
 				return ;
 			}
@@ -837,8 +857,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 	
 	private Tuple sendGetRequest(PointToPoint l, Template t) throws InterruptedException, IOException {
-		for (IPort p : ports) {
-			if (p.canDeliver(l)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(l)) {
 				int session = getSession();
 				Pending<Tuple> pending = new Pending<Tuple>();
 				synchronized (tuplePending) {
@@ -860,7 +880,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		int session = getSession();
 		LinkedList<GroupPutReply> received = new LinkedList<GroupPutReply>();
 		outGroupPutPending.put(session,received);
-		for (IPort p : ports) {
+		for (MessageSender p : ports) {
 			p.sendGroupPutRequest(getName(), session, l.getPredicate().getParameters(), t);
 		}
 		executor.execute( new GroupPutHandler( l , session , t ) );		
@@ -884,13 +904,13 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 	
 	private void broadCastGetRequest(int session, String[] parameters, Template t ) throws IOException, InterruptedException {
-		for (IPort p : ports) {
+		for (MessageSender p : ports) {
 			p.sendGroupGetRequest(getName(), session, parameters, t);
 		}		
 	}
 
 	private void broadCastQueryRequest(int session, String[] parameters, Template t ) throws IOException, InterruptedException {
-		for (IPort p : ports) {
+		for (MessageSender p : ports) {
 			p.sendGroupQueryRequest(getName(), session, parameters, t);
 		}		
 	}
@@ -902,8 +922,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 
 	private boolean sendPutRequest(PointToPoint l, Tuple t) throws InterruptedException, IOException {
-		for (IPort p : ports) {
-			if (p.canDeliver(l)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(l)) {
 				int session = getSession();
 				Pending<Boolean> pending = new Pending<Boolean>();
 				putPending.put(session, pending);
@@ -915,8 +935,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 	
 	private Tuple sendQueryRequest(PointToPoint l, Template t) throws InterruptedException, IOException {
-		for (IPort p : ports) {
-			if (p.canDeliver(l)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(l)) {
 				int session = getSession();
 				Pending<Tuple> pending = new Pending<Tuple>();
 				synchronized (tuplePending) {
@@ -935,8 +955,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 
 	public void sendTuple(PointToPoint to, int session, Tuple tuple) throws IOException, InterruptedException {
-		for (IPort p : ports) {
-			if (p.canDeliver(to)) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(to)) {
 				p.sendTuple( to , getName() , session , tuple );
 				return ;
 			}
@@ -1158,7 +1178,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 	public void gPut(PointToPoint from, int session, String[] attributes,
 			Tuple tuple) throws IOException, InterruptedException {
-		IPort p = getPort(from);
+		MessageSender p = getPort(from);
 		if (p != null) {
 			int tupleSession = getSession();
 			Pending<Boolean> pending = new Pending<Boolean>();
@@ -1170,9 +1190,9 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		}
 	}
 
-	private synchronized IPort getPort(Target l) {
-		for (IPort p : ports) {
-			if (p.canDeliver(l)) {
+	private synchronized MessageSender getPort(Target l) {
+		for (MessageSender p : ports) {
+			if (p.canSendTo(l)) {
 				return p;
 			}
 		}
@@ -1181,7 +1201,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 	public void gGet(PointToPoint from, int session, String[] attributes,
 			Template template) {
-		IPort p = getPort(from);
+		MessageSender p = getPort(from);
 		if (p != null) {
 			Tuple t = knowledge.getp(template);
 			if (t != null) {
@@ -1204,7 +1224,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 	public void gQuery(PointToPoint from, int session, String[] attributes,
 			Template template) {
-		IPort p = getPort(from);
+		MessageSender p = getPort(from);
 		if (p != null) {
 			Tuple t = knowledge.queryp(template);
 			if (t != null) {

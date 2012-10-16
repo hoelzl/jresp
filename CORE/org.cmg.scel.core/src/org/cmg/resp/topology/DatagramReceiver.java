@@ -1,0 +1,48 @@
+package org.cmg.resp.topology;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.MulticastSocket;
+
+import org.cmg.resp.RESPFactory;
+import org.cmg.resp.protocol.Message;
+
+import com.google.gson.Gson;
+
+public class DatagramReceiver implements Runnable {
+
+	private Gson gson = RESPFactory.getGSon();
+	
+	private MulticastSocket msocket;
+
+	private MessageReceiver receiver;
+	
+	
+	/**
+	 * @param socketPort
+	 */
+	public DatagramReceiver(MulticastSocket msocket , MessageReceiver receiver) {
+		this.msocket = msocket;
+		this.receiver = receiver;
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				DatagramPacket p = new DatagramPacket(new byte[5000], 5000);
+				msocket.receive(p);
+				String str = new String(p.getData(),p.getOffset(),p.getLength());
+				Message msg = gson.fromJson(str, Message.class);
+				receiver.receiveMessage(msg);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}

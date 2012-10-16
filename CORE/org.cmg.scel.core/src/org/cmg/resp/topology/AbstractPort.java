@@ -37,20 +37,28 @@ import org.cmg.resp.protocol.TupleReply;
 import org.cmg.resp.protocol.UnicastMessage;
 
 /**
+ * An <code>AbstractPort</code> is used to identify a generic communication channel
+ * that nodes use to interact with each other.
+ * 
  * @author Michele Loreti
  *
  */
-public abstract class AbstractPort implements IPort {
+public abstract class AbstractPort implements MessageSender, MessageReceiver {
 	
-	
+	/**
+	 * A table mapping names to dispatchers.
+	 */
 	Hashtable<String, MessageDispatcher> nodes;
 	
+	/**
+	 * Constructs a new <code>AbstractPort</code>.
+	 */
 	public AbstractPort( ) {
 		this.nodes = new Hashtable<String, MessageDispatcher>();
 	}
 
-
-	public abstract boolean canDeliver(Target l);
+	@Override
+	public abstract boolean canSendTo(Target l);
 
 	@Override
 	public void sendTuple(PointToPoint target, String name, int session, Tuple tuple) throws IOException, InterruptedException {
@@ -58,10 +66,34 @@ public abstract class AbstractPort implements IPort {
 		send(target.getAddress(),new TupleReply(source, session, target.getName(), tuple));
 	}
 
+	/**
+	 * Concrete extensions of <code>AbstractPort</code> has to implement this method
+	 * to provide the actual point-to-point communication mechanism. Indeed, this method is used to send
+	 * message <code>message</code> to node at address <code>address</code>.
+	 * 
+	 * @param address receiver address
+	 * @param message message
+	 * @throws IOException is thrown when an I/O error occurs in the communciation
+	 * @throws InterruptedException is thrown when the thread is interrupted while is is waiting for action completion.
+	 */
 	protected abstract void send(Address address, UnicastMessage message) throws IOException, InterruptedException;
 	
+	/**
+	 * Concrete extensions of <code>AbstractPort</code> has to implement this method
+	 * to provide the actual communication mechanism. 
+	 *
+	 * @param m sent message
+	 * @throws IOException is thrown when an I/O error occurs in the communciation
+	 * @throws InterruptedException is thrown when the thread is interrupted while is is waiting for action completion.
+	 */
 	protected abstract void send( Message m ) throws IOException, InterruptedException;
 	
+	/**
+	 * Returns port address. The address obtained by this method is attached to each
+	 * message sent through the port.
+	 * 
+	 * @return port address.
+	 */
 	public abstract Address getAddress();
 
 	@Override
@@ -102,7 +134,6 @@ public abstract class AbstractPort implements IPort {
 	}
 
 
-	@Override
 	public synchronized void register(MessageDispatcher n) {
 		if (nodes.contains(n.getName())) {
 			throw new DuplicateNameException(this,n.getName());
@@ -110,9 +141,10 @@ public abstract class AbstractPort implements IPort {
 		nodes.put(n.getName(), n);
 	}
 
-	protected synchronized void handleMessage( Message m ) throws InterruptedException {
+	@Override
+	public synchronized void receiveMessage( Message m ) throws InterruptedException {
 		if (m instanceof UnicastMessage) {
-			handleUnicastMessage((UnicastMessage) m) ;
+			receiveUnicastMessage((UnicastMessage) m) ;
 		} else {
 			for (MessageDispatcher n : nodes.values()) {
 				n.addMessage(m);
@@ -120,7 +152,8 @@ public abstract class AbstractPort implements IPort {
 		}
 	}
 
-	protected synchronized void handleUnicastMessage( UnicastMessage m ) throws InterruptedException {
+	@Override
+	public synchronized void receiveUnicastMessage( UnicastMessage m ) throws InterruptedException {
 		String target = m.getTarget();
 		MessageDispatcher targetNode = nodes.get(target);
 		if (targetNode == null) {

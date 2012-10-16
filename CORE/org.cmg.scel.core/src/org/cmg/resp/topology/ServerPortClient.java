@@ -12,9 +12,7 @@
  */
 package org.cmg.resp.topology;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -40,13 +38,13 @@ public class ServerPortClient extends AbstractPort {
 		this.serverAddress = serverAddress;
 		this.localAddress = localAddress;
 		this.gson = RESPFactory.getGSon();
-		Thread t = new Thread( new PortHandler() ); 
+		Thread t = new Thread( new SocketReceiver(this.localAddress,this) ); 
 		t.setDaemon(true);
 		t.start();
 	}
 	
 	@Override
-	public boolean canDeliver(Target l) {
+	public boolean canSendTo(Target l) {
 		return (l instanceof PointToPoint)&&(((PointToPoint) l).getAddress().equals(serverAddress));
 	}
 
@@ -73,31 +71,6 @@ public class ServerPortClient extends AbstractPort {
 	@Override
 	public Address getAddress() {
 		return serverAddress;
-	}
-	
-	public class PortHandler implements Runnable {
-
-		@Override
-		public void run() {
-			while (true) {
-				try {
-					System.out.println("Waiting for connections at"+getAddress());
-					Socket s = localAddress.accept();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-					Message msg = gson.fromJson(reader, Message.class);
-					handleMessage(msg);
-					reader.close();
-					s.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		
 	}
 
 }

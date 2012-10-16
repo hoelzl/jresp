@@ -156,4 +156,11 @@ public interface IPolicy {
 	void acceptGroupQuery(PointToPoint from, int session, String[] attributes,
 			Template template) throws IOException, InterruptedException;
 
+	/**
+	 * This method is invoked when a fresh action is performed.
+	 * 
+	 * @return a new fresh identifier.
+	 */
+	String fresh();
+
 }
