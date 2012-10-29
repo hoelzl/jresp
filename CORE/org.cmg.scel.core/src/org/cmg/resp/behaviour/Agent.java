@@ -298,6 +298,9 @@ public abstract class Agent extends Observable implements Runnable {
 		return state;
 	}
 
+	/**
+	 * Executes Agent a.
+	 */
 	public void call() {
 		try {
 			doRun();
@@ -313,6 +316,13 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	public String fresh() {
 		return context.fresh();
+	}
+	
+	public void call( Agent a ) {
+		a.setState(state);
+		a.context = this.context;
+		a.call();
+		a.setState(State.DONE);
 	}
 
 }

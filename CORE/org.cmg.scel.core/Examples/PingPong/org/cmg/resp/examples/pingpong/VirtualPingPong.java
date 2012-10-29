@@ -60,11 +60,11 @@ public class VirtualPingPong {
 		protected void doRun() {
 			try {
 				while (true) {
-					System.out.println("PING!");
+//					System.out.println("PING!");
 					put(new Tuple( "PING" ) , other);
-					System.out.println("PING DONE!");
+//					System.out.println("PING DONE!");
 					get(new Template(new ActualTemplateField( "PONG" )) , Self.SELF);
-					System.out.println("GET PONG!");
+//					System.out.println("GET PONG!");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -87,7 +87,7 @@ public class VirtualPingPong {
 			try {
 				while (true) {
 					get(new Template(new ActualTemplateField( "PING" )) , Self.SELF);
-					System.out.println("PONG!");
+//					System.out.println("PONG!");
 					put(new Tuple( "PONG" ) , other);
 				}
 			} catch (Exception e) {

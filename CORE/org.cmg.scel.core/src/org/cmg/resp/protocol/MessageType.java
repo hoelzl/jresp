@@ -20,7 +20,7 @@ package org.cmg.resp.protocol;
  */
 public enum MessageType {
 	ATTRIBUTE_REQUEST(0,"A_REQUEST"),
-	ATTRIBUTE_REPLY(1,"A_REQUEST"),
+	ATTRIBUTE_REPLY(1,"A_REPLY"),
 	PUT_REQUEST(2,"P_REQUEST"),
 	GET_REQUEST(3,"G_REQUEST"),
 	QUERY_REQUEST(4,"Q_REQUEST"),

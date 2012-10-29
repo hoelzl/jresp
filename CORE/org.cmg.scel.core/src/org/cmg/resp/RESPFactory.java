@@ -13,6 +13,8 @@
 package org.cmg.resp;
 
 import java.lang.reflect.Type;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import org.cmg.resp.json.ActualTemplateFieldDeserializer;
 import org.cmg.resp.json.ActualTemplateFieldSerializer;
@@ -117,4 +119,15 @@ public class RESPFactory {
 		}
 		builder.registerTypeAdapter(t, typeAdapter);
 	}
+	
+	/**
+	 * Find or create a logger for a named subsystem.
+	 * 
+	 * @param name A name for the logger
+	 * @return a suitable Logger 
+	 */
+	public static Logger getLogger(String name) {
+		return Logger.getLogger(name);
+	}
+	
 }

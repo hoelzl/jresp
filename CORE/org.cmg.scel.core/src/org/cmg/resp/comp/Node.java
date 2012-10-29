@@ -46,8 +46,8 @@ import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
 import org.cmg.resp.topology.AbstractPort;
 import org.cmg.resp.topology.Group;
-import org.cmg.resp.topology.MessageSender;
 import org.cmg.resp.topology.MessageDispatcher;
+import org.cmg.resp.topology.MessageSender;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
@@ -94,6 +94,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 				Pending<Boolean> pending = putPending.get(msg.getSession());
 				if (pending != null) {
 					pending.set(true);
+				} else {
 				}
 			}
 		}
@@ -138,7 +139,6 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 					return ;
 				}
 			}
-			//TODO: Add error handling or logging!
 		}
 
 		@Override
@@ -190,6 +190,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 				LinkedList<GroupQueryReply> pending = pendigGroupQuery.get(msg.getSession());
 				if (pending != null) {
 					pending.add(msg);
+				} else {
 				}
 			}
 		}
@@ -255,7 +256,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		public void run() {
 			try {
 			while (isRunning()) {				
-				executor.execute( new NodeMessageHandler(getNextMessage()) );			
+				Message m = getNextMessage();
+				executor.execute( new NodeMessageHandler(m) );			
 			}
 			} catch (Exception e) {
 				e.printStackTrace();
