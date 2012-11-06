@@ -33,8 +33,6 @@ public class LocalPingPong {
 		Agent pong = new PongAgent();
 		node.addAgent(ping);		
 		node.addAgent(pong);
-		ping.start();
-		pong.start();
 		System.out.println("START!");
 		node.start();
 	}

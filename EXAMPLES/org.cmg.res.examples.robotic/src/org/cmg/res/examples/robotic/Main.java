@@ -86,16 +86,12 @@ public class Main extends JFrame {
 			n.put(new Tuple( "informed" , false));
 			Agent a = new ManagedElement();
 			n.addAgent(a);
-			a.start();
 			a = new TargetSeeker();
 			n.addAgent(a);
-			a.start();
 			a= new BatteryMonitor();
 			n.addAgent(a);
-			a.start();
 			a = new DataSeeker();
 			n.addAgent(a);
-			a.start();
 			nodes.put(n.getName(), n);
 		}
 		for (Node<?> n: nodes.values()) {

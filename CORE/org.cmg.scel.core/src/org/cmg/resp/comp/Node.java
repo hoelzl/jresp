@@ -59,8 +59,13 @@ import org.cmg.resp.topology.Target;
  * 
  *
  */
-public class Node<T extends Knowledge> extends Observable implements MessageDispatcher {
+public class Node<T extends Knowledge> extends Observable implements MessageDispatcher, INode<T> {
 
+	/**
+	 * A list of Agents that are waiting for the execution.
+	 */
+	protected LinkedList<Agent> waiting;
+	
 	/**
 	 * A parameter identifying the time-out for group oriente actions.
 	 */
@@ -391,67 +396,67 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		this.policy = new NodePolicy(this);
 		this.state = ContextState.READY;
 		this.ports = new LinkedList<AbstractPort>();
+		this.waiting = new LinkedList<Agent>();
 	}
 
-	/**
-	 * Adds an actuator to the current node.
-	 * 
-	 * @param actuator the actuator to add to the node.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#addActuator(org.cmg.resp.comp.NodeActuator)
 	 */
+	@Override
 	public synchronized void addActuator( NodeActuator actuator ) {
 		actuators.add(actuator);
 	}
 
-	/**
-	 * Executes agent <code>a</code>
-	 * 
-	 * @param a agent to execute
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#addAgent(org.cmg.resp.behaviour.Agent)
 	 */
+	@Override
 	public void addAgent(Agent a) {
+		if (isRunning()) {
+			_addAgent(a);
+		} else {
+			waiting.add(a);
+		}		
+	}
+	
+	protected void _addAgent(Agent a) {
 		a.setContext( 
-			getAgentId() , 
-			new AgentContext() {
-				
-				@Override
-				public void exec(Agent a, Agent b) throws InterruptedException {
-					policy.exec(a, b);
-				}
+				getAgentId() , 
+				new AgentContext() {
+					
+					@Override
+					public void exec(Agent a, Agent b) throws InterruptedException {
+						policy.exec(a, b);
+					}
 
-				@Override
-				public Tuple get(Agent a, Template t, Target l) throws InterruptedException, IOException {
-					return policy.get(a, t, l);
-				}
+					@Override
+					public Tuple get(Agent a, Template t, Target l) throws InterruptedException, IOException {
+						return policy.get(a, t, l);
+					}
 
-				@Override
-				public ContextState getState() {
-					return Node.this.getState();
-				}
+					@Override
+					public boolean put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
+						return policy.put(a, t, l);
+					}
 
-				@Override
-				public boolean put(Agent a, Tuple t, Target l) throws InterruptedException, IOException {
-					return policy.put(a, t, l);
-				}
+					@Override
+					public Tuple query(Agent a, Template t, Target l) throws InterruptedException, IOException {
+						return policy.query(a, t, l);
+					}
 
-				@Override
-				public Tuple query(Agent a, Template t, Target l) throws InterruptedException, IOException {
-					return policy.query(a, t, l);
-				}
+					@Override
+					public String fresh() {
+						return policy.fresh();
+					}
 
-				@Override
-				public void waitState(ContextState state)
-						throws InterruptedException {
-					Node.this.waitState(state);
-				}
+					@Override
+					public void done(Agent agent) {
+					}
 
-				@Override
-				public String fresh() {
-					return policy.fresh();
 				}
-
-			}
-		);
-		agents.add(a);
-		executor.execute(a);
+			);
+			agents.add(a);
+			executor.execute(a);
 	}
 	
 	/**
@@ -459,15 +464,15 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * 
 	 * @return a new fresh identifier.
 	 */
-	protected synchronized String fresh() {		
+	@Override
+	public synchronized String fresh() {		
 		return super.toString()+":"+name+":"+(nameCounter++);
 	}
 
-	/**
-	 * Adds an attribute collector to the node
-	 *  
-	 * @param ac the attribute collector to add to the node
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#addAttributeCollector(org.cmg.resp.comp.AttributeCollector)
 	 */
+	@Override
 	public synchronized void addAttributeCollector( AttributeCollector ac ) {
 		ac.setNode(this);
 		attributes.put(ac.getName(), ac);
@@ -482,21 +487,19 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		notifyAll();
 	}
 
-	/**
-	 * Add a port to the node.
-	 * 
-	 * @param p the port to add 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#addPort(org.cmg.resp.topology.AbstractPort)
 	 */
+	@Override
 	public synchronized void addPort( AbstractPort p ) {
 		p.register(this);
 		ports.add(p);
 	}
 	
-	/**
-	 * Adds a sensor to the current node
-	 * 
-	 * @param sensor the sensor to add
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#addSensor(org.cmg.resp.comp.NodeSensor)
 	 */
+	@Override
 	public synchronized void addSensor(NodeSensor sensor) {
 		sensors.add(sensor);
 	}
@@ -509,28 +512,18 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		
 	}
 
-	/**
-	 * Gets a tuple matching the parameter from the local knowledge repository. This action
-	 * is blocking if a matching is not found.
-	 * 
-	 * @param template get template
-	 * @return	a tuple matching the parameter
-	 * @throws InterruptedException  when another thread interrupt current thread
-	 * computation while action is under execution.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#get(org.cmg.resp.knowledge.Template)
 	 */
+	@Override
 	public Tuple get(Template template) throws InterruptedException {
 		return knowledge.get(template);
 	}
 
-	/**
-	 * Gets a tuple matching the parameter from the knowledge repository located at <code>l</code>. 
-	 * This action is blocking if a matching is not found.
-	 * 
-	 * @param template get template
-	 * @return	a tuple matching the parameter
-	 * @throws InterruptedException  when another thread interrupt current thread
-	 * computation while action is under execution.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#get(org.cmg.resp.knowledge.Template, org.cmg.resp.topology.Target)
 	 */
+	@Override
 	public Tuple get(Template t, Target l) throws InterruptedException, IOException {
 		if (l.isSelf()) {
 			return get(t);
@@ -541,11 +534,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return sendGetRequest( (PointToPoint) l , t);
 	}
 
-	/**
-	 * Returns an array containing node's actuators.
-	 * 
-	 * @return an array containing node's actuators.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getActuators()
 	 */
+	@Override
 	public NodeActuator[] getActuators() {
 		return actuators.toArray(new NodeActuator[sensors.size()]);
 	}
@@ -559,12 +551,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return agentCounter++;
 	}
 
-	/**
-	 * Returns attribute named <code>name</code>
-	 * 
-	 * @param name attribute name
-	 * @return attribute named <code>name</code>
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getAttribute(java.lang.String)
 	 */
+	@Override
 	public synchronized Attribute getAttribute( String name ) {
 		AttributeCollector ac = attributes.get(name);
 		if (ac == null) {
@@ -576,12 +566,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return ac.eval();
 	}
 
-	/**
-	 * Returns an array of attributes whose names are in array <code>attributes</code>
-	 *
-	 * @param attributes attributes' names
-	 * @return an array of attributes.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getAttributes(java.lang.String[])
 	 */
+	@Override
 	public synchronized Attribute[] getAttributes(String[] attributes) {
 		Attribute[] toReturn = new Attribute[attributes.length];
 		for( int i=0 ; i<attributes.length ; i++ ) {
@@ -592,6 +580,9 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 	/* (non-Javadoc)
 	 * @see org.cmg.scel.topology.MessageDispatcher#getName()
+	 */
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getName()
 	 */
 	@Override
 	public String getName() {
@@ -613,12 +604,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return pendingMessages.poll();
 	}
 
-	/**
-	 * Returns the node interface. This is rendered as an hash-table associating to
-	 * each name the corresponding attribute.
-	 * 
-	 * @return an hash-table with the node interface.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getNodeInterface()
 	 */
+	@Override
 	public synchronized Hashtable<String, Attribute> getNodeInterface() {
 		Hashtable<String, Attribute> toReturn = new Hashtable<String, Attribute>();
 		for (String a : attributes.keySet()) {
@@ -628,11 +617,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return toReturn;
 	}
 
-	/**
-	 * Returns the array of sensors attached to the node.
-	 * 
-	 * @return the array of sensors attached to the node.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getSensors()
 	 */
+	@Override
 	public NodeSensor[] getSensors() {
 		return sensors.toArray(new NodeSensor[sensors.size()]);
 	}
@@ -646,29 +634,26 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return sessionCounter++;
 	}
 
-	/**
-	 * Returns node status.
-	 * 
-	 * @return node status.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#getState()
 	 */
+	@Override
 	public synchronized ContextState getState() {
 		return state;
 	}
 
-	/**
-	 * Checks if the node is running.
-	 * 
-	 * @return true if the node is running.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#isRunning()
 	 */
+	@Override
 	public synchronized boolean isRunning() {
 		return state==ContextState.RUNNING;
 	}
 
-	/**
-	 * Adds tuple <code>tuple</code> to the local knowledge repository.
-	 * 
-	 * @param tuple the tuple to add
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#put(org.cmg.resp.knowledge.Tuple)
 	 */
+	@Override
 	public void put(Tuple tuple) {
 		if (putToActuators(tuple)) {
 			return ;
@@ -676,17 +661,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		knowledge.put(tuple);
 	}
 
-	/**
-	 * Adds tuple <code>tuple</code> to the knowledge repository located at
-	 * <code>l</code>
-	 * 
-	 * @param t tuple to add
-	 * @param l target locality
-	 * @return true if the action has been correctrly executed.
-	 * @throws InterruptedException when another thread interrupts current thread
-	 * computation while action is under execution.
-	 * @throws IOException when an I/O error occurs
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#put(org.cmg.resp.knowledge.Tuple, org.cmg.resp.topology.Target)
 	 */
+	@Override
 	public boolean put(Tuple t, Target l) throws InterruptedException, IOException {
 		if (l.isSelf()) {
 			put(t);
@@ -716,16 +694,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return false;
 	}
 
-	/**
-	 * Queries a tuple matching template <code>template</code> from the local
-	 * knowledge repository. This is a blocking: the thread invoking this method
-	 * is blocked until a matching tuple is found.
-	 * 
-	 * @param template action template
-	 * @return a matching tuple
-	 * @throws InterruptedException when another thread interrupts current thread
-	 * computation while action is under execution.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#query(org.cmg.resp.knowledge.Template)
 	 */
+	@Override
 	public Tuple query(Template template) throws InterruptedException {
 		Tuple t = queryFromSensors(template);
 		if (t!=null) {
@@ -734,18 +706,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return knowledge.query(template);
 	}
 
-	/**
-	 * Queries a tuple matching template <code>template</code> from the
-	 * knowledge repository located at <code>l</code>. This is a blocking: the thread 
-	 * invoking this method
-	 * is blocked until a matching tuple is found.
-	 * 
-	 * @param template action template
-	 * @param l target locality
-	 * @return a matching tuple
-	 * @throws InterruptedException when another thread interrupts current thread
-	 * computation while action is under execution.
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#query(org.cmg.resp.knowledge.Template, org.cmg.resp.topology.Target)
 	 */
+	@Override
 	public Tuple query(Template t, Target l) throws InterruptedException, IOException {
 		if (l.isSelf()) {
 			return query(t);
@@ -810,6 +774,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @param template action template
 	 * @return	a matching tuple or null.
 	 */
+	@Override
 	public Tuple queryp(Template template) {
 		return knowledge.queryp(template);
 	}
@@ -832,14 +797,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		}
 	}
 	
-	/**
-	 * 
-	 * @param to
-	 * @param session
-	 * @param attributes
-	 * @throws IOException
-	 * @throws InterruptedException
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#sendAttibutes(org.cmg.resp.topology.PointToPoint, int, java.lang.String[])
 	 */
+	@Override
 	public void sendAttibutes(PointToPoint to, int session, String[] attributes) throws IOException, InterruptedException {
 		for (MessageSender p : ports) {
 			if (p.canSendTo(to)) {
@@ -849,6 +810,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#sendFail(org.cmg.resp.topology.PointToPoint, int, java.lang.String)
+	 */
+	@Override
 	public void sendFail(PointToPoint to, int session, String message) throws IOException, InterruptedException {
 		for (MessageSender p : ports) {
 			if (p.canSendTo(to)) {
@@ -918,6 +883,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#sendGroupPutReply(org.cmg.resp.topology.PointToPoint, int, org.cmg.resp.knowledge.Attribute[])
+	 */
+	@Override
 	public void sendGroupPutReply(PointToPoint source, int session,
 			Attribute[] attributes2) {
 //		IPort p = getPort( source );
@@ -956,6 +925,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#sendTuple(org.cmg.resp.topology.PointToPoint, int, org.cmg.resp.knowledge.Tuple)
+	 */
+	@Override
 	public void sendTuple(PointToPoint to, int session, Tuple tuple) throws IOException, InterruptedException {
 		for (MessageSender p : ports) {
 			if (p.canSendTo(to)) {
@@ -966,12 +939,11 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	}
 
 	public synchronized void start() {
-		if (state != ContextState.READY) {
-			throw new IllegalStateException();
+		for (Agent a : waiting) {
+			_addAgent(a);
 		}
 		executor.execute(new NodeThread());
 		state = ContextState.RUNNING;
-		notifyAll();
 	}
 	
 	public synchronized void stop() {
@@ -980,6 +952,9 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		}
 		state = ContextState.HALT;
 		notifyAll();
+//		for (Agent a : agents) {
+//			a.stop();
+//		}
 		doStop();
 	}
 	
@@ -1173,11 +1148,19 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		this.groupActionWaitingTime = groupActionWaitingTime;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#put(org.cmg.resp.topology.PointToPoint, int, org.cmg.resp.knowledge.Tuple)
+	 */
+	@Override
 	public void put(PointToPoint from, int session, Tuple tuple) throws IOException, InterruptedException {
 		put(tuple);
 		sendAck( from , session );
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#gPut(org.cmg.resp.topology.PointToPoint, int, java.lang.String[], org.cmg.resp.knowledge.Tuple)
+	 */
+	@Override
 	public void gPut(PointToPoint from, int session, String[] attributes,
 			Tuple tuple) throws IOException, InterruptedException {
 		MessageSender p = getPort(from);
@@ -1201,6 +1184,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#gGet(org.cmg.resp.topology.PointToPoint, int, java.lang.String[], org.cmg.resp.knowledge.Template)
+	 */
+	@Override
 	public void gGet(PointToPoint from, int session, String[] attributes,
 			Template template) {
 		MessageSender p = getPort(from);
@@ -1224,6 +1211,10 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.comp.INode#gQuery(org.cmg.resp.topology.PointToPoint, int, java.lang.String[], org.cmg.resp.knowledge.Template)
+	 */
+	@Override
 	public void gQuery(PointToPoint from, int session, String[] attributes,
 			Template template) {
 		MessageSender p = getPort(from);

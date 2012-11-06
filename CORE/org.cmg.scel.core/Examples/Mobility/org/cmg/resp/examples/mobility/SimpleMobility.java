@@ -127,10 +127,8 @@ public class SimpleMobility extends JFrame implements Observer {
 			n.addActuator(sc.getStopActuator(name));
 			Agent a = new MovementAgent("_driver_"+name,sc.getMaxX(),sc.getMaxY());
 			n.addAgent(a);
-			a.start();
 			a = new CommunicationAgent("_comm_"+name);
 			n.addAgent(a);
-			a.start();
 			nodes.put(name, n);
 		}
 		SimpleMobility sf = new SimpleMobility(sc);

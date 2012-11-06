@@ -74,7 +74,7 @@ public abstract class Agent extends Observable implements Runnable {
 	/**
 	 * Agent state
 	 */
-	private State state;
+	//FIXME: private State state;
 	
 	/**
 	 * Identifies the context where the agent is running.
@@ -98,7 +98,6 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	public Agent( String name ) {
 		this.name = name;
-		this.state = State.AWAIT;
 	}
 	
 	/**
@@ -115,12 +114,13 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	public final void run() {
 		try {
-			context.waitState(ContextState.RUNNING);
 			doStart();
 			doRun();
 			doClose();
 		} catch (Exception e) {
 			doHandle(e);
+		} finally {
+			context.done(this);
 		}
 	}
 	
@@ -146,10 +146,7 @@ public abstract class Agent extends Observable implements Runnable {
 	 * A subclass of <code>Agent</code> has to provide an implementation 
 	 * of this method that identifies agent behaviour.
 	 */
-	private synchronized void doStart() throws InterruptedException {
-		while ((state != State.RUNNING)) {
-			wait();
-		}
+	protected void doStart() {
 	}
 
 	/**
@@ -164,7 +161,7 @@ public abstract class Agent extends Observable implements Runnable {
 	 * @throws IOException 
 	 */
 	protected boolean put(Tuple t, Target l) throws InterruptedException, IOException {
-		doStep();
+//		doStep();
 		return context.put(this, t, l);
 	}
 
@@ -198,70 +195,70 @@ public abstract class Agent extends Observable implements Runnable {
 		return context.query(this, t, l);
 	}
 
-	/**
-	 * Suspends agent computation.
-	 */
-	public void sleep( ) {
-		setState( State.SLEEP );
-	}
+//	/**
+//	 * Suspends agent computation.
+//	 */
+//	public void sleep( ) {
+//		setState( State.SLEEP );
+//	}
 	
-	/**
-	 * Stops agent computation.
-	 */
-	public void stop() {
-		setState( State.HALT );
-	}
+//	/**
+//	 * Stops agent computation.
+//	 */
+//	public void stop() {
+//		setState( State.HALT );
+//	}
 
-	/**
-	 * Set agent state to <code>state</code>
-	 * 
-	 * @param state new agent state
-	 */
-	private synchronized void setState(State state) {
-		this.state = state;
-		notifyObservers();
-		notifyAll();
-	}
+//	/**
+//	 * Set agent state to <code>state</code>
+//	 * 
+//	 * @param state new agent state
+//	 */
+//	private synchronized void setState(State state) {
+//		this.state = state;
+//		notifyObservers();
+//		notifyAll();
+//	}
 	
-	/**
-	 * Checks if an action can be executed or, according to
-	 * current state, agent computation is suspended or terminated.
-	 * 
-	 * @throws InterruptedException
-	 */
-	protected synchronized void doStep() throws InterruptedException {
-		while (this.state==State.SLEEP) {
-			wait();
-		}
-		switch (state) {
-		case HALT:
-		case DONE:
-		case AWAIT:
-		case ERROR:
-			throw new IllegalStateException();
-		default:
-			//Agent can perform requested action!
-		}
-	}
+//	/**
+//	 * Checks if an action can be executed or, according to
+//	 * current state, agent computation is suspended or terminated.
+//	 * 
+//	 * @throws InterruptedException
+//	 */
+//	protected synchronized void doStep() throws InterruptedException {
+//		while (this.state==State.SLEEP) {
+//			wait();
+//		}
+//		switch (state) {
+//		case HALT:
+//		case DONE:
+//		case AWAIT:
+//		case ERROR:
+//			throw new IllegalStateException();
+//		default:
+//			//Agent can perform requested action!
+//		}
+//	}
 	
-	/**
-	 * Returns <code>true</code> if the agent is in
-	 * sleep state.
-	 * 
-	 * @return <code>true</code> if the agent is in sleep state.
-	 */
-	public boolean isSleeping() {
-		return this.state==State.SLEEP;
-	}
-
-	/**
-	 * Returns <code>true</code> if the agent computation has been terminated.
-	 * 
-	 * @return <code>true</code> if the agent computation has been terminated.
-	 */
-	public boolean isHalted() {
-		return this.state==State.HALT;
-	}
+//	/**
+//	 * Returns <code>true</code> if the agent is in
+//	 * sleep state.
+//	 * 
+//	 * @return <code>true</code> if the agent is in sleep state.
+//	 */
+//	public boolean isSleeping() {
+//		return this.state==State.SLEEP;
+//	}
+//
+//	/**
+//	 * Returns <code>true</code> if the agent computation has been terminated.
+//	 * 
+//	 * @return <code>true</code> if the agent computation has been terminated.
+//	 */
+//	public boolean isHalted() {
+//		return this.state==State.HALT;
+//	}
 
 	/**
 	 * Sets the container where agent is executed. This method can be invoked
@@ -270,23 +267,12 @@ public abstract class Agent extends Observable implements Runnable {
 	 * @param context the context where agent is executed.
 	 */
 	public synchronized void setContext(int id , AgentContext context) {
-		if (state != State.AWAIT) {
-			throw new IllegalStateException();
-		}
+//		if (state != State.AWAIT) {
+//			throw new IllegalStateException();
+//		}
 		this.context = context;
 		this.id = id;
-		setState(State.READY);
-	}
-
-	/**
-	 * Starts agent computation. This method can be invoked only when an agent
-	 * is in state <code>State.READY</code> or <code>State.SLEEP</coode>.
-	 */
-	public synchronized void start() {
-		if ((state != State.READY)&&(state != State.SLEEP)) {
-			throw new IllegalStateException();
-		}
-		setState(State.RUNNING);
+//		setState(State.READY);
 	}
 
 	/**
@@ -294,9 +280,9 @@ public abstract class Agent extends Observable implements Runnable {
 	 * 
 	 * @return agent status
 	 */
-	public State getState() {
-		return state;
-	}
+//	public State getState() {
+//		return state;
+//	}
 
 	/**
 	 * Executes Agent a.
@@ -319,10 +305,8 @@ public abstract class Agent extends Observable implements Runnable {
 	}
 	
 	public void call( Agent a ) {
-		a.setState(state);
 		a.context = this.context;
 		a.call();
-		a.setState(State.DONE);
 	}
 
 }

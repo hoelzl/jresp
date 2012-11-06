@@ -27,9 +27,9 @@ import org.cmg.resp.topology.Target;
  */
 public class NodePolicy implements IPolicy {
 
-	private Node<?> node;
+	private INode<?> node;
 
-	public NodePolicy(Node<?> node) {
+	public NodePolicy(INode<?> node) {
 		this.node = node;
 	}
 

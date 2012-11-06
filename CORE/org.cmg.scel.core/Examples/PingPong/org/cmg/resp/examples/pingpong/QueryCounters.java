@@ -41,12 +41,11 @@ public class QueryCounters {
 		Agent one = new Counter("agentOne", new PointToPoint("two", new SocketPortAddress(9998)));
 		Agent two = new Counter("agentTwo", new PointToPoint("one", new SocketPortAddress(9999)));
 		nodeOne.addAgent(one);
-		one.start();
 		Node<TupleSpace> nodeTwo = new Node<TupleSpace>("two", new TupleSpace());
 		nodeTwo.addPort(portTwo);
 		nodeTwo.put(new Tuple( "COUNTER" , 0 ) );
+		nodeOne.put(new Tuple( "COUNTER" , 0 ) );
 		nodeTwo.addAgent(two);
-		two.start();
 		nodeTwo.start();
 		nodeOne.start();
 	}

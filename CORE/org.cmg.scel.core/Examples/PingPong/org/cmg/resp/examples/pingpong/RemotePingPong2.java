@@ -39,11 +39,9 @@ public class RemotePingPong2 {
 		Agent ping = new PingAgent();
 		Agent pong = new PongAgent();
 		pingNode.addAgent(ping);
-		ping.start();
 		Node<TupleSpace> pongNode = new Node<TupleSpace>("pong", new TupleSpace());
 		pongNode.addPort(pongPort);
 		pongNode.addAgent(pong);
-		pong.start();
 		pongNode.start();
 		pingNode.start();
 	}

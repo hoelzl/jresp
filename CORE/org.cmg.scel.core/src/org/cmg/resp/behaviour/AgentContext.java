@@ -77,26 +77,17 @@ public interface AgentContext {
 	public void exec( Agent a , Agent b) throws InterruptedException;
 
 	/**
-	 * Returns context status.
-	 * 
-	 * @return context status.
-	 */
-	public ContextState getState();
-	
-	/**
-	 * Wait until context is in statatus state.
-	 * 
-	 * @param expected context status.
-	 * @throws InterruptedException if any thread interrupted the current thread before 
-	 * or while the current thread was waiting for a notification.
-	 */
-	public void waitState( ContextState state ) throws InterruptedException;
-
-	/**
 	 * This method is used to generate a new fresh identifier.
 	 * 
 	 * @return a new fresh identifier.
 	 */
 	public String fresh();
+
+	/**
+	 * This method is invoked when agent a terminates its computation.
+	 * 
+	 * @param agent the agent that has terminated the computating.
+	 */
+	public void done(Agent agent);
 
 }

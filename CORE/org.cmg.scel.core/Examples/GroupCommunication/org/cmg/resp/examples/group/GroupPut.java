@@ -101,9 +101,6 @@ public class GroupPut {
 		node1.addAgent(agent1);
 		node2.addAgent(agent2);
 		node3.addAgent(agent3);
-		agent1.start();
-		agent2.start();
-		agent3.start();
 		node3.start();
 		node2.start();
 		node1.start();

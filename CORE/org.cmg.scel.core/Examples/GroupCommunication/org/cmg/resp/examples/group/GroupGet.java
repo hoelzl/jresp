@@ -83,7 +83,6 @@ public class GroupGet {
 		node3.setGroupActionWaitingTime(100);
 		Agent agent1 = new GGetAgent();
 		node1.addAgent(agent1);
-		agent1.start();
 		node3.start();
 		node2.start();
 		node1.start();

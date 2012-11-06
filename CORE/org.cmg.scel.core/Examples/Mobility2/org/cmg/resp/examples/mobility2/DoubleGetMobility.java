@@ -163,10 +163,8 @@ public class DoubleGetMobility extends JFrame implements Observer {
 			});
 			Agent a = new MovementAgent("_driver_"+name,sc.getMaxX(),sc.getMaxY());
 			n.addAgent(a);
-			a.start();
 			a = new CommunicationAgent("_comm_"+name,sc.isGreen(name));
 			n.addAgent(a);
-			a.start();
 			nodes.put(name, n);
 		}
 		DoubleGetMobility sf = new DoubleGetMobility(sc);

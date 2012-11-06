@@ -39,7 +39,7 @@ public abstract class AttributeCollector {
 	/**
 	 * A reference to the node where the attribute is computed.
 	 */
-	private Node<?> node;
+	private INode<?> node;
 
 	/**
 	 * Creates a new attribute collector.
@@ -58,7 +58,7 @@ public abstract class AttributeCollector {
 	 * @param n node to be associated to the collector. If <code>n</code> is
 	 * null, a <code>NullPointerException</code> is thrown.
 	 */
-	public void setNode( Node<?> n ) {
+	public void setNode( INode<?> n ) {
 		if (n == null) {
 			throw new NullPointerException();
 		}
