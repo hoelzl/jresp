@@ -80,4 +80,9 @@ public class SimContext extends SimProcess implements AgentContext {
 	public void actions() {
 		a.run();
 	}
+
+	@Override
+	public void suspend(long t) throws InterruptedException {
+		delay(t);
+	}
 }

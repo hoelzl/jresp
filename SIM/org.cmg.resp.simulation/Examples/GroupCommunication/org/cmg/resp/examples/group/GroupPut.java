@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
-import org.cmg.resp.core.simulation.ConstantDelayFactory;
+import org.cmg.resp.core.simulation.ExponentialDelayFactory;
 import org.cmg.resp.core.simulation.SimNode;
 import org.cmg.resp.core.simulation.SimTupleSpace;
 import org.cmg.resp.knowledge.Attribute;
@@ -95,9 +95,9 @@ public class GroupPut {
 	public static void main(String[] argv) {
 		ProcessSimulator sim = new ThreadProcessSimulator();
 		sim.init();
-		SimNode node1 = new SimNode("node1", new SimTupleSpace(sim),sim, new ConstantDelayFactory(1.0));
-		SimNode node2 = new SimNode("node2", new SimTupleSpace(sim),sim, new ConstantDelayFactory(1.0));
-		SimNode node3 = new SimNode("node3", new SimTupleSpace(sim),sim, new ConstantDelayFactory(1.0));
+		SimNode node1 = new SimNode("node1", new SimTupleSpace(sim),sim, new ExponentialDelayFactory(1.0));
+		SimNode node2 = new SimNode("node2", new SimTupleSpace(sim),sim, new ExponentialDelayFactory(1.0));
+		SimNode node3 = new SimNode("node3", new SimTupleSpace(sim),sim, new ExponentialDelayFactory(1.0));
 		node1.addPort(vp);
 		node1.setGroupActionWaitingTime(100);
 		node2.addPort(vp);

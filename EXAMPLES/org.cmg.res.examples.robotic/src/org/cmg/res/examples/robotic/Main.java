@@ -22,7 +22,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.comp.AttributeCollector;
 import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.Attribute;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
@@ -84,13 +89,25 @@ public class Main extends JFrame {
 			n.put(new Tuple( "controlStep" , new RandomWalk() ));
 			n.put(new Tuple( "lowBattery" , false ));
 			n.put(new Tuple( "informed" , false));
+			n.put(new Tuple( "task" , i%2) );
+			n.addAttributeCollector( new AttributeCollector("task", 
+					new Template( new ActualTemplateField( "task"),
+								new FormalTemplateField(Integer.class)
+							)
+			) {
+				
+				@Override
+				protected Attribute doEval(Tuple t) {
+					return new Attribute("task", t.getElementAt(Integer.class, 1));
+				}
+			});
 			Agent a = new ManagedElement();
 			n.addAgent(a);
 			a = new TargetSeeker();
 			n.addAgent(a);
 			a= new BatteryMonitor();
 			n.addAgent(a);
-			a = new DataSeeker();
+			a = new DataSeeker(i%2);
 			n.addAgent(a);
 			nodes.put(n.getName(), n);
 		}
@@ -103,10 +120,10 @@ public class Main extends JFrame {
 	private void init() {
 		JPanel panel = new JPanel();
 		internal = new SpatialPanel(this.scenario);
-		table = new JTable(new BatteryLevelData(scenario));
+//		table = new JTable(new BatteryLevelData(scenario));
 		panel.setLayout(new BorderLayout());
-		panel.add(internal, BorderLayout.CENTER);
-		panel.add(new JScrollPane(table) , BorderLayout.EAST );
+		panel.add(new JScrollPane(internal), BorderLayout.CENTER);
+//		panel.add(new JScrollPane(table) , BorderLayout.EAST );
 		setContentPane(panel);
 		pack();
 	}

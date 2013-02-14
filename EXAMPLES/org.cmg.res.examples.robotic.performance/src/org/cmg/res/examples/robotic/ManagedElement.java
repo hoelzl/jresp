@@ -31,13 +31,15 @@ public class ManagedElement extends Agent {
 
 	@Override
 	protected void doRun() throws Exception {
-		while (true) {
-			Thread.sleep(1000);
+		boolean flag = true;
+		while (flag) {
 			Tuple t = query(new Template( 
-									new ActualTemplateField("controlStep") , 
-									new FormalTemplateField(Agent.class)) , 
+									new ActualTemplateField("controlStep") ,
+									new FormalTemplateField(Boolean.class) ,
+									new FormalTemplateField(Agent.class)) , 									
 							Self.SELF );
-			Agent X = t.getElementAt(Agent.class, 1);
+			flag = t.getElementAt(Boolean.class, 1);
+			Agent X = t.getElementAt(Agent.class, 2);
 			call(X);
 		}
 	}

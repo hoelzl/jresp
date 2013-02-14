@@ -90,4 +90,12 @@ public interface AgentContext {
 	 */
 	public void done(Agent agent);
 
+	/**
+	 * Suspends agent execution for time t
+	 * 
+	 * @param t
+	 * @throws InterruptedException 
+	 */
+	public void suspend(long t) throws InterruptedException;
+
 }

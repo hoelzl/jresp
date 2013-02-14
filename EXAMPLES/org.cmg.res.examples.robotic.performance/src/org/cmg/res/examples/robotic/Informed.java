@@ -12,6 +12,7 @@
  */
 package org.cmg.res.examples.robotic;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
@@ -40,8 +41,10 @@ public class Informed extends Agent {
 						Self.SELF );
 		double x = t.getElementAt(Double.class, 1);
 		double y = t.getElementAt(Double.class, 2);
-		put( new Tuple( "direction" , towards(x , y ) ) , Self.SELF );
-		put( new Tuple( "seek" ) , Self.SELF );
+		double angle = towards( x , y );
+		if (angle != -10) {
+			put( new Tuple( "direction" , towards(x , y ) ) , Self.SELF );
+		}
 	}
 
 	private double towards(double x, double y) throws InterruptedException, IOException {
@@ -52,20 +55,33 @@ public class Informed extends Agent {
 			Self.SELF );
 		double xl = t.getElementAt(Double.class, 1);
 		double yl = t.getElementAt(Double.class, 2);
-		return getAngle(xl,yl,x,y);
+		double angle = getAngle(xl,yl,x,y);
+		return angle;
 	}
 
-	private double getAngle(double x, double y, double xTarget, double yTarget) {
-		double dX = (xTarget - x);
-		double dY = (yTarget - y);
+	public static double getAngle(double x, double y, double xTarget, double yTarget) {
+		double dX = Math.abs(xTarget - x);
+		double dY = Math.abs(yTarget - y);
+		if ((dX==0)&&(dY==0)) {
+			return -10;
+		}
 		if (dX == 0) {
-			return (dY>0?Math.PI/2:-Math.PI/2);
+			return (yTarget>y?Math.PI/2:-Math.PI/2);
 		}
 		if (dY == 0) {
-			return (dX>0?0:Math.PI);			
+			return (xTarget>x?0:Math.PI);			
 		}
-		
-		return (dX<0?Math.PI:0.0)+Math.atan(dY/dX);
+		double angle = Math.atan(dY/dX);
+		if ((xTarget>x)&&(yTarget>y)) {
+			return angle;
+		}
+		if ((xTarget<x)&&(yTarget>y)) {
+			return Math.PI-angle;
+		}
+		if ((xTarget<x)&&(yTarget<y)) {
+			return angle+Math.PI;
+		}
+		return (2*Math.PI)-angle;
 	}
 
 

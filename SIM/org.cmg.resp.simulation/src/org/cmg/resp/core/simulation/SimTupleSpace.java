@@ -61,16 +61,16 @@ public class SimTupleSpace extends TupleSpace {
 	private boolean consumedBywaitingElements(Tuple t) {
 		LinkedList<WaitingElement> old = waiting;
 		waiting = new LinkedList<WaitingElement>();
+		boolean active = true;
 		for (WaitingElement waitingElement : old) {
-			if (waitingElement.template.match(t)) {
+			if (active&&(waitingElement.template.match(t))) {
 				waitingElement.t = t;
 				waitingElement.process.resume();
-			}
-			if (waitingElement.isGet) {
-				return true;
+			} else {
+				waiting.add(waitingElement);
 			}
 		}
-		return false;
+		return !active;
 	}
 
 	@Override

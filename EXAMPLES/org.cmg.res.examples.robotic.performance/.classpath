@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/LIBS/ssj/lib/logger-1.6.4.jar"/>
 	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/LIBS/ssj/lib/optimization.jar"/>
 	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/LIBS/ssj/lib/tcode.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.cmg.resp.simulation"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

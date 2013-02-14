@@ -18,6 +18,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -51,11 +52,18 @@ public class SpatialPanel extends JPanel implements Observer {
 		super.paint(arg0);
 		Graphics2D g2 = (Graphics2D) arg0;
 		g2.setColor(Color.BLACK);
-		g2.fill(new Ellipse2D.Double(scenario.getTarget().x-20, scenario.getTarget().y-20, 40, 40));
+		Point2D.Double[] target = scenario.getTarget();
+		g2.fill(new Ellipse2D.Double(target[0].x-20, target[0].y-20, 40, 40));
+		g2.setColor(Color.BLUE);
+		g2.fill(new Ellipse2D.Double(target[1].x-20, target[1].y-20, 40, 40));
 		for (int i=0 ; i<scenario.getSize() ; i++ ) {
 			g2.setColor(getRobotColor(i));
 			Point2D.Double p = scenario.getPosition(i);
-			g2.fill(new Ellipse2D.Double(p.x-5, p.y-5, 10, 10));
+			if ((i%2)==0) {
+				g2.fill(new Ellipse2D.Double(p.x-5, p.y-5, 10, 10));
+			} else {
+				g2.fill(new Rectangle2D.Double(p.x-5, p.y-5, 10, 10));
+			}
 		}
 	}
 

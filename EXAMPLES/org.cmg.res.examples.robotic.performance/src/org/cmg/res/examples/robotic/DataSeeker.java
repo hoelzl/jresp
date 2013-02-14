@@ -22,6 +22,7 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
+import org.cmg.resp.topology.HasValue;
 import org.cmg.resp.topology.Self;
 
 /**
@@ -37,8 +38,11 @@ public class DataSeeker extends Agent {
 		}
 	};
 	
-	public DataSeeker() {
+	private int taskId;
+	
+	public DataSeeker(int taskId) {
 		super("DataSeeker");
+		this.taskId = taskId;
 	}
 
 	@Override
@@ -47,10 +51,11 @@ public class DataSeeker extends Agent {
 					 			new ActualTemplateField("targetLocation") , 
 					 			new FormalTemplateField(Double.class), 
 					 			new FormalTemplateField(Double.class)), 
-					 			new Group( any ));
-//					 			new Group(new HasValue( "task" , 1 ) ));
+//					 			new Group( any ));
+					 			new Group(new HasValue( "task" , taskId ) ));
 			double x = t.getElementAt(Double.class, 1);
 			double y = t.getElementAt(Double.class, 2);
+			put( new Tuple( "perceivedTarget" , x, y ) , Self.SELF );
 			put( new Tuple( "targetLocation" , x , y ) , Self.SELF );
 			get( new Template( new ActualTemplateField("informed") , new ActualTemplateField(false)) , Self.SELF );
 			put( new Tuple( "informed" , true ) , Self.SELF );

@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
-import org.cmg.resp.core.simulation.ConstantDelayFactory;
+import org.cmg.resp.core.simulation.ExponentialDelayFactory;
 import org.cmg.resp.core.simulation.SimNode;
 import org.cmg.resp.core.simulation.SimTupleSpace;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -45,13 +45,13 @@ public class QueryCounters {
 		ProcessSimulator sim = new ThreadProcessSimulator();
 		sim.init();
 		VirtualPort vp = new VirtualPort(10);
-		SimNode nodeOne = new SimNode("one", new SimTupleSpace(sim), sim , new ConstantDelayFactory(1.0));
+		SimNode nodeOne = new SimNode("one", new SimTupleSpace(sim), sim , new ExponentialDelayFactory(1.0));
 		nodeOne.addPort(vp);
 		nodeOne.put(new Tuple( "COUNTER" , 0 ) );
 		Agent one = new Counter("agentOne", new PointToPoint("two", new VirtualPortAddress(10)));
 		Agent two = new Counter("agentTwo", new PointToPoint("one", new VirtualPortAddress(10)));
 		nodeOne.addAgent(one);
-		SimNode nodeTwo = new SimNode("two", new SimTupleSpace(sim), sim , new ConstantDelayFactory(1.0));
+		SimNode nodeTwo = new SimNode("two", new SimTupleSpace(sim), sim , new ExponentialDelayFactory(1.0));
 		nodeTwo.addPort(vp);
 		nodeTwo.put(new Tuple( "COUNTER" , 0 ) );
 		nodeTwo.addAgent(two);

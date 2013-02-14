@@ -453,6 +453,11 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 					public void done(Agent agent) {
 					}
 
+					@Override
+					public void suspend(long t) throws InterruptedException {
+						Thread.sleep(t);
+					}
+
 				}
 			);
 			agents.add(a);

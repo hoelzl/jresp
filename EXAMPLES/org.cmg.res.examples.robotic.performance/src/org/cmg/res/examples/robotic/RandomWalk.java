@@ -34,7 +34,6 @@ public class RandomWalk extends Agent {
 	@Override
 	protected void doRun() throws IOException, InterruptedException{
 		put( new Tuple( "direction" , r.nextDouble()*2*Math.PI ) , Self.SELF );
-		put( new Tuple( "seek" ) , Self.SELF );
 	}
 
 }

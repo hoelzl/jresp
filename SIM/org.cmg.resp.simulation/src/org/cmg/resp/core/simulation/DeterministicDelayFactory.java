@@ -26,38 +26,37 @@ import umontreal.iro.lecuyer.rng.RandomStream;
  * @author loreti
  *
  */
-public class ConstantDelayFactory implements IDelayFactory {
+public class DeterministicDelayFactory implements IDelayFactory {
 
-	private RandomStream  stream;
-	private double lambda;		
+	private double delay;		
 
-	public ConstantDelayFactory(double lambda) {
-		this(new MRG32k3a() , lambda );
+	public DeterministicDelayFactory(double delay) {
+		this.delay = delay;
 	}
 	
-	public ConstantDelayFactory(RandomStream stream, double lambda) {
-		this.stream = stream;
-		this.lambda = lambda;
-	}
+//	public DeterministicDelayFactory(RandomStream stream, double lambda) {
+//		this.stream = stream;
+//		this.lambda = lambda;
+//	}
 
 	@Override
 	public double getPutDelay(INode<?> node, Agent a, Tuple t, Target l) {
-		return ExponentialGen.nextDouble (stream, lambda);
+		return delay;
 	}
 
 	@Override
 	public double getGetDelay(INode<?> node, Agent a, Template t, Target l) {
-		return ExponentialGen.nextDouble (stream, lambda);
+		return delay;
 	}
 
 	@Override
 	public double getQueryDelay(INode<?> node, Agent a, Template t, Target l) {
-		return ExponentialGen.nextDouble (stream, lambda);
+		return delay;
 	}
 
 	@Override
 	public double getExecDelay(INode<?> node, Agent a, Agent b) {
-		return ExponentialGen.nextDouble (stream, lambda);
+		return delay;
 	}
 
 }

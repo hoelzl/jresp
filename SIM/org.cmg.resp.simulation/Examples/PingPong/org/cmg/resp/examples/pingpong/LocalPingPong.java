@@ -13,7 +13,7 @@
 package org.cmg.resp.examples.pingpong;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.core.simulation.ConstantDelayFactory;
+import org.cmg.resp.core.simulation.ExponentialDelayFactory;
 import org.cmg.resp.core.simulation.SimNode;
 import org.cmg.resp.core.simulation.SimTupleSpace;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -35,7 +35,7 @@ public class LocalPingPong {
 		
 		ProcessSimulator sim = new ThreadProcessSimulator();
 		sim.init();
-		SimNode node = new SimNode("pingpong", new SimTupleSpace(sim),sim,new ConstantDelayFactory(1.0));
+		SimNode node = new SimNode("pingpong", new SimTupleSpace(sim),sim,new ExponentialDelayFactory(1.0));
 		Agent ping = new PingAgent();
 		Agent pong = new PongAgent();
 		node.addAgent(ping);		

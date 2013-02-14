@@ -14,6 +14,7 @@ package org.cmg.res.examples.robotic;
 
 import java.io.IOException;
 
+import org.cmg.res.examples.robotic.Scenario.RobotState;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
@@ -35,34 +36,33 @@ public class TargetSeeker extends Agent {
 	protected void doRun() throws IOException, InterruptedException{
 		boolean found = false;
 		while (!found) {
+	        get( new Template( 
+                    new ActualTemplateField( "controlStep" ) ,
+                    new FormalTemplateField( Boolean.class ) ,
+                    new FormalTemplateField( Agent.class ) ) ,
+                 Self.SELF );
 			Tuple t = query( new Template(
-					 	new ActualTemplateField("lowBattery") , 
-					 	new FormalTemplateField(Boolean.class)) , 
-				   Self.SELF );
+					 				new ActualTemplateField("lowBattery") , 
+					 				new FormalTemplateField(Boolean.class)) , 
+					 		 Self.SELF );
 			boolean low = t.getElementAt(Boolean.class,1);
 			if (low) {
-		        get( new Template( 
-	                     new ActualTemplateField( "controlStep" ) ,
-	                     new FormalTemplateField( Agent.class ) ) ,
-	           Self.SELF );
-				put( new Tuple( "controlStep" , new LowBattery() ) , Self.SELF );
+				put( new Tuple( "controlStep" , true , new LowBattery() ) , Self.SELF );
+				put( new Tuple( "state" ,  RobotState.SOS ) , Self.SELF );
 				query( new Template( 
 					 	new ActualTemplateField("lowBattery") , 
 					 	new ActualTemplateField(false)) ,
 					 Self.SELF );
 			} else {
-		        get( new Template( 
-	                     new ActualTemplateField( "controlStep" ) ,
-	                     new FormalTemplateField( Agent.class ) ) ,
-	           Self.SELF );
 				t = query( new Template(
 				 		new ActualTemplateField("target") , 
 				 		new FormalTemplateField(Boolean.class)) , 
 				 	  Self.SELF );
 				found = t.getElementAt(Boolean.class, 1);
 				if (found) {
+					put( new Tuple( "state" ,  RobotState.REACHED ) , Self.SELF );
 					put( new Tuple( "stop" ) , Self.SELF );
-					put( new Tuple( "controlStep" , new Found() ) , Self.SELF );
+					put( new Tuple( "controlStep" , false , new Found() ) , Self.SELF );
                     doTask();
 				} else {
 					t = query( new Template(
@@ -71,11 +71,11 @@ public class TargetSeeker extends Agent {
 					 	  Self.SELF );
 					boolean informed = t.getElementAt(Boolean.class, 1);
 					if (informed) {
-						put( new Tuple( "controlStep" , new Informed() ) , Self.SELF );
-						get( new Template( new ActualTemplateField("seek") ) , Self.SELF );
+						put( new Tuple( "state" ,  RobotState.INFORMED ) , Self.SELF );
+						put( new Tuple( "controlStep" , true , new Informed() ) , Self.SELF );
 					} else {
-						put( new Tuple( "controlStep" , new RandomWalk() ) , Self.SELF );
-						get( new Template( new ActualTemplateField("seek") ) , Self.SELF );
+						put( new Tuple( "state" ,  RobotState.WALKING ) , Self.SELF );
+						put( new Tuple( "controlStep" , true , new RandomWalk() ) , Self.SELF );
 					}
 				}				
 			}

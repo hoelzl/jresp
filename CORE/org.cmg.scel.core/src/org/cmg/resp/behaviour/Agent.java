@@ -308,5 +308,9 @@ public abstract class Agent extends Observable implements Runnable {
 		a.context = this.context;
 		a.call();
 	}
+	
+	public void suspend( long time ) throws InterruptedException {
+		context.suspend( time );
+	}
 
 }

@@ -31,7 +31,7 @@ import org.cmg.resp.knowledge.Tuple;
 public class Scenario extends Observable {
 	
 	
-	public Point2D.Double target;
+	public Point2D.Double[] target;
 	
 	private Random r = new Random();
 	
@@ -81,7 +81,9 @@ public class Scenario extends Observable {
 	}
 
 	private void init() {
-		target = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+		target = new Point2D.Double[2];
+		target[0] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+		target[1] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
 		speed = new double[size];
 		positions = new Point2D.Double[size];
 		direction = new double[size];
@@ -186,21 +188,23 @@ public class Scenario extends Observable {
 	private void _updatePosition(double dt) {
 		for( int i=0 ; i<size ; i++ ) {
 			if (battery[i]>0.0) {
-				double x = positions[i].getX()+((speed[i]*dt)*Math.cos(direction[i]));
-				double y = positions[i].getY()+((speed[i]*dt)*Math.sin(direction[i]));
-				if (x<0.0) {
-					x=0.0;
+				if (positions[i].distance(target[i%2])>20) {
+					double x = positions[i].getX()+((speed[i]*dt)*Math.cos(direction[i]));
+					double y = positions[i].getY()+((speed[i]*dt)*Math.sin(direction[i]));
+					if (x<0.0) {
+						x=0.0;
+					}
+					if (y<0.0) {
+						y=0.0;
+					}
+					if (x>width) {
+						x=width;
+					}
+					if (y>height) {
+						y=height;
+					}
+					positions[i].setLocation(x,y);
 				}
-				if (y<0.0) {
-					y=0.0;
-				}
-				if (x>width) {
-					x=width;
-				}
-				if (y>height) {
-					y=height;
-				}
-				positions[i].setLocation(x,y);
 			}
 		}
 	}
@@ -288,13 +292,13 @@ public class Scenario extends Observable {
 			
 			@Override
 			public Tuple getValue() {
-				return new Tuple( "target" , target.distance(positions[i])<20 );
+				return new Tuple( "target" , target[i%2].distance(positions[i])<20 );
 			}
 
 		};
 	}
 
-	public Point2D.Double getTarget() {
+	public Point2D.Double[] getTarget() {
 		return target;
 	}
 	

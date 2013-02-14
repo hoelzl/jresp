@@ -30,8 +30,16 @@ import org.cmg.resp.knowledge.Tuple;
  */
 public class Scenario extends Observable {
 	
+	public enum RobotState {
+		WALKING , 
+		INFORMED , 
+		SOS , 
+		REACHED
+	}
 	
-	public Point2D.Double target;
+	public Point2D.Double[] target;
+	
+	private RobotState[] states;
 	
 	private Random r = new Random();
 	
@@ -49,7 +57,9 @@ public class Scenario extends Observable {
 	 * Array of robots positions
 	 */
 	private Point2D.Double[] positions;
-	
+
+	private Point2D.Double[] informedTarget;
+
 	/**
 	 * Array of robots directions
 	 */
@@ -69,6 +79,11 @@ public class Scenario extends Observable {
 	 * Arena height
 	 */
 	private double height;
+	
+	/**
+	 * Number of robots that have reached the target zone.
+	 */
+	private double onTarget;
 
 	private BatteryConsumptionFunction batteryDischargingFunction;
 
@@ -80,17 +95,22 @@ public class Scenario extends Observable {
 		init();
 	}
 
-	private void init() {
-		target = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+	public void init() {
+		target = new Point2D.Double[2];
+		target[0] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+		target[1] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
 		speed = new double[size];
 		positions = new Point2D.Double[size];
 		direction = new double[size];
 		battery = new double[size];
+		states = new RobotState[size];
+		informedTarget = new Point2D.Double[size];
 		for( int i=0 ; i<size ; i++ ) {
-			battery[i] = r.nextDouble();
+			battery[i] = 1.0;//r.nextDouble();
 			positions[i] = new Point2D.Double(r.nextDouble()*width, r.nextDouble()*height);
-			speed[i] = 5.0;
+			speed[i] = 0.2;
 			direction[i] = r.nextDouble()*2*Math.PI;
+			states[i] = RobotState.WALKING;
 		}
 		
 	}
@@ -186,18 +206,24 @@ public class Scenario extends Observable {
 	private void _updatePosition(double dt) {
 		for( int i=0 ; i<size ; i++ ) {
 			if (battery[i]>0.0) {
-				double x = positions[i].getX()+((speed[i]*dt)*Math.cos(direction[i]));
-				double y = positions[i].getY()+((speed[i]*dt)*Math.sin(direction[i]));
+				double dx = ((speed[i]*dt)*Math.cos(direction[i]));
+				double dy = ((speed[i]*dt)*Math.sin(direction[i]));
+				double x = positions[i].getX()+dx;
+				double y = positions[i].getY()+dy;
 				if (x<0.0) {
+//					x=Math.abs(x);
 					x=0.0;
 				}
 				if (y<0.0) {
+//					y=Math.abs(y);
 					y=0.0;
 				}
 				if (x>width) {
+//					x=width-(x-width);
 					x=width;
 				}
 				if (y>height) {
+//					y=height-(y-height);
 					y=height;
 				}
 				positions[i].setLocation(x,y);
@@ -272,6 +298,29 @@ public class Scenario extends Observable {
 		};
 	}
 
+	public NodeActuator getPerceivedTargetActuator(final int i) {
+		return new NodeActuator("perceivedTarget") {
+			
+			@Override
+			public void send(Tuple t) {
+				setPerceivedTarget(i, t.getElementAt(Double.class, 1) , t.getElementAt(Double.class, 2));
+			}
+			
+			@Override
+			public Template getTemplate() {
+				return new Template(
+						new ActualTemplateField("perceivedTarget") , 
+						new FormalTemplateField(Double.class) , 
+						new FormalTemplateField(Double.class)
+				);
+			}
+		};
+	}
+
+	protected void setPerceivedTarget(int i, Double x, Double y) {
+		this.informedTarget[i] = new Point2D.Double(x, y);
+	}
+
 	public NodeSensor getBatterySensor(final int i) {
 		return new NodeSensor("gps") {
 			
@@ -288,14 +337,56 @@ public class Scenario extends Observable {
 			
 			@Override
 			public Tuple getValue() {
-				return new Tuple( "target" , target.distance(positions[i])<20 );
+				return new Tuple( "target" , target[i%2].distance(positions[i])<20 );
 			}
 
 		};
 	}
 
-	public Point2D.Double getTarget() {
+	public Point2D.Double[] getTarget() {
 		return target;
 	}
+
+	public double getRobotOnTarget() {
+		return onTarget/size;
+	}
 	
+	public double getDistaneToTarget(int i) {
+		return target[i%2].distance(positions[i]);
+	}
+	
+	public NodeActuator getRobotStateActuator( final int i ) {
+		return new NodeActuator("state") {
+		
+			@Override
+			public void send(Tuple t) {
+				setRobotState(i, t.getElementAt(RobotState.class, 1));
+			}
+			
+			@Override
+			public Template getTemplate() {
+				return new Template(
+						new ActualTemplateField("state") ,
+						new FormalTemplateField(RobotState.class)
+				);
+			}
+		
+		};
+
+	}
+
+	protected void setRobotState(int i, RobotState s) {
+		if (s==RobotState.REACHED) {
+			onTarget++;
+		}
+		states[i] = s;
+	}
+
+	public String getState(int i) {
+		return states[i].name();
+	}
+	
+	public Point2D.Double getInformedTarget(int i) {
+		return informedTarget[i];
+	}
 }
