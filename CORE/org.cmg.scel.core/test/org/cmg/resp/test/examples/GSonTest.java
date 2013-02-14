@@ -14,12 +14,6 @@ package org.cmg.resp.test.examples;
 
 import java.lang.reflect.Type;
 
-import org.cmg.resp.json.MessageDeserializer;
-import org.cmg.resp.knowledge.Attribute;
-import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.protocol.Message;
-import org.cmg.resp.topology.PointToPoint;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -30,7 +24,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.TypeAdapterFactory;
 
 /**
  * @author Michele Loreti
@@ -40,11 +33,7 @@ public class GSonTest {
 	
 	
 	public static void main(String[] argv) {
-		
-//		AttributeRequest request = new AttributeRequest(new Locality("pippo", 999), 23, new String[] {"ciao", "come"} );
-		byte value = 10;
-		
-//		Tuple t = new Tuple(3,2.4,"ciao",true);
+				
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeHierarchyAdapter(TestClass.class, new TestSerializer());
 		gsonBuilder.registerTypeHierarchyAdapter(TestClass.class, new TestDeserializer());

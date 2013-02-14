@@ -13,7 +13,6 @@
 package org.cmg.resp;
 
 import java.lang.reflect.Type;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.cmg.resp.json.ActualTemplateFieldDeserializer;

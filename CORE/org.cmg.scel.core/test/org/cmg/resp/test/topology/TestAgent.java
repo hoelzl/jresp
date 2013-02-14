@@ -1,20 +1,3 @@
-package org.cmg.resp.test.topology;
-
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-
-import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.behaviour.Agent.State;
-import org.cmg.resp.comp.INode;
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
-import org.cmg.resp.knowledge.Template;
-import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
-import org.cmg.resp.topology.Self;
-import org.junit.Test;
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
  * Universitˆ di Firenze
@@ -27,6 +10,21 @@ import org.junit.Test;
  * Contributors:
  *      Michele Loreti
  */
+package org.cmg.resp.test.topology;
+
+import java.io.IOException;
+
+import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.comp.INode;
+import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.topology.Self;
+import org.junit.Test;
+
 
 /**
  * @author Michele Loreti
