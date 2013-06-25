@@ -18,6 +18,7 @@ import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.policy.IPolicy;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
@@ -27,9 +28,9 @@ import org.cmg.resp.topology.Target;
  */
 public class NodePolicy implements IPolicy {
 
-	private INode<?> node;
+	private INode node;
 
-	public NodePolicy(INode<?> node) {
+	public NodePolicy(INode node) {
 		this.node = node;
 	}
 
@@ -93,22 +94,22 @@ public class NodePolicy implements IPolicy {
 
 	@Override
 	public void acceptGroupPut(PointToPoint from, int session,
-			String[] attributes, Tuple tuple) throws IOException, InterruptedException {
-		node.gPut( from , session , attributes , tuple );
+			GroupPredicate groupPredicate, Tuple tuple) throws IOException, InterruptedException {
+		node.gPut( from , session , groupPredicate , tuple );
 	}
 
 	@Override
 	public void acceptGroupGet(PointToPoint from, int session,
-			String[] attributes, Template template) throws IOException,
+			GroupPredicate groupPredicate, Template template) throws IOException,
 			InterruptedException {
-		node.gGet( from , session , attributes , template );
+		node.gGet( from , session , groupPredicate , template );
 	}
 
 	@Override
 	public void acceptGroupQuery(PointToPoint from, int session,
-			String[] attributes, Template template) throws IOException,
+			GroupPredicate groupPredicate, Template template) throws IOException,
 			InterruptedException {
-		node.gQuery( from , session , attributes , template );
+		node.gQuery( from , session , groupPredicate , template );
 	}
 
 	@Override

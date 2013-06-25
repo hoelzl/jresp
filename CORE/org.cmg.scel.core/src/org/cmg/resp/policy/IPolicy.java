@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
@@ -127,7 +128,7 @@ public interface IPolicy {
 	 * is waiting for action execution
 	 * @throws IOException is thrown when a communication error occurs
 	 */
-	void acceptGroupPut(PointToPoint from, int session, String[] attributes,
+	void acceptGroupPut(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Tuple tuple) throws IOException, InterruptedException;
 	
 	/**
@@ -140,7 +141,7 @@ public interface IPolicy {
 	 * is waiting for action execution
 	 * @throws IOException is thrown when a communication error occurs
 	 */
-	void acceptGroupGet(PointToPoint from, int session, String[] attributes,
+	void acceptGroupGet(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Template template) throws IOException, InterruptedException;
 
 	/**
@@ -153,7 +154,7 @@ public interface IPolicy {
 	 * is waiting for action execution
 	 * @throws IOException is thrown when a communication error occurs
 	 */
-	void acceptGroupQuery(PointToPoint from, int session, String[] attributes,
+	void acceptGroupQuery(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Template template) throws IOException, InterruptedException;
 
 	/**

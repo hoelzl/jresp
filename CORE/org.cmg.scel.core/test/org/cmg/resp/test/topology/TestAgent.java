@@ -88,7 +88,7 @@ public class TestAgent {
 			
 		};
 //		assertEquals(State.AWAIT,a.getState());
-		INode<TupleSpace> n = new Node<TupleSpace>("test", new TupleSpace());
+		INode n = new Node("test", new TupleSpace());
 		n.addAgent(a);
 //		assertEquals(State.READY,a.getState());
 	}

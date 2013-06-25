@@ -21,6 +21,7 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.topology.AnyComponent;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.VirtualPort;
@@ -33,12 +34,7 @@ public class GroupGet {
 
 	public static VirtualPort vp = new VirtualPort(10);
 
-	public static GroupPredicate any = new GroupPredicate() {		
-		@Override
-		public boolean evaluate(Attribute[] data) {
-			return true;
-		}
-	};
+	public static GroupPredicate any = new AnyComponent();
 	
 	
 	public static class GGetAgent extends Agent {
@@ -68,13 +64,13 @@ public class GroupGet {
 	}
 
 	public static void main(String[] argv) {
-		Node<TupleSpace> node1 = new Node<TupleSpace>("node1", new TupleSpace());
+		Node node1 = new Node("node1", new TupleSpace());
 		TupleSpace ts2 =new TupleSpace();
 		ts2.put(new Tuple(("TEST_1") ) );
-		Node<TupleSpace> node2 = new Node<TupleSpace>("node2", ts2 );
+		Node node2 = new Node("node2", ts2 );
 		TupleSpace ts3 =new TupleSpace();
 		ts3.put(new Tuple(("TEST_2") ) );
-		Node<TupleSpace> node3 = new Node<TupleSpace>("node3", ts3);
+		Node node3 = new Node("node3", ts3);
 		node1.addPort(vp);
 		node1.setGroupActionWaitingTime(100);
 		node2.addPort(vp);

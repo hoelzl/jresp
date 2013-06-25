@@ -170,30 +170,29 @@ public abstract class AbstractPort implements MessageSender, MessageReceiver {
 
 	@Override
 	public void sendGroupPutRequest(String name, int session,
-			String[] attributes, Tuple t) throws IOException, InterruptedException {
+			GroupPredicate groupPredicate , Tuple t) throws IOException, InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
-		send(new GroupPutRequest(source, session, attributes,t));		
+		send(new GroupPutRequest(source, session, groupPredicate,t));		
 	}
 
 	@Override
 	public void sendGroupGetRequest(String name, int session,
-			String[] attributes, Template t) throws IOException, InterruptedException {
+			GroupPredicate groupPredicate , Template t) throws IOException, InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
-		send( new GroupGetRequest(source, session, t, attributes));
+		send( new GroupGetRequest(source, session, t, groupPredicate));
 	}
 
 	@Override
 	public void sendGroupQueryRequest(String name, int session,
-			String[] attributes, Template t) throws IOException, InterruptedException {
+			GroupPredicate groupPredicate , Template t) throws IOException, InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
-		send( new GroupQueryRequest(source, session, t, attributes));
+		send( new GroupQueryRequest(source, session, t, groupPredicate));
 	}
 
 	@Override
-	public void sendGroupPutReply(PointToPoint l, String name, int session, int tupleSession,
-			Attribute[] attributes) throws IOException, InterruptedException {
+	public void sendGroupPutReply(PointToPoint l, String name, int session, int tupleSession) throws IOException, InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
-		send(l.getAddress(),new GroupPutReply(source, session, l.getName(), tupleSession, attributes));		
+		send(l.getAddress(),new GroupPutReply(source, session, l.getName(), tupleSession));		
 	}
 
 
@@ -208,10 +207,10 @@ public abstract class AbstractPort implements MessageSender, MessageReceiver {
 
 	@Override
 	public void sendGroupQueryReply(PointToPoint l, String name, int session,
-			Attribute[] attributes, Tuple t) throws IOException,
+			Tuple t) throws IOException,
 			InterruptedException {
 		PointToPoint source = new PointToPoint(name, getAddress());
-		send(l.getAddress(),new GroupQueryReply(source, session, l.getName(), attributes, t));		
+		send(l.getAddress(),new GroupQueryReply(source, session, l.getName(), t));		
 	}
 
 	public void sendAttributeRequest(PointToPoint l, String name,

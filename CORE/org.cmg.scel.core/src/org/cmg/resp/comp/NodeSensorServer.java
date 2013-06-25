@@ -16,8 +16,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.cmg.resp.RESPFactory;
+import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Tuple;
 
 import com.google.gson.Gson;
@@ -28,12 +32,12 @@ import com.google.gson.Gson;
  * @author Michele Loreti
  *
  */
-public class NodeSensorServer extends NodeSensor {
+public class NodeSensorServer extends AbstractSensor implements Observer {
 
 	/**
 	 * The sensor collecting data.
 	 */
-	private NodeSensor sensor;
+	private AbstractSensor sensor;
 	
 	/**
 	 * Server socket used to accept remote connections.
@@ -45,18 +49,13 @@ public class NodeSensorServer extends NodeSensor {
 	 */
 	private Gson gson = RESPFactory.getGSon();
 
-	public NodeSensorServer(NodeSensor sensor , int port ) throws IOException {
-		super( sensor.name );
+	public NodeSensorServer(AbstractSensor sensor , int port ) throws IOException {
+		super( sensor.getName() );
 		this.sensor = sensor;
 		this.ssocket = new ServerSocket(port);
 		new Thread(new SensorThread()).start();
 	}
 
-	@Override
-	public Tuple getValue() {
-		return sensor.getValue();
-	}
-	
 	public class SensorThread implements Runnable {
 
 		@Override
@@ -76,6 +75,11 @@ public class NodeSensorServer extends NodeSensor {
 		
 		}
 
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		setValue(this.sensor.getValue());
 	}
 	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Copyright (c) 2013 Concurrency and Mobility Group.
  * Universitˆ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
@@ -12,42 +12,43 @@
  */
 package org.cmg.resp.topology;
 
+import java.util.HashMap;
+
+import org.cmg.resp.knowledge.Attribute;
 
 /**
  * @author Michele Loreti
  *
  */
-public class VirtualPortAddress extends Address {
+public class AnyComponent extends GroupPredicate {
 
-	public static final String ADDRESS_CODE = "virtual";
-	private int id;
+	public AnyComponent() {
+		super(GroupPredicate.PredicateType.TRUE);
+	}
 
-	public VirtualPortAddress(int id) {
-		super(ADDRESS_CODE);
-		this.id = id;
+	@Override
+	public boolean evaluate(HashMap<String, Attribute> data) {
+		return true;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof VirtualPortAddress) {
-			VirtualPortAddress vpa = (VirtualPortAddress) obj;
-			return this.id == vpa.id;
+		if (obj == null) {
+			return false;
 		}
-		return false;
+		return obj instanceof AnyComponent;
 	}
 
 	@Override
 	public int hashCode() {
-		return ADDRESS_CODE.hashCode()^id;
+		return "true".hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return ADDRESS_CODE+":"+id;
+		return "true";
 	}
 	
-	public int getId() {
-		return id;
-	}
+	
 
 }

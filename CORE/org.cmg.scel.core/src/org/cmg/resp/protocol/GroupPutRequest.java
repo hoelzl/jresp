@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 
 /**
@@ -35,7 +36,7 @@ public class GroupPutRequest extends Message {
 	/**
 	 * Names of attributes used to select target nodes
 	 */
-	private String[] attributes;
+	private GroupPredicate groupPredicate;
 
 	/**
 	 * Creates a new object instance.
@@ -45,9 +46,9 @@ public class GroupPutRequest extends Message {
 	 * @param attributes names of attributes used to select target nodes
 	 * @param tuple tuple to put
 	 */
-	public GroupPutRequest(PointToPoint source, int session, String[] attributes, Tuple tuple) {
+	public GroupPutRequest(PointToPoint source, int session, GroupPredicate groupPredicate , Tuple tuple) {
 		super(MessageType.GROUP_PUT_REQUEST, source, session);
-		this.attributes = attributes;
+		this.groupPredicate = groupPredicate;
 		this.tuple = tuple;
 
 	}
@@ -65,27 +66,27 @@ public class GroupPutRequest extends Message {
 	 * 
 	 * @return the names of attributes used to select target nodes.
 	 */
-	public String[] getAttributes() {
-		return attributes;
+	public GroupPredicate getGroupPredicate() {
+		return groupPredicate;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			GroupPutRequest ggr = (GroupPutRequest) obj;
-			return Arrays.deepEquals(attributes, ggr.attributes)&&tuple.equals(ggr.tuple);
+			return this.groupPredicate.equals(ggr.groupPredicate)&&tuple.equals(ggr.tuple);
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+" , "+Arrays.toString(attributes)+" , "+tuple.toString()+" ]";
+		return getType()+"["+super.toString()+" , "+groupPredicate+" , "+tuple.toString()+" ]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^Arrays.hashCode(attributes)^tuple.hashCode();
+		return super.hashCode()^groupPredicate.hashCode()^tuple.hashCode();
 	}
 
 	/**

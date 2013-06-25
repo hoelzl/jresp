@@ -42,18 +42,17 @@ public interface MessageSender {
 
 	void sendQueryRequest(PointToPoint l, String name, int session, Template t)  throws IOException, InterruptedException;
 
-	void sendGroupPutRequest(String name, int session, String[] attributes, Tuple t)  throws IOException, InterruptedException;
+	void sendGroupPutRequest(String name, int session, GroupPredicate groupPredicate , Tuple t)  throws IOException, InterruptedException;
 
-	void sendGroupGetRequest(String name, int session, String[] attributes , Template t)  throws IOException, InterruptedException;
+	void sendGroupGetRequest(String name, int session, GroupPredicate groupPredicate , Template t)  throws IOException, InterruptedException;
 
-	void sendGroupQueryRequest(String name, int session, String[] attributes , Template t)  throws IOException, InterruptedException;
+	void sendGroupQueryRequest(String name, int session, GroupPredicate groupPredicate , Template t)  throws IOException, InterruptedException;
 
-	void sendGroupPutReply(PointToPoint l, String name, int session, int tupleSession,
-			Attribute[] attributes)  throws IOException, InterruptedException;
+	void sendGroupPutReply(PointToPoint l, String name, int session, int tupleSession)  throws IOException, InterruptedException;
 
 	void sendGroupGetReply(PointToPoint l, String name, int session, int tupleSession, Attribute[] attributes, Tuple t)  throws IOException, InterruptedException;
 
-	void sendGroupQueryReply(PointToPoint l, String name, int session, Attribute[] attributes, Tuple t)  throws IOException, InterruptedException;
+	void sendGroupQueryReply(PointToPoint l, String name, int session, Tuple t)  throws IOException, InterruptedException;
 
 	void deliver(Message msg) throws IOException, InterruptedException;
 

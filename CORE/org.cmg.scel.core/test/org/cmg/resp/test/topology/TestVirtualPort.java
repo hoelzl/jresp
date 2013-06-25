@@ -36,6 +36,7 @@ import org.cmg.resp.protocol.Message;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
+import org.cmg.resp.topology.HasValue;
 import org.cmg.resp.topology.MessageDispatcher;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.VirtualPort;
@@ -164,30 +165,30 @@ public class TestVirtualPort {
 
 	@Test
 	public void testSendGroupPutRequest() throws IOException, InterruptedException {
-		port.sendGroupPutRequest(NODE3, 0, new String[] { "attr1" , "attr2" } , TUPLE );
-		assertEquals( new GroupPutRequest(new PointToPoint(NODE3, ADDRESS), 0, new String[] { "attr1" , "attr2" }, TUPLE), receivedAtOne);
-		assertEquals( new GroupPutRequest(new PointToPoint(NODE3, ADDRESS), 0, new String[] { "attr1" , "attr2" }, TUPLE), receivedAtTwo);
+		port.sendGroupPutRequest(NODE3, 0, new HasValue("attr1", 32) , TUPLE );
+		assertEquals( new GroupPutRequest(new PointToPoint(NODE3, ADDRESS), 0, new HasValue("attr1", 32), TUPLE), receivedAtOne);
+		assertEquals( new GroupPutRequest(new PointToPoint(NODE3, ADDRESS), 0, new HasValue("attr1", 32), TUPLE), receivedAtTwo);
 	}
 
 	@Test
 	public void testSendGroupGetRequest() throws IOException, InterruptedException {
-		port.sendGroupGetRequest(NODE3, 0, new String[] { "attr1" , "attr2" } , TEMPLATE );
-		assertEquals( new GroupGetRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new String[] { "attr1" , "attr2" }), receivedAtOne);
-		assertEquals( new GroupGetRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new String[] { "attr1" , "attr2" }), receivedAtTwo);
+		port.sendGroupGetRequest(NODE3, 0, new HasValue("attr1", 32) , TEMPLATE );
+		assertEquals( new GroupGetRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new HasValue("attr1", 32)), receivedAtOne);
+		assertEquals( new GroupGetRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new HasValue("attr1", 32)), receivedAtTwo);
 	}
 
 	@Test
 	public void testSendGroupQueryRequest() throws IOException, InterruptedException {
-		port.sendGroupQueryRequest(NODE3, 0, new String[] { "attr1" , "attr2" } , TEMPLATE );
-		assertEquals( new GroupQueryRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new String[] { "attr1" , "attr2" }), receivedAtOne);
-		assertEquals( new GroupQueryRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new String[] { "attr1" , "attr2" }), receivedAtTwo);
+		port.sendGroupQueryRequest(NODE3, 0, new HasValue("attr1", 32) , TEMPLATE );
+		assertEquals( new GroupQueryRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new HasValue("attr1", 32)), receivedAtOne);
+		assertEquals( new GroupQueryRequest(new PointToPoint(NODE3, ADDRESS), 0, TEMPLATE, new HasValue("attr1", 32)), receivedAtTwo);
 	}
 
 	@Test
 	public void testSendGroupPutReply() throws IOException, InterruptedException {
-		port.sendGroupPutReply(new PointToPoint(NODE2, ADDRESS), NODE1, 0, 0, new Attribute[0]);
+		port.sendGroupPutReply(new PointToPoint(NODE2, ADDRESS), NODE1, 0, 0);
 		assertNull(receivedAtOne);
-		assertEquals( new GroupPutReply(new PointToPoint(NODE1, ADDRESS), 0, NODE2, 0, new Attribute[0]), receivedAtTwo);
+		assertEquals( new GroupPutReply(new PointToPoint(NODE1, ADDRESS), 0, NODE2, 0), receivedAtTwo);
 	}
 
 	@Test
@@ -199,9 +200,9 @@ public class TestVirtualPort {
 
 	@Test
 	public void testSendGroupQueryReply() throws IOException, InterruptedException {
-		port.sendGroupQueryReply(new PointToPoint(NODE2, ADDRESS), NODE1, 0, new Attribute[0],TUPLE);
+		port.sendGroupQueryReply(new PointToPoint(NODE2, ADDRESS), NODE1, 0, TUPLE);
 		assertNull(receivedAtOne);
-		assertEquals( new GroupQueryReply(new PointToPoint(NODE1, ADDRESS), 0, NODE2, new Attribute[0],TUPLE), receivedAtTwo);
+		assertEquals( new GroupQueryReply(new PointToPoint(NODE1, ADDRESS), 0, NODE2,TUPLE), receivedAtTwo);
 	}
 
 }

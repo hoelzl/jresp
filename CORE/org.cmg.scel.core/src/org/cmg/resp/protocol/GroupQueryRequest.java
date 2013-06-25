@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 
 /**
@@ -29,7 +30,7 @@ public class GroupQueryRequest extends Message {
 
 	
 	private Template template;
-	private String[] attributes;
+	private GroupPredicate groupPredicate;
 
 	/**
 	 * 
@@ -38,13 +39,13 @@ public class GroupQueryRequest extends Message {
 	 * @param source address of the node originating the message
 	 * @param session an integer used to relate this message to a conversation
 	 * @param template query termplate
-	 * @param attributes attribute names
+	 * @param groupPredicate attribute names
 	 */
 	public GroupQueryRequest(PointToPoint source, int session,
-			Template template, String[] attributes) {
+			Template template, GroupPredicate groupPredicate) {
 		super(MessageType.GROUP_QUERY_REQUEST, source, session);
 		this.template = template;
-		this.attributes = attributes;
+		this.groupPredicate = groupPredicate;
 
 	}
 
@@ -72,27 +73,27 @@ public class GroupQueryRequest extends Message {
 	 * @return the attribute names used to evaluate if a node is involved
 	 * or not in the communication.
 	 */
-	public String[] getAttributes() {
-		return attributes;
+	public GroupPredicate getAttributes() {
+		return groupPredicate;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			GroupQueryRequest ggr = (GroupQueryRequest) obj;
-			return template.equals(ggr.template)&&Arrays.deepEquals(attributes, ggr.attributes);
+			return template.equals(ggr.template)&&groupPredicate.equals(ggr.groupPredicate);
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+","+template.toString()+" , "+Arrays.toString(attributes)+"]";
+		return getType()+"["+super.toString()+","+template.toString()+" , "+groupPredicate+"]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^template.hashCode()^Arrays.hashCode(attributes);
+		return super.hashCode()^template.hashCode()^groupPredicate.hashCode();
 	}
 
 }

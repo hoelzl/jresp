@@ -33,12 +33,12 @@ public class VirtualPingPong {
 
 	public static void main(String[] argv) throws IOException {
 		VirtualPort vp = new VirtualPort(10);
-		Node<TupleSpace> pingNode = new Node<TupleSpace>("ping", new TupleSpace());
+		Node pingNode = new Node("ping", new TupleSpace());
 		pingNode.addPort(vp);
 		Agent ping = new PingAgent();
 		Agent pong = new PongAgent();
 		pingNode.addAgent(ping);
-		Node<TupleSpace> pongNode = new Node<TupleSpace>("pong", new TupleSpace());
+		Node pongNode = new Node("pong", new TupleSpace());
 		pongNode.addPort(vp);
 		pongNode.addAgent(pong);
 		pongNode.start();

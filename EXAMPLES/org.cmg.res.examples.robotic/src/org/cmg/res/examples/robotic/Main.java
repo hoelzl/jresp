@@ -76,9 +76,9 @@ public class Main extends JFrame {
 	
 	private void instantiateNet() {
 		VirtualPort vp = new VirtualPort(10);
-		Hashtable<String, Node<TupleSpace>> nodes = new Hashtable<String, Node<TupleSpace>>();
+		Hashtable<String, Node> nodes = new Hashtable<String, Node>();
 		for (int i=0 ;i<scenario.getSize();i++) {
-			Node<TupleSpace> n = new Node<TupleSpace>("Robot"+i, new TupleSpace());
+			Node n = new Node("Robot"+i, new TupleSpace());
 			n.addPort(vp);
 			n.setGroupActionWaitingTime(250);
 			n.addActuator(scenario.getDirectionActuator(i));
@@ -97,8 +97,8 @@ public class Main extends JFrame {
 			) {
 				
 				@Override
-				protected Attribute doEval(Tuple t) {
-					return new Attribute("task", t.getElementAt(Integer.class, 1));
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Integer.class, 1);
 				}
 			});
 			Agent a = new ManagedElement();
@@ -111,7 +111,7 @@ public class Main extends JFrame {
 			n.addAgent(a);
 			nodes.put(n.getName(), n);
 		}
-		for (Node<?> n: nodes.values()) {
+		for (Node n: nodes.values()) {
 			n.start();
 		}
 	}

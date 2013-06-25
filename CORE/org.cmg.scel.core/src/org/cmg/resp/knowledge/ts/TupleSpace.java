@@ -14,23 +14,24 @@ package org.cmg.resp.knowledge.ts;
 
 import java.util.LinkedList;
 
-import org.cmg.resp.knowledge.Knowledge;
+import org.cmg.resp.knowledge.KnowledgeManager;
+import org.cmg.resp.knowledge.KnowledgeListener;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 
 /**
- * This class provides a tuple-base implementation of {@link Knowledge}. 
+ * This class provides a tuple-base implementation of {@link KnowledgeManager}. 
  * 
  * @author Michele Loreti
  *
  */
-public class TupleSpace implements Knowledge {
+public class TupleSpace implements KnowledgeManager {
 	
 	/**
 	 * Elements in the tuple space are arranged in a list. 
 	 */
 	LinkedList<Tuple> elements;
-	
+		
 	public TupleSpace() {
 		elements = new LinkedList<Tuple>();
 	}
@@ -149,5 +150,8 @@ public class TupleSpace implements Knowledge {
 	public Tuple[] getKnowledgeItems() {
 		return elements.toArray(new Tuple[elements.size()]);
 	}
+	
+
+	
 
 }

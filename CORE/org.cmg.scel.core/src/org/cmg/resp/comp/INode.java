@@ -1,26 +1,31 @@
 package org.cmg.resp.comp;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.behaviour.ContextState;
+import org.cmg.resp.knowledge.AbstractActuator;
+import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Attribute;
-import org.cmg.resp.knowledge.Knowledge;
+import org.cmg.resp.knowledge.KnowledgeManager;
+import org.cmg.resp.knowledge.KnowledgeListener;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.AbstractPort;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
-public interface INode<T extends Knowledge> {
-
+public interface INode {	
+	
 	/**
 	 * Adds an actuator to the current node.
 	 * 
 	 * @param actuator the actuator to add to the node.
 	 */
-	public abstract void addActuator(NodeActuator actuator);
+	public abstract void addActuator(AbstractActuator actuator);
 
 	/**
 	 * Executes agent <code>a</code>
@@ -48,7 +53,7 @@ public interface INode<T extends Knowledge> {
 	 * 
 	 * @param sensor the sensor to add
 	 */
-	public abstract void addSensor(NodeSensor sensor);
+	public abstract void addSensor(AbstractSensor sensor);
 
 	/**
 	 * Gets a tuple matching the parameter from the local knowledge repository. This action
@@ -78,7 +83,7 @@ public interface INode<T extends Knowledge> {
 	 * 
 	 * @return an array containing node's actuators.
 	 */
-	public abstract NodeActuator[] getActuators();
+	public abstract AbstractActuator[] getActuators();
 
 	/**
 	 * Returns attribute named <code>name</code>
@@ -114,7 +119,7 @@ public interface INode<T extends Knowledge> {
 	 * 
 	 * @return the array of sensors attached to the node.
 	 */
-	public abstract NodeSensor[] getSensors();
+	public abstract AbstractSensor[] getSensors();
 
 	/**
 	 * Returns node status.
@@ -178,6 +183,9 @@ public interface INode<T extends Knowledge> {
 	public abstract Tuple query(Template t, Target l)
 			throws InterruptedException, IOException;
 
+	
+	public abstract HashMap<String,Attribute> getInterface();
+	
 	/**
 	 * 
 	 * @param to
@@ -202,17 +210,35 @@ public interface INode<T extends Knowledge> {
 			throws IOException, InterruptedException;
 
 	public abstract void gPut(PointToPoint from, int session,
-			String[] attributes, Tuple tuple) throws IOException,
+			GroupPredicate groupPredicate, Tuple tuple) throws IOException,
 			InterruptedException;
 
 	public abstract void gGet(PointToPoint from, int session,
-			String[] attributes, Template template);
+			GroupPredicate groupPredicate, Template template);
 
 	public abstract void gQuery(PointToPoint from, int session,
-			String[] attributes, Template template);
+			GroupPredicate groupPredicate, Template template);
 
 	public abstract String fresh();
 
 	public abstract Tuple queryp(Template template);
+	
+	/**
+	 * Add a knowledge listener to the knowledge repository.
+	 * 
+	 * @param listener a knowledge listener.
+	 */
+	public void addKnowledgeListener( KnowledgeListener listener );
 
+	/**
+	 * Remove a knowledge listener from the knowledge repository.
+	 * 
+	 * @param listener a knowledge listener.
+	 */
+	public void removeKnowledgeListener( KnowledgeListener listener );
+	
+	
+	public void addAttributeListener( AttributeListener listener );
+
+	public void removeAttributeListener( AttributeListener listener );
 }

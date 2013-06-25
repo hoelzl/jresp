@@ -20,6 +20,7 @@ import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.AnyComponent;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.Self;
@@ -30,12 +31,7 @@ import org.cmg.resp.topology.Self;
  */
 public class CommunicationAgent extends Agent {
 
-	public static GroupPredicate any = new GroupPredicate() {		
-		@Override
-		public boolean evaluate(Attribute[] data) {
-			return true;
-		}
-	};
+	public static GroupPredicate any = new AnyComponent();
 
 	private Template informedTemplate = new Template( 
 			new ActualTemplateField( "INFORMED" ),

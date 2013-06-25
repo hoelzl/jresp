@@ -23,8 +23,11 @@ import org.cmg.resp.protocol.Message;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
+import org.cmg.resp.topology.HasValue;
 import org.cmg.resp.topology.PointToPoint;
+import org.cmg.resp.topology.ServerPortAddress;
 import org.cmg.resp.topology.SocketPortAddress;
+import org.cmg.resp.topology.VirtualPortAddress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,8 +44,11 @@ public class MessageSerializationDeserialization {
 	
 	@Test
 	public void testSerializeDeserializeAck() {
-		Ack ack = new Ack(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo");
+//		Ack ack = new Ack(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo");
+//		Ack ack = new Ack(new PointToPoint("test", new VirtualPortAddress(9999)), 23,"pippo");
+		Ack ack = new Ack(new PointToPoint("test", new ServerPortAddress(9999)), 23,"pippo");
 		String txt = gson.toJson(ack);
+		System.out.println(txt);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(ack, msg);
 	}
@@ -76,6 +82,7 @@ public class MessageSerializationDeserialization {
 						}
 				);
 		String txt = gson.toJson(fail);
+		System.out.println(txt);
 		Message msg = gson.fromJson(txt, Message.class);
 		assertEquals(fail, msg);
 	}
@@ -167,8 +174,9 @@ public class MessageSerializationDeserialization {
 					new FormalTemplateField( Integer.class ) ,
 					new ActualTemplateField( new AnObject(2, 3) ) , 
 					new ActualTemplateField( new AnObjectWithArrays( new AnObject(1, 2) , new AnObject(3, 4) ) ) 
-				), 
-				new String[] { "attr1" , "attr2" }
+				),
+				new HasValue("attr1", 35)
+				//new String[] { "attr1" , "attr2" }
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -187,8 +195,8 @@ public class MessageSerializationDeserialization {
 						new FormalTemplateField( Integer.class ) ,
 						new ActualTemplateField( new AnObject(2, 3) ) , 
 						new ActualTemplateField( new AnObjectWithArrays( new AnObject(1, 2) , new AnObject(3, 4) ) ) 
-				), 
-				new String[] { "attr1" , "attr2" }
+				),
+				new HasValue("attr1", 35)
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
@@ -202,7 +210,7 @@ public class MessageSerializationDeserialization {
 			new GroupPutRequest(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,
-				new String[] { "attr1" , "attr2" },
+				new HasValue("attr1", 35),
 				new Tuple(  true , 34 )
 			);
 		String txt = gson.toJson(request);
@@ -236,10 +244,6 @@ public class MessageSerializationDeserialization {
 			new GroupQueryReply(
 				new PointToPoint("test",new SocketPortAddress(9999)) , 
 				34 ,"pippo", 
-				new Attribute[] {
-					new Attribute("attr1" , 34 ),
-					new Attribute("attr2" , false )
-				},
 				new Tuple( true , 34 )
 			);
 		String txt = gson.toJson(request);
@@ -255,11 +259,7 @@ public class MessageSerializationDeserialization {
 						new PointToPoint("test", new SocketPortAddress(9999)), 
 						23,
 						"pippo", 
-						34,
-						new Attribute[] {
-							new Attribute("attr1",34),
-							new Attribute("attr2",false)
-						}
+						34
 				);
 		String txt = gson.toJson(fail);
 		System.out.println(txt);

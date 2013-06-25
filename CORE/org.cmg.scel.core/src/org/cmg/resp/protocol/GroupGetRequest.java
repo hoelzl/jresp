@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 
 /**
@@ -35,7 +36,7 @@ public class GroupGetRequest extends Message {
 	/**
 	 * Attributes used to select target nodes.
 	 */
-	private String[] attributes;
+	private GroupPredicate groupPredicate;
 
 	/**
 	 * Crate a new instance.
@@ -43,12 +44,12 @@ public class GroupGetRequest extends Message {
 	 * @param source address of the node originating the message
 	 * @param session an integer used to relate this message to a conversation
 	 * @param template get template
-	 * @param attributes attribute values
+	 * @param groupPredicate attribute values
 	 */
-	public GroupGetRequest(PointToPoint source, int session, Template template, String[] attributes) {
+	public GroupGetRequest(PointToPoint source, int session, Template template, GroupPredicate groupPredicate) {
 		super(MessageType.GROUP_GET_REQUEST, source, session);
 		this.template = template;
-		this.attributes = attributes;
+		this.groupPredicate = groupPredicate;
 
 	}
 
@@ -70,31 +71,31 @@ public class GroupGetRequest extends Message {
 	}
 
 	/**
-	 * Returns attributes used to identify target nodes.
+	 * Returns the predicate used to identify target nodes.
 	 * 
-	 * @return attributes used to identify target nodes.
+	 * @return the predicate used to identify target nodes.
 	 */
-	public String[] getAttributes() {
-		return attributes;
+	public GroupPredicate getGroupPredicate() {
+		return groupPredicate;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			GroupGetRequest ggr = (GroupGetRequest) obj;
-			return template.equals(ggr.template)&&Arrays.deepEquals(attributes, ggr.attributes);
+			return template.equals(ggr.template)&&groupPredicate.equals( ggr.groupPredicate ) ;
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+","+template.toString()+" , "+Arrays.toString(attributes)+"]";
+		return getType()+"["+super.toString()+","+template.toString()+" , "+groupPredicate+"]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^template.hashCode()^Arrays.hashCode(attributes);
+		return super.hashCode()^template.hashCode()^groupPredicate.hashCode();
 	}
 
 	

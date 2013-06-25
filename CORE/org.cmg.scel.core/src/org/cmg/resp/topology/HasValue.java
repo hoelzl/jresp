@@ -12,6 +12,8 @@
  */
 package org.cmg.resp.topology;
 
+import java.util.HashMap;
+
 import org.cmg.resp.knowledge.Attribute;
 
 /**
@@ -21,22 +23,54 @@ import org.cmg.resp.knowledge.Attribute;
 public class HasValue extends GroupPredicate {
 	
 	private Object value;
+	
+	private String attribute;
 
-	public HasValue( String name , Object value ) {
-		super(name);
+	public HasValue( String attribute , Object value ) {
+		super(GroupPredicate.PredicateType.ISEQUAL);
+		this.attribute = attribute;
 		this.value = value;
 	}
-	
-	
+		
 	@Override
-	public boolean evaluate(Attribute[] data) {
-		if (value == data[0].getValue()) {
-			return true;
-		}
-		if (value == null) {
+	public boolean evaluate(HashMap<String, Attribute> data) {
+		Attribute a = data.get(attribute);
+		if (a == null) {
 			return false;
 		}
-		return value.equals(data[0].getValue());
+		Object o = a.getValue();
+		return (value == o)||((value != null)&&(value.equals(o)));
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof HasValue) {
+			HasValue hv = (HasValue) obj;
+			return attribute.equals(hv.attribute)&&value.equals(hv.value);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return attribute.hashCode()^value.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "{"+attribute+"=="+value+"}";
+	}
+
+	public String getAttribute() {
+		return attribute;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	
 }

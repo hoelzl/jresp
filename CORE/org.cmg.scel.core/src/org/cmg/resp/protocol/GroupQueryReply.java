@@ -27,7 +27,6 @@ import org.cmg.resp.topology.PointToPoint;
  */
 public class GroupQueryReply extends UnicastMessage {
 
-	private Attribute[] values;
 	private Tuple tuple;
 
 	/**
@@ -41,9 +40,8 @@ public class GroupQueryReply extends UnicastMessage {
 	 * @param values values of attributes contained in the associated {@link GroupPutRequest}
 	 */
 	public GroupQueryReply(PointToPoint source, int session,
-			String target, Attribute[] values, Tuple tuple) {
+			String target, Tuple tuple) {
 		super(MessageType.GROUP_QUERY_REPLY, source, session, target);
-		this.values = values;
 		this.tuple = tuple;
 
 	}
@@ -54,15 +52,6 @@ public class GroupQueryReply extends UnicastMessage {
 	@Override
 	public void accept(MessageHandler messageHandler) throws IOException, InterruptedException {
 		messageHandler.handle(this);
-	}
-
-	/**
-	 * Returns the values of attributes
-	 * 
-	 * @return values of attributes.
-	 */
-	public Attribute[] getAttributes() {
-		return values;
 	}
 
 	/**
@@ -78,19 +67,19 @@ public class GroupQueryReply extends UnicastMessage {
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
 			GroupQueryReply gqr = (GroupQueryReply) obj;
-			return Arrays.deepEquals(values, gqr.values)&&tuple.equals(gqr.tuple);
+			return tuple.equals(gqr.tuple);
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"["+super.toString()+","+Arrays.toString(values)+" , "+tuple.toString()+"]";
+		return getType()+"["+super.toString()+","+tuple.toString()+"]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^Arrays.hashCode(values)^tuple.hashCode();
+		return super.hashCode()^tuple.hashCode();
 	}
 	
 }

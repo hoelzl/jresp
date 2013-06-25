@@ -10,10 +10,8 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.resp.comp;
+package org.cmg.resp.knowledge;
 
-import org.cmg.resp.knowledge.Template;
-import org.cmg.resp.knowledge.Tuple;
 
 /**
  * This abstract class identifies an actuator that, associated
@@ -29,7 +27,7 @@ import org.cmg.resp.knowledge.Tuple;
  * @author Michele Loreti
  *
  */
-public abstract class NodeActuator {
+public abstract class AbstractActuator {
 	
 	/**
 	 * Actuator name
@@ -41,7 +39,7 @@ public abstract class NodeActuator {
 	 * 
 	 * @param name actuator name
 	 */
-	public NodeActuator( String name ) {
+	public AbstractActuator( String name ) {
 		this.name = name;
 	}
 

@@ -20,8 +20,10 @@ import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.AnyComponent;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
+import org.cmg.resp.topology.HasValue;
 import org.cmg.resp.topology.Self;
 
 /**
@@ -30,15 +32,8 @@ import org.cmg.resp.topology.Self;
  */
 public class CommunicationAgent extends Agent {
 
-	public GroupPredicate color = new GroupPredicate( "isgreen" ) {		
-		@Override
-		public boolean evaluate(Attribute[] data) {
-			if (data.length<1) {
-				return false;
-			}
-			return data[0].getValue().equals(CommunicationAgent.this.isGreen);
-		}
-	};
+	public GroupPredicate green = new HasValue( "isgreen" , true );
+	public GroupPredicate red = new HasValue( "isgreen" , false );
 	
 	
 	private Template gpsTemplate = new Template(
@@ -83,7 +78,12 @@ public class CommunicationAgent extends Agent {
 	@Override
 	protected void doRun() {
 		try {
-			Tuple t = query(directionTemplate, new Group(color));
+			Tuple t; 
+			if (isGreen) {
+				t = query(directionTemplate, new Group(green));
+			} else {
+				t = query(directionTemplate, new Group(red));
+			}
 			put( t , Self.SELF );
 			get( informedTemplate , Self.SELF );
 			put( new Tuple( ("INFORMED") , (true)) , Self.SELF );

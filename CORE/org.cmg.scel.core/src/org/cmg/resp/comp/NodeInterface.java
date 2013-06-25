@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Copyright (c) 2013 Concurrency and Mobility Group.
  * Universitˆ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
@@ -12,27 +12,20 @@
  */
 package org.cmg.resp.comp;
 
-import java.util.Observable;
-
-import org.cmg.resp.knowledge.Tuple;
-
+import java.util.HashMap;
 
 /**
  * @author Michele Loreti
  *
  */
-public abstract class NodeSensor extends Observable {
+public class NodeInterface {
 	
-	protected String name;
+	protected INode node;
 	
-	public NodeSensor(String name) {
-		this.name = name;
+	protected HashMap<String, AttributeCollector> attributes;
+
+	public NodeInterface(INode node) {
+		this.node = node;
 	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public abstract Tuple getValue();
 	
 }

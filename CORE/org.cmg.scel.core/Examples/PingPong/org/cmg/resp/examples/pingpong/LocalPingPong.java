@@ -28,7 +28,7 @@ public class LocalPingPong {
 	
 	public static void main(String[] argv) {
 		
-		Node<TupleSpace> node = new Node<TupleSpace>("pingpong", new TupleSpace());
+		Node node = new Node("pingpong", new TupleSpace());
 		Agent ping = new PingAgent();
 		Agent pong = new PongAgent();
 		node.addAgent(ping);		

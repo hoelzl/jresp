@@ -21,6 +21,7 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.topology.AnyComponent;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.Self;
@@ -34,12 +35,7 @@ public class GroupPut {
 
 	public static VirtualPort vp = new VirtualPort(10);
 
-	public static GroupPredicate any = new GroupPredicate() {		
-		@Override
-		public boolean evaluate(Attribute[] data) {
-			return true;
-		}
-	};
+	public static GroupPredicate any = new AnyComponent();
 	
 	
 	public static class GPutAgent extends Agent {
@@ -86,9 +82,9 @@ public class GroupPut {
 	}
 
 	public static void main(String[] argv) {
-		Node<TupleSpace> node1 = new Node<TupleSpace>("node1", new TupleSpace());
-		Node<TupleSpace> node2 = new Node<TupleSpace>("node2", new TupleSpace());
-		Node<TupleSpace> node3 = new Node<TupleSpace>("node3", new TupleSpace());
+		Node node1 = new Node("node1", new TupleSpace());
+		Node node2 = new Node("node2", new TupleSpace());
+		Node node3 = new Node("node3", new TupleSpace());
 		node1.addPort(vp);
 		node1.setGroupActionWaitingTime(100);
 		node2.addPort(vp);

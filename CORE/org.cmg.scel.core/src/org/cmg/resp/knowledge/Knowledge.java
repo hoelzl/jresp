@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Copyright (c) 2013 Concurrency and Mobility Group.
  * Universitˆ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
@@ -12,102 +12,206 @@
  */
 package org.cmg.resp.knowledge;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * This interface identifies a generic <em>knowledge</em> and provides the high 
- * level primitives to manage pieces of relevant information coming from different 
- * sources. 
+ * This class handles the knowledge installed in a SCEL component. 
+ * 
  * 
  * @author Michele Loreti
  *
  */
-public interface Knowledge {
-	
-	/**
-	 * Adds <code>element<code> to the knowledge. This method returns <code>true</code>
-	 * if the new element has been successfully added to the knowledge
-	 * and <code>false</code> otherwise.
-	 * 
-	 * @param element	the element to add to the knowledge.
-	 * @return returns <code>true</code> if the tuple has been correctly added to
-	 * the knowledge.
-	 * 
-	 */
-	public boolean put( Tuple t );
-	
-	/**
-	 * Removes from the knowledge a tuple matching the template. This is a 
-	 * blocking operation. If the knowledge does not contain a matching
-	 * tuple, the thread is blocked. 
-	 * 
-	 * @param template template used to retrieve tuple
-	 * @return a tuple matching template <code>template</code>
-	 * 
-	 * @throws InterruptedException if another thread has interrupted the current thread.
-	 */
-	public Tuple get( Template template ) throws InterruptedException;
-	
-	
-	/**
-	 * Removes from the knowledge a tuple matching the template. Differently from
-	 * <code>get</code>, this is a no-blocking operation. If the knowledge does not contain a matching
-	 * tuple, value <code>null</code> is returned.
-	 * 
-	 * @param template template used to retrieve tuple
-	 * @return a tuple matching template <code>template</code>
-	 * 
-	 */
-	public Tuple getp( Template template );
-
-	
-	/**
-	 * Removes from the knowledge all the tuple matching the template.
-	 * 
-	 * @param template template used to retrieve tuple
-	 * @return the list of tuples matching template <code>template</code>
-	 * 
-	 */
-	public LinkedList<Tuple> getAll( Template template );
-	
-	/**
-	 * Checks if the knowledge contains (or can infer) a tuple matching the template. This is a 
-	 * blocking operation. The matching tuple is not removed from the knowledge.
-	 * If the knowledge does not contain a matching tuple, the thread is blocked. 
-	 * 
-	 * @param template template used to retrieve tuple
-	 * @return a tuple matching template <code>template</code>
-	 * 
-	 * @throws InterruptedException if another thread has interrupted the current thread.
-	 */
-	public Tuple query( Template template ) throws InterruptedException;
+public class Knowledge {
 
 	/**
-	 * Checks if the knowledge contains (or can infer) a tuple matching the template. Differently from
-	 * <code>query</code>, this is a no-blocking operation. If the knowledge does not contain a matching
-	 * tuple, value <code>null</code> is returned.
-	 * 
-	 * @param template template used to retrieve tuple
-	 * @return a tuple matching template <code>template</code>
-	 * 
+	 * A reference to a <code>KnowledgeManager</code>.
 	 */
-	public Tuple queryp( Template template );
+	protected KnowledgeManager knowledgeManager;
+	
 
 	/**
-	 * Returns the list of tuples matching <code>template</code> that can be inferred or that
-	 * are contained in the knowledge.
-	 * 
-	 * @param template template used to retrieve tuple
-	 * @return the list of tuples matching template <code>template</code>
-	 * 
-	 */	
-	public LinkedList<Tuple> queryAll( Template template );
+	 * A list of <code>KnowledgeAdapter</code>s. These adapters can be
+	 * used to include external knowledge repositories in the knowledge. 
+	 */
+	protected LinkedList<KnowledgeAdapter> adapters;
+
+	/**
+	 * Active listeners registered to the knowledge. When a knowledge item
+	 * is inserted/removed to/from the knowledge, all listeners are notified.
+	 */
+	protected LinkedList<KnowledgeListener> listeners;
 	
 	/**
-	 * Returns an {@link Iterator} with all the items in the knowledge. 
-	 *  
-	 * @return an {@link Iterator} with all the items in the knowledge. 
+	 * A list of <code>AbstractSensors</code>. These objects let available
+	 * knowledge elements retrieved from external sources.
 	 */
-	public Tuple[] getKnowledgeItems();
+	protected LinkedList<AbstractSensor> sensors;
+	
+	/**
+	 * A lit of <code>AbstractActuators</code>. These objects are used to
+	 * transmit knowledge items to actuators so to control
+	 * external components.
+	 */
+	protected LinkedList<AbstractActuator> actuators;
+	
+	
+	public Knowledge( KnowledgeManager knowledgeMangaer , KnowledgeAdapter ... adapters ) {
+		this.knowledgeManager = knowledgeMangaer;
+		this.adapters = new LinkedList<KnowledgeAdapter>();
+		for (KnowledgeAdapter knowledgeAdapter : adapters) {
+			this.adapters.add(knowledgeAdapter);
+		}
+		this.sensors = new LinkedList<AbstractSensor>();
+		this.actuators = new LinkedList<AbstractActuator>();
+		this.listeners = new LinkedList<KnowledgeListener>();
+		this.adapters = new LinkedList<KnowledgeAdapter>();
+	}
+	
+	public boolean put( Tuple t ) {
+		boolean result;
+		if (putToActuator(t)) {
+			return true;
+		}
+		KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
+		if (knowledgeAdapter != null) {
+			result = knowledgeAdapter.put(t);
+		} else {
+			result = this.knowledgeManager.put(t);
+		}		
+		notifyListernersOfAPut(t);
+		return result;
+	}
+
+	private synchronized boolean putToActuator(Tuple t) {
+		for (AbstractActuator a : this.actuators) {
+			if (a.getTemplate().match(t)) {
+				a.send(t);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Tuple get( Template t ) throws InterruptedException {
+		Tuple result;
+		KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
+		if (knowledgeAdapter != null) {
+			result = knowledgeAdapter.get(t);
+		} else {
+			result = this.knowledgeManager.get(t);
+		}
+		notifyListernersOfAGet(result);
+		return result;
+	}
+
+	public Tuple getp( Template t ) {
+		Tuple result;
+		KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
+		if (knowledgeAdapter != null) {
+			result = knowledgeAdapter.getp(t);
+		} else {
+			result = this.knowledgeManager.getp(t);
+		}
+		if (result != null) {
+			notifyListernersOfAGet(result);
+		}
+		return result;
+	}
+
+	public Tuple query( Template t ) throws InterruptedException {
+		Tuple result = queryFromSensors(t);
+		if (result != null) {
+			return result;
+		}
+		KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
+		if (knowledgeAdapter != null) {
+			result = knowledgeAdapter.query(t);
+		} else {
+			result = this.knowledgeManager.query(t);
+		}
+		return result;
+	}
+
+	public Tuple queryp( Template t ) {
+		Tuple result = queryFromSensors(t);
+		if (result != null) {
+			return result;
+		}
+		KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
+		if (knowledgeAdapter != null) {
+			result = knowledgeAdapter.queryp(t);
+		} else {
+			result = this.knowledgeManager.queryp(t);
+		}
+		return result;
+	}
+
+	private synchronized Tuple queryFromSensors(Template template) {
+		for (AbstractSensor s : this.sensors) {
+			Tuple result = s.getValue();
+			if ((result!=null)&&(template.match(result))) {
+				return result;
+			}
+		}
+		return null;
+	}
+
+	private synchronized void notifyListernersOfAGet(Tuple t) {
+		for (KnowledgeListener listener : this.listeners) {
+			listener.getOfTuple(t);
+		}		
+	}
+
+	private synchronized void notifyListernersOfAPut(Tuple t) {
+		for (KnowledgeListener listener : this.listeners) {
+			listener.putOfTuple(t);
+		}		
+	}
+
+	private synchronized KnowledgeAdapter getAdapterFor(Tuple t) {
+		for (KnowledgeAdapter knowledgeAdapter : this.adapters) {
+			if (knowledgeAdapter.isResponsibleFor(t)) {
+				return knowledgeAdapter;
+			}
+		}
+		return null;
+	}
+	
+	private synchronized KnowledgeAdapter getAdapterFor(Template t) {
+		for (KnowledgeAdapter knowledgeAdapter : this.adapters) {
+			if (knowledgeAdapter.isResponsibleFor(t)) {
+				return knowledgeAdapter;
+			}
+		}
+		return null;
+	}
+
+	public synchronized void addSensor( AbstractSensor s ) {
+		this.sensors.add(s);
+	}
+	
+	public synchronized void addActuator( AbstractActuator a ) {
+		this.actuators.add(a);
+	}
+	
+	public synchronized void addKnowledgeListener( KnowledgeListener listener ) {
+		this.listeners.add(listener);
+	}
+	
+	public synchronized void addKnowledgeAdapter( KnowledgeAdapter adapter ) {
+		this.adapters.add(adapter);
+	}
+
+	public AbstractActuator[] getActuators() {
+		return actuators.toArray(new AbstractActuator[sensors.size()]);
+	}
+
+	public AbstractSensor[] getSensors() {
+		return sensors.toArray(new AbstractSensor[sensors.size()]);
+	}
+
+	public void removeKnowledgeListener(KnowledgeListener listener) {
+		this.listeners.remove(listener);
+	}
+	
 }

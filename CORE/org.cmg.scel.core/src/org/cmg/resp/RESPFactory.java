@@ -18,10 +18,13 @@ import java.util.logging.Logger;
 import org.cmg.resp.json.ActualTemplateFieldDeserializer;
 import org.cmg.resp.json.ActualTemplateFieldSerializer;
 import org.cmg.resp.json.AddressDeserializer;
+import org.cmg.resp.json.AddressSerializer;
 import org.cmg.resp.json.AttributeDeserializer;
 import org.cmg.resp.json.AttributeSerializer;
 import org.cmg.resp.json.FormalTemplateFieldDeserializer;
 import org.cmg.resp.json.FormalTemplateFieldSerializer;
+import org.cmg.resp.json.GroupPredicateDeserializer;
+import org.cmg.resp.json.GroupPredicateSerializer;
 import org.cmg.resp.json.MessageDeserializer;
 import org.cmg.resp.json.TemplateDeserializer;
 import org.cmg.resp.json.TemplateSerializer;
@@ -34,6 +37,8 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.protocol.Message;
 import org.cmg.resp.topology.Address;
+import org.cmg.resp.topology.GroupPredicate;
+import org.cmg.resp.topology.HasValue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -81,6 +86,7 @@ public class RESPFactory {
 		builder.registerTypeHierarchyAdapter(Message.class, new MessageDeserializer());		
 		builder.registerTypeHierarchyAdapter(Template.class, new TemplateDeserializer());
 		builder.registerTypeAdapter(Tuple.class, new TupleDeserializer());
+		builder.registerTypeHierarchyAdapter(GroupPredicate.class, new GroupPredicateDeserializer());
 		
 		
 		//
@@ -90,7 +96,9 @@ public class RESPFactory {
 		builder.registerTypeAdapter(Attribute.class, new AttributeSerializer());
 		builder.registerTypeAdapter(FormalTemplateField.class, new FormalTemplateFieldSerializer());
 		builder.registerTypeHierarchyAdapter(Template.class, new TemplateSerializer());
+		builder.registerTypeHierarchyAdapter(Address.class, new AddressSerializer());
 		builder.registerTypeAdapter(Tuple.class, new TupleSerializer());
+		builder.registerTypeHierarchyAdapter(GroupPredicate.class , new GroupPredicateSerializer());
 	}
 
 	/**

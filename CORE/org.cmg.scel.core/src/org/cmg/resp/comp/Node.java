@@ -13,6 +13,7 @@
 package org.cmg.resp.comp;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -23,8 +24,13 @@ import java.util.concurrent.Executors;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.behaviour.AgentContext;
 import org.cmg.resp.behaviour.ContextState;
+import org.cmg.resp.knowledge.AbstractActuator;
+import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.Knowledge;
+import org.cmg.resp.knowledge.KnowledgeManager;
+import org.cmg.resp.knowledge.KnowledgeAdapter;
+import org.cmg.resp.knowledge.KnowledgeListener;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.policy.IPolicy;
@@ -46,6 +52,7 @@ import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
 import org.cmg.resp.topology.AbstractPort;
 import org.cmg.resp.topology.Group;
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.MessageDispatcher;
 import org.cmg.resp.topology.MessageSender;
 import org.cmg.resp.topology.PointToPoint;
@@ -59,7 +66,7 @@ import org.cmg.resp.topology.Target;
  * 
  *
  */
-public class Node<T extends Knowledge> extends Observable implements MessageDispatcher, INode<T> {
+public class Node extends Observable implements MessageDispatcher, INode {
 
 	/**
 	 * A list of Agents that are waiting for the execution.
@@ -70,7 +77,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * A parameter identifying the time-out for group oriente actions.
 	 */
 	protected int groupActionWaitingTime = 10000;
-	
+
 	/**
 	 * This is the thread that is instantiated when a node receives a new message.
 	 * 
@@ -169,7 +176,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 		@Override
 		public void handle(GroupGetRequest msg) throws IOException, InterruptedException {
-			policy.acceptGroupGet(msg.getSource(), msg.getSession(), msg.getAttributes(), msg.getTemplate());
+			policy.acceptGroupGet(msg.getSource(), msg.getSession(), msg.getGroupPredicate() , msg.getTemplate());
 		}
 
 		@Override
@@ -186,7 +193,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 		@Override
 		public void handle(GroupPutRequest msg) throws IOException, InterruptedException {
-			policy.acceptGroupPut( msg.getSource() , msg.getSession() , msg.getAttributes() , msg.getTuple() );
+			policy.acceptGroupPut( msg.getSource() , msg.getSession() , msg.getGroupPredicate() , msg.getTuple() );
 		}
 
 		@Override
@@ -276,7 +283,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	/**
 	 * Local knowledge
 	 */
-	protected T knowledge;
+	protected Knowledge knowledge;
 
 	/**
 	 * Node policy
@@ -330,16 +337,6 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	protected Hashtable<Integer, Pending<Boolean>> inGroupPutPending = new Hashtable<Integer, Pending<Boolean>>();
 	
 	/**
-	 * The list of node sensors.
-	 */
-	protected LinkedList<NodeSensor> sensors = new LinkedList<NodeSensor>();
-	
-	/**
-	 * The lis of node actuators.
-	 */
-	protected LinkedList<NodeActuator> actuators = new LinkedList<NodeActuator>();
-	
-	/**
 	 * The collection of attributes exposed by the node.
 	 */
 	protected Hashtable<String,AttributeCollector> attributes = new Hashtable<String, AttributeCollector>();
@@ -389,22 +386,23 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @param name node name
 	 * @param knowledge knowledge repository
 	 */
-	public Node( String name , T knowledge ) {
+	public Node( String name , KnowledgeManager knowledge , KnowledgeAdapter ... adapters ) {
 		this.name = name;
-		this.knowledge = knowledge;
+		this.knowledge = new Knowledge( knowledge , adapters );
 		this.agents = new LinkedList<Agent>();
 		this.policy = new NodePolicy(this);
 		this.state = ContextState.READY;
 		this.ports = new LinkedList<AbstractPort>();
 		this.waiting = new LinkedList<Agent>();
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.cmg.resp.comp.INode#addActuator(org.cmg.resp.comp.NodeActuator)
 	 */
 	@Override
-	public synchronized void addActuator( NodeActuator actuator ) {
-		actuators.add(actuator);
+	public synchronized void addActuator( AbstractActuator actuator ) {
+		this.knowledge.addActuator(actuator);
 	}
 
 	/* (non-Javadoc)
@@ -505,8 +503,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @see org.cmg.resp.comp.INode#addSensor(org.cmg.resp.comp.NodeSensor)
 	 */
 	@Override
-	public synchronized void addSensor(NodeSensor sensor) {
-		sensors.add(sensor);
+	public synchronized void addSensor(AbstractSensor sensor) {
+		knowledge.addSensor(sensor);
 	}
 	
 	/**
@@ -543,8 +541,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @see org.cmg.resp.comp.INode#getActuators()
 	 */
 	@Override
-	public NodeActuator[] getActuators() {
-		return actuators.toArray(new NodeActuator[sensors.size()]);
+	public AbstractActuator[] getActuators() {
+		return knowledge.getActuators();
 	}
 
 	/**
@@ -626,8 +624,8 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @see org.cmg.resp.comp.INode#getSensors()
 	 */
 	@Override
-	public NodeSensor[] getSensors() {
-		return sensors.toArray(new NodeSensor[sensors.size()]);
+	public AbstractSensor[] getSensors() {
+		return knowledge.getSensors();
 	}
 
 	/**
@@ -660,11 +658,9 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 */
 	@Override
 	public void put(Tuple tuple) {
-		if (putToActuators(tuple)) {
-			return ;
-		}
 		knowledge.put(tuple);
 	}
+
 
 	/* (non-Javadoc)
 	 * @see org.cmg.resp.comp.INode#put(org.cmg.resp.knowledge.Tuple, org.cmg.resp.topology.Target)
@@ -681,33 +677,11 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return sendPutRequest((PointToPoint) l , t );
 	}
 
-	/**
-	 * Checks if tuple <code>tuple</code> can be intercepted to one of 
-	 * the actuators attached to the node. In the case, the tuple is sent
-	 * to the right actuator. 
-	 * 
-	 * @param tuple the tuple send to actuators
-	 * @return if an actuator has received the tuple.
-	 */
-	private boolean putToActuators(Tuple tuple) {
-		for (NodeActuator a : actuators) {
-			if (a.getTemplate().match(tuple)) {
-				a.send(tuple);
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.cmg.resp.comp.INode#query(org.cmg.resp.knowledge.Template)
 	 */
 	@Override
 	public Tuple query(Template template) throws InterruptedException {
-		Tuple t = queryFromSensors(template);
-		if (t!=null) {
-			return t;
-		}
 		return knowledge.query(template);
 	}
 
@@ -746,7 +720,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			synchronized (pendigGroupQuery) {
 				pendigGroupQuery.put(session,received);				
 			}
-			broadCastQueryRequest(session, l.getPredicate().getParameters(), t);
+			broadCastQueryRequest(session, l.getPredicate() , t);
 			Pending<Tuple> pending = new Pending<Tuple>();
 			executor.execute( new GroupQueryHandler( l , session , pending ) );		
 			result = pending.get();
@@ -754,35 +728,6 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return result;
 	}
 
-	/**
-	 * Queries a tuple matching template <code>template</code> from sensors attached
-	 * to the node.
-	 * 
-	 * @param template action template
-	 * @return a matching tuple or null if no sensors for the template is available.
-	 */
-	private synchronized Tuple queryFromSensors(Template template) {
-		for (NodeSensor s : sensors) {
-			Tuple t = s.getValue();
-			if ((t!=null)&&(template.match(t))) {
-				return t;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * This is the predicative variant of action query. Differently from action query, this is
-	 * not blocking. Indeed, if no tuple matching <code>template</code> is available in the
-	 * local repository, value null is returned.
-	 * 
-	 * @param template action template
-	 * @return	a matching tuple or null.
-	 */
-	@Override
-	public Tuple queryp(Template template) {
-		return knowledge.queryp(template);
-	}
 	
 	/**
 	 * Sends an acknowledgment message to <code>to</code> with id <code>session</code>.
@@ -853,7 +798,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		LinkedList<GroupPutReply> received = new LinkedList<GroupPutReply>();
 		outGroupPutPending.put(session,received);
 		for (MessageSender p : ports) {
-			p.sendGroupPutRequest(getName(), session, l.getPredicate().getParameters(), t);
+			p.sendGroupPutRequest(getName(), session, l.getPredicate() , t);
 		}
 		executor.execute( new GroupPutHandler( l , session , t ) );		
 		return true;
@@ -867,7 +812,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 			synchronized (pendigGroupGet) {
 				pendigGroupGet.put(session,received);				
 			}
-			broadCastGetRequest(session, l.getPredicate().getParameters(), t);
+			broadCastGetRequest(session, l.getPredicate() , t);
 			Pending<Tuple> pending = new Pending<Tuple>();
 			executor.execute( new GroupGetHandler( l , session , pending ) );		
 			result = pending.get();
@@ -875,15 +820,15 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		return result;
 	}
 	
-	private void broadCastGetRequest(int session, String[] parameters, Template t ) throws IOException, InterruptedException {
+	private void broadCastGetRequest(int session, GroupPredicate groupPredicate, Template t ) throws IOException, InterruptedException {
 		for (MessageSender p : ports) {
-			p.sendGroupGetRequest(getName(), session, parameters, t);
+			p.sendGroupGetRequest(getName(), session, groupPredicate, t);
 		}		
 	}
 
-	private void broadCastQueryRequest(int session, String[] parameters, Template t ) throws IOException, InterruptedException {
+	private void broadCastQueryRequest(int session, GroupPredicate groupPredicate, Template t ) throws IOException, InterruptedException {
 		for (MessageSender p : ports) {
-			p.sendGroupQueryRequest(getName(), session, parameters, t);
+			p.sendGroupQueryRequest(getName(), session, groupPredicate , t);
 		}		
 	}
 
@@ -1099,7 +1044,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 
 		for (GroupGetReply reply : received) {
 			try {
-				if (flag&&group.getPredicate().evaluate(reply.getAttributes())) {
+				if (flag) {
 					sendAck(reply.getSource(), reply.getTupleSession());
 					flag = false;
 					pending.set(reply.getTuple());
@@ -1122,7 +1067,7 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 		boolean flag = true;
 
 		for (GroupQueryReply reply : received) {
-			if (flag&&group.getPredicate().evaluate(reply.getAttributes())) {
+			if (flag) {
 				flag = false;
 				pending.set(reply.getTuple());
 			} 
@@ -1137,11 +1082,11 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	public void doGroupPut(Group group, LinkedList<GroupPutReply> received) throws InterruptedException {
 		for (GroupPutReply reply : received) {
 			try {
-				if (group.getPredicate().evaluate(reply.getValues())) {
+//				if (group.getPredicate().evaluate(reply.getValues())) {
 					sendAck(reply.getSource(), reply.getTupleSession());
-				} else {
-					sendFail(reply.getSource(), reply.getTupleSession(),"Attribute predicate is not satisfied!");
-				}
+//				} else {
+//					sendFail(reply.getSource(), reply.getTupleSession(),"Attribute predicate is not satisfied!");
+//				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1166,16 +1111,18 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @see org.cmg.resp.comp.INode#gPut(org.cmg.resp.topology.PointToPoint, int, java.lang.String[], org.cmg.resp.knowledge.Tuple)
 	 */
 	@Override
-	public void gPut(PointToPoint from, int session, String[] attributes,
+	public void gPut(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Tuple tuple) throws IOException, InterruptedException {
 		MessageSender p = getPort(from);
 		if (p != null) {
-			int tupleSession = getSession();
-			Pending<Boolean> pending = new Pending<Boolean>();
-			putPending.put(tupleSession, pending);
-			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
-			if (pending.get()) {
-				knowledge.put(tuple);
+			if (groupPredicate.evaluate(getInterface())) {
+				int tupleSession = getSession();
+				Pending<Boolean> pending = new Pending<Boolean>();
+				putPending.put(tupleSession, pending);
+				p.sendGroupPutReply(from, getName(), session,tupleSession);
+				if (pending.get()) {
+					knowledge.put(tuple);
+				}
 			}
 		}
 	}
@@ -1193,51 +1140,90 @@ public class Node<T extends Knowledge> extends Observable implements MessageDisp
 	 * @see org.cmg.resp.comp.INode#gGet(org.cmg.resp.topology.PointToPoint, int, java.lang.String[], org.cmg.resp.knowledge.Template)
 	 */
 	@Override
-	public void gGet(PointToPoint from, int session, String[] attributes,
+	public void gGet(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Template template) {
-		MessageSender p = getPort(from);
-		if (p != null) {
-			Tuple t = knowledge.getp(template);
-			if (t != null) {
-				int tupleSession = getSession();
-				Pending<Boolean> pending = new Pending<Boolean>();
-				putPending.put(tupleSession, pending);
-				try {
-					p.sendGroupGetReply(from, getName(), session, tupleSession, getAttributes(attributes), t);
-					if (pending.get()==null) {
-						knowledge.put(t);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					knowledge.put(t);
-				}
-			}
-//			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
-		}
+//		MessageSender p = getPort(from);
+//		if (p != null) {
+//			Tuple t = knowledge.getp(template);
+//			if (t != null) {
+//				int tupleSession = getSession();
+//				Pending<Boolean> pending = new Pending<Boolean>();
+//				putPending.put(tupleSession, pending);
+//				try {
+//					p.sendGroupGetReply(from, getName(), session, tupleSession, getAttributes(attributes), t);
+//					if (pending.get()==null) {
+//						knowledge.put(t);
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					knowledge.put(t);
+//				}
+//			}
+//		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.cmg.resp.comp.INode#gQuery(org.cmg.resp.topology.PointToPoint, int, java.lang.String[], org.cmg.resp.knowledge.Template)
 	 */
 	@Override
-	public void gQuery(PointToPoint from, int session, String[] attributes,
+	public void gQuery(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Template template) {
 		MessageSender p = getPort(from);
 		if (p != null) {
-			Tuple t = knowledge.queryp(template);
-			if (t != null) {
-				try {
-					p.sendGroupQueryReply(from, getName(), session, getAttributes(attributes), t);
-				} catch (Exception e) {
-					e.printStackTrace();
+			HashMap<String, Attribute> nodeInterface = getInterface();
+			if (groupPredicate.evaluate(nodeInterface)) {
+				System.out.println(getName()+": "+groupPredicate+" SATISFIED with "+nodeInterface);				
+				Tuple t = knowledge.queryp(template);
+				if (t != null) {
+					try {
+						p.sendGroupQueryReply(from, getName(), session, t);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
+			} else {
+				System.out.println(getName()+": "+groupPredicate+" UNSATISFIED with "+nodeInterface);				
 			}
 //			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
 		}
 	}
 	
-	public Tuple[] getKnowledgeItems() {
-		return knowledge.getKnowledgeItems();
+	@Override
+	public void addKnowledgeListener(KnowledgeListener listener) {
+		knowledge.addKnowledgeListener(listener);
 	}
-	
+
+	@Override
+	public void removeKnowledgeListener(KnowledgeListener listener) {
+		knowledge.removeKnowledgeListener(listener);
+	}
+
+
+	@Override
+	public void addAttributeListener(AttributeListener listener) {
+		//FIXME: !!!!!
+	}
+
+	@Override
+	public void removeAttributeListener(AttributeListener listener) {
+		//FIXME: !!!!!
+	}
+
+
+	@Override
+	public Tuple queryp(Template template) {
+		return knowledge.queryp(template);
+	}
+
+
+	@Override
+	public HashMap<String, Attribute> getInterface() {
+		HashMap<String,Attribute> values = new HashMap<String, Attribute>();
+		values.put("ID", new Attribute("ID", getName()));
+		for (String attributeName : attributes.keySet() ) {
+			values.put(attributeName, attributes.get(attributeName).eval());
+		}		
+		return values;
+	}
+
 }

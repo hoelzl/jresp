@@ -48,10 +48,10 @@ public class AddressDeserializer implements JsonDeserializer<Address> {
 			throw new IllegalStateException("This is not an Address!");
 		}
 		if (addressCode.equals(SocketPortAddress.ADDRESS_CODE)) {
-			return new SocketPortAddress( (InetSocketAddress) context.deserialize( json.get("address") , InetSocketAddress.class) );
+			return new SocketPortAddress( new InetSocketAddress(json.get("host").getAsString() , json.get("port").getAsInt()) );
 		}
 		if (addressCode.equals(ServerPortAddress.ADDRESS_CODE)) {
-			return new ServerPortAddress( (InetSocketAddress) context.deserialize( json.get("address") , InetSocketAddress.class) );
+			return new ServerPortAddress( new InetSocketAddress(json.get("host").getAsString() , json.get("port").getAsInt()) );
 		}
 		if (addressCode.equals(VirtualPortAddress.ADDRESS_CODE)) {
 			return new VirtualPortAddress( (Integer) context.deserialize( json.get("id") , Integer.class) );

@@ -138,9 +138,9 @@ public class DoubleGetMobility extends JFrame implements Observer {
 		int size = 40;
 		SpatialConnection sc = new SpatialConnection(size, 750);
 		VirtualPort vp = new VirtualPort(10,sc);
-		Hashtable<String, Node<TupleSpace>> nodes = new Hashtable<String, Node<TupleSpace>>();
+		Hashtable<String, Node> nodes = new Hashtable<String, Node>();
 		for (String name : sc.getNodes()) {
-			Node<TupleSpace> n = new Node<TupleSpace>(name, new TupleSpace());
+			Node n = new Node(name, new TupleSpace());
 			n.addPort(vp);
 			n.setGroupActionWaitingTime(250);
 			n.addActuator(sc.getDirectionActuator(name));
@@ -157,8 +157,8 @@ public class DoubleGetMobility extends JFrame implements Observer {
 					) {
 				
 				@Override
-				protected Attribute doEval(Tuple t) {
-					return new Attribute("color", t.getElementAt(1));
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(1);
 				}
 			});
 			Agent a = new MovementAgent("_driver_"+name,sc.getMaxX(),sc.getMaxY());
@@ -169,7 +169,7 @@ public class DoubleGetMobility extends JFrame implements Observer {
 		}
 		DoubleGetMobility sf = new DoubleGetMobility(sc);
 		sf.setVisible(true);
-		for (Node<?> n: nodes.values()) {
+		for (Node n: nodes.values()) {
 			n.start();
 		}
 		sf.start();

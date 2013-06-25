@@ -18,10 +18,12 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.Set;
 
-import org.cmg.resp.comp.NodeActuator;
+import org.cmg.resp.comp.AttributeCollector;
 import org.cmg.resp.comp.NodeConnection;
-import org.cmg.resp.comp.NodeSensor;
+import org.cmg.resp.knowledge.AbstractActuator;
+import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
@@ -33,7 +35,7 @@ import org.cmg.resp.knowledge.Tuple;
 public class SpatialConnection extends Observable implements NodeConnection {
 
 	protected Random r = new Random();
-	protected Hashtable<String, Point2D.Double> locations;	
+	protected Hashtable<String, RobotLocation> locations;	
 	
 	protected Hashtable<String, Boolean> green;
 	protected Hashtable<String, Boolean> moving;
@@ -54,7 +56,7 @@ public class SpatialConnection extends Observable implements NodeConnection {
 	
 	public SpatialConnection( int size , double range ) {
 		this.range = range;
-		this.locations = new Hashtable<String, Point2D.Double>();
+		this.locations = new Hashtable<String, RobotLocation>();
 		this.directions = new Hashtable<String, Double>();
 		this.moving = new Hashtable<String, Boolean>();
 		this.greenTargetX = 75+(maxX/2-150)*r.nextDouble();
@@ -68,10 +70,10 @@ public class SpatialConnection extends Observable implements NodeConnection {
 	private void init(int size) {
 		for( int i=0 ; i<size ; i++ ) {
 			String node = NODE_PREFIX+i;
-			this.locations.put(node, new Point2D.Double(maxX*r.nextDouble(),maxY*r.nextDouble()));	
+			this.green.put(node,i%2==0);
+			this.locations.put(node, new RobotLocation(node, new Point2D.Double(maxX*r.nextDouble(),maxY*r.nextDouble())));	
 			this.directions.put(node, r.nextDouble()*Math.PI*2);
 			this.moving.put(node, true);
-			this.green.put(node,i%2==0);
 		}
 	}
 	
@@ -85,11 +87,11 @@ public class SpatialConnection extends Observable implements NodeConnection {
 
 	@Override
 	public synchronized boolean areInTouch(String src, String target) {
-		Point2D.Double pSrc = locations.get(src);
+		Point2D.Double pSrc = locations.get(src).getPoint();
 		if (pSrc == null) {
 			return false;
 		}
-		Point2D.Double pTrg = locations.get(target);
+		Point2D.Double pTrg = locations.get(target).getPoint();
 		if (pTrg == null) {
 			return false;
 		}
@@ -100,7 +102,8 @@ public class SpatialConnection extends Observable implements NodeConnection {
 	public synchronized void move( ) {
 		for (String n : locations.keySet()) {
 			if (moving.get(n)) {
-				Point2D.Double p = locations.get(n);
+				RobotLocation location = locations.get(n);
+				Point2D.Double p = location.getPoint();
 				Double d = directions.get(n);
 				double newX = p.x+speed*Math.cos(d);
 				double newY = p.y+speed*Math.sin(d);
@@ -117,7 +120,7 @@ public class SpatialConnection extends Observable implements NodeConnection {
 					newY = maxY;
 				}
 				Point2D.Double np = new Point2D.Double(newX,newY);
-				locations.put(n, np);			
+				location.setPoint(np);			
 	//			if ((newX==0)||(newX==maxX)||(newY==0)||(newY==maxY)) {
 	//				directions.put(n, r.nextDouble()*Math.PI*2);
 	//			}
@@ -149,7 +152,7 @@ public class SpatialConnection extends Observable implements NodeConnection {
 	}
 
 	public Point2D.Double getLocation(String node) {
-		return locations.get(node);
+		return locations.get(node).getPoint();
 	}
 	
 	public Point2D.Double getGreenTargetLocation( ) {
@@ -160,50 +163,16 @@ public class SpatialConnection extends Observable implements NodeConnection {
 		return new Point2D.Double(redTargetX,redTargetY);
 	}
 
-	public NodeSensor getLocationSensor( final String n ) {
-		return new NodeSensor("location") {
-			
-			@Override
-			public Tuple getValue() {
-				Point2D.Double p = locations.get(n);
-				if (p== null) {
-					return null;
-				}
-				return new Tuple( 
-					("GPS"),
-					(p.x),
-					(p.y)
-				);
-			}
-			
-		};
+	public AbstractSensor getLocationSensor( final String n ) {
+		return locations.get(n).getLocationSensor();
 	}
 	
-	public NodeSensor getTargetSensor( final String n ) {
-		return new NodeSensor( "target" ) {
-
-			@Override
-			public Tuple getValue() {
-				Point2D.Double p = locations.get(n);
-				if (p== null) {
-					return null;
-				}
-				return new Tuple( 
-					("TARGET"),
-					(
-						(isGreen(n)?
-							p.distance(greenTargetX, greenTargetY)<targetSize/2-5:
-							p.distance(redTargetX, redTargetY)<targetSize/2-5
-						)
-					)
-				);
-			}
-			
-		};
+	public AbstractSensor getTargetSensor( final String n ) {
+		return locations.get(n).getTargetSensor();
 	}
 
-	public NodeActuator getDirectionActuator( final String n ) {
-		return new NodeActuator("direction") {
+	public AbstractActuator getDirectionActuator( final String n ) {
+		return new AbstractActuator("direction") {
 			
 			@Override
 			public void send(Tuple t) {
@@ -220,8 +189,8 @@ public class SpatialConnection extends Observable implements NodeConnection {
 		};
 	}
 	
-	public NodeActuator getStopActuator( final String n ) {
-		return new NodeActuator("stop") {
+	public AbstractActuator getStopActuator( final String n ) {
+		return new AbstractActuator("stop") {
 			
 			@Override
 			public void send(Tuple t) {
@@ -257,5 +226,58 @@ public class SpatialConnection extends Observable implements NodeConnection {
 		return this.green.get(n);
 	}
 	
+	public class RobotLocation {
+		
+		private java.awt.geom.Point2D.Double point;
+		private String name;
+		
+		private AbstractSensor locationSensor;
+		
+		private AbstractSensor targetSensor;
+
+		public RobotLocation(String name, Point2D.Double point) {
+			this.name = name;
+			this.locationSensor = new AbstractSensor(name+"-LocationSensor") {};
+			this.targetSensor = new AbstractSensor(name+"-TargetSensor") {};
+			setPoint(point);
+		}
+
+		public AbstractSensor getTargetSensor() {
+			return targetSensor;
+		}
+
+		public AbstractSensor getLocationSensor() {
+			return locationSensor;
+		}
+
+		public void setPoint(Point2D.Double point) {
+			this.point = point;
+			if (point == null) {
+				locationSensor.setValue(null);
+				targetSensor.setValue(null);
+			} else {
+				locationSensor.setValue(new Tuple( 
+						("GPS"),
+						(point.x),
+						(point.y)
+					)
+				);
+				targetSensor.setValue(new Tuple( 
+					("TARGET"),
+					(
+						(isGreen(name)?
+							point.distance(greenTargetX, greenTargetY)<targetSize/2-5:
+							point.distance(redTargetX, redTargetY)<targetSize/2-5
+						)
+					)
+				));
+			}
+		}		
+		
+		public Point2D.Double getPoint() {
+			return point;
+		}
+		
+	}
 	
 }

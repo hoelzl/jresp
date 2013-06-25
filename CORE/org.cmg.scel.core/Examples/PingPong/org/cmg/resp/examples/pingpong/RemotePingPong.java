@@ -34,12 +34,12 @@ public class RemotePingPong {
 	public static void main(String[] argv) throws IOException {
 		SocketPort pingPort = new SocketPort(9999);
 		SocketPort pongPort = new SocketPort(9998);
-		Node<TupleSpace> pingNode = new Node<TupleSpace>("ping", new TupleSpace());
+		Node pingNode = new Node("ping", new TupleSpace());
 		pingNode.addPort(pingPort);
 		Agent ping = new PingAgent();
 		Agent pong = new PongAgent();
 		pingNode.addAgent(ping);
-		Node<TupleSpace> pongNode = new Node<TupleSpace>("pong", new TupleSpace());
+		Node pongNode = new Node("pong", new TupleSpace());
 		pongNode.addPort(pongPort);
 		pongNode.addAgent(pong);
 		pongNode.start();

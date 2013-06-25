@@ -12,34 +12,81 @@
  */
 package org.cmg.resp.topology;
 
+import java.util.HashMap;
+
 import org.cmg.resp.knowledge.Attribute;
-
-
 
 /**
  * @author Michele Loreti
  *
  */
+
 public abstract class GroupPredicate {
 
-	protected String[] parameters;
-	
-	protected GroupPredicate( String ... parameters ) {
-		this.parameters = parameters;
+	public enum PredicateType {		
+		TRUE,
+		ISEQUAL,
+		ISGTR,
+		ISGEQ,
+		ISLEQ,
+		ISLES,
+		AND,
+		OR,
+		NOT				
 	}
 
-	public int size() {
-		return parameters.length;
-	}
+	private PredicateType type;
 	
-	public String getParameterName( int i ) {
-		return parameters[i];
-	}
-	
-	public abstract boolean evaluate( Attribute[] data );
+	public abstract boolean evaluate( HashMap<String,Attribute> data );
 
-	public String[] getParameters() {
-		return parameters;
+	public GroupPredicate( PredicateType type ) {
+		this.type = type;
+	}
+	
+	public PredicateType getType() {
+		return this.type;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof GroupPredicate) {
+			return this.type == ((GroupPredicate) obj).type;
+		}
+		return false;
 	}
 	
 }
+
+
+/*
+
+public abstract class GroupPredicate {
+
+protected String[] parameters;
+
+protected GroupPredicate( String ... parameters ) {
+	this.parameters = parameters;
+}
+
+public int size() {
+	return parameters.length;
+}
+
+public String getParameterName( int i ) {
+	return parameters[i];
+}
+
+public abstract boolean evaluate( Attribute[] data );
+
+public String[] getParameters() {
+	return parameters;
+}
+
+}
+*/

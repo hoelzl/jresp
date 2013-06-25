@@ -16,8 +16,8 @@ import java.awt.geom.Point2D;
 import java.util.Observable;
 import java.util.Random;
 
-import org.cmg.resp.comp.NodeActuator;
-import org.cmg.resp.comp.NodeSensor;
+import org.cmg.resp.knowledge.AbstractActuator;
+import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
@@ -41,25 +41,10 @@ public class Scenario extends Observable {
 	private int size;
 
 	/**
-	 * Array of robots speeds in meters over seconds
+	 * Array of robots;
 	 */
-	private double[] speed;
-	
-	/**
-	 * Array of robots positions
-	 */
-	private Point2D.Double[] positions;
-	
-	/**
-	 * Array of robots directions
-	 */
-	private double[] direction;
-	
-	/**
-	 * Array of robot batteries levels
-	 */
-	private double[] battery;
-	
+	private Robot[] robots;
+		
 	/**
 	 * Arena width
 	 */
@@ -84,15 +69,9 @@ public class Scenario extends Observable {
 		target = new Point2D.Double[2];
 		target[0] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
 		target[1] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
-		speed = new double[size];
-		positions = new Point2D.Double[size];
-		direction = new double[size];
-		battery = new double[size];
+		robots = new Robot[size];
 		for( int i=0 ; i<size ; i++ ) {
-			battery[i] = r.nextDouble();
-			positions[i] = new Point2D.Double(r.nextDouble()*width, r.nextDouble()*height);
-			speed[i] = 5.0;
-			direction[i] = r.nextDouble()*2*Math.PI;
+			robots[i] = new Robot(i, r.nextDouble(), new Point2D.Double(r.nextDouble()*width, r.nextDouble()*height) , r.nextDouble(), 5.0);
 		}
 		
 	}
@@ -104,7 +83,7 @@ public class Scenario extends Observable {
 	 * @return the speed of the robot with index i
 	 */
 	public double getSpeed(int i) {
-		return speed[i];
+		return robots[i].getSpeed();
 	}
 
 	/**
@@ -114,7 +93,7 @@ public class Scenario extends Observable {
 	 * @param s robot speed
 	 */
 	public void setSpeed(int i,double s) {
-		speed[i]=s;
+		robots[i].setSpeed(s);
 	}
 
 	/**
@@ -124,7 +103,7 @@ public class Scenario extends Observable {
 	 * @return direction of robot with index i
 	 */
 	public double getDirection(int i) {
-		return direction[i];
+		return robots[i].getDirection();
 	}
 
 	/**
@@ -134,7 +113,7 @@ public class Scenario extends Observable {
 	 * @param d robot direction
 	 */
 	public void setDirection(int i,double d) {
-		direction[i]=d;
+		robots[i].setDirection(d);
 	}
 
 	/**
@@ -144,7 +123,7 @@ public class Scenario extends Observable {
 	 * @return robot position
 	 */
 	public double getBatteryLevel( int i ) {
-		return battery[i];
+		return robots[i].getBatteryLevel();
 	}
 	
 	/**
@@ -154,7 +133,7 @@ public class Scenario extends Observable {
 	 * @return robot position
 	 */
 	public Point2D.Double getPosition( int i ) {
-		return positions[i];
+		return robots[i].getPosition();
 	}
 	
 	/**
@@ -176,7 +155,7 @@ public class Scenario extends Observable {
 	 */
 	private void _updateBattery( double dt ) {
 		for( int i=0 ; i<size ; i++ ) {
-			battery[i] = batteryDischargingFunction.nextBatteryLevel(dt, battery[i], speed[i]);
+			robots[i].setBatteryLevel( batteryDischargingFunction.nextBatteryLevel(dt, robots[i].getBatteryLevel(), robots[i].getSpeed() )); 
 		}
 	}
 
@@ -187,10 +166,11 @@ public class Scenario extends Observable {
 	 */
 	private void _updatePosition(double dt) {
 		for( int i=0 ; i<size ; i++ ) {
-			if (battery[i]>0.0) {
-				if (positions[i].distance(target[i%2])>20) {
-					double x = positions[i].getX()+((speed[i]*dt)*Math.cos(direction[i]));
-					double y = positions[i].getY()+((speed[i]*dt)*Math.sin(direction[i]));
+			if (robots[i].getBatteryLevel()>0.0) {
+				if (robots[i].getPosition().distance(target[i%2])>20) {
+					Point2D.Double position = robots[i].getPosition();
+					double x = position.getX()+((robots[i].getSpeed()*dt)*Math.cos(robots[i].getDirection()));
+					double y = position.getY()+((robots[i].getSpeed()*dt)*Math.sin(robots[i].getDirection()));
 					if (x<0.0) {
 						x=0.0;
 					}
@@ -203,7 +183,7 @@ public class Scenario extends Observable {
 					if (y>height) {
 						y=height;
 					}
-					positions[i].setLocation(x,y);
+					robots[i].setPosition(x,y);
 				}
 			}
 		}
@@ -230,8 +210,8 @@ public class Scenario extends Observable {
 		return height;
 	}
 
-	public NodeActuator getDirectionActuator(final int i) {
-		return new NodeActuator("direction") {
+	public AbstractActuator getDirectionActuator(final int i) {
+		return new AbstractActuator("direction") {
 			
 			@Override
 			public void send(Tuple t) {
@@ -249,18 +229,12 @@ public class Scenario extends Observable {
 		};
 	}
 
-	public NodeSensor getLocationSensor(final int i) {
-		return new NodeSensor("batteryLevel") {
-			
-			@Override
-			public Tuple getValue() {
-				return new Tuple( "batteryLevel" , getBarreryPercentage(i) );
-			}
-		};
+	public AbstractSensor getLocationSensor(final int i) {
+		return robots[i].getLocationSensor();
 	}
 
-	public NodeActuator getStopActuator(final int i) {
-		return new NodeActuator("stop") {
+	public AbstractActuator getStopActuator(final int i) {
+		return new AbstractActuator("stop") {
 			
 			@Override
 			public void send(Tuple t) {
@@ -276,30 +250,101 @@ public class Scenario extends Observable {
 		};
 	}
 
-	public NodeSensor getBatterySensor(final int i) {
-		return new NodeSensor("gps") {
-			
-			@Override
-			public Tuple getValue() {
-				return new Tuple( "gps" , positions[i].getX() , positions[i].getY() );
-			}
-
-		};
+	public AbstractSensor getBatterySensor(final int i) {
+		return robots[i].getBatterySensor();
 	}
 
-	public NodeSensor getTargetSensor(final int i) {
-		return new NodeSensor("target") {
-			
-			@Override
-			public Tuple getValue() {
-				return new Tuple( "target" , target[i%2].distance(positions[i])<20 );
-			}
-
-		};
+	public AbstractSensor getTargetSensor(final int i) {
+		return robots[i].getTargetSensor();
 	}
 
 	public Point2D.Double[] getTarget() {
 		return target;
+	}
+	
+	public class Robot {
+		
+		private int i;
+		
+		private double direction;
+		
+		private Point2D.Double position;
+		
+		private double speed;
+		
+		private double batteryLevel;
+		
+		private AbstractSensor targetSensor;
+		
+		private AbstractSensor batterySensor;
+		
+		private AbstractSensor locationSensor;
+		
+		public Robot( int i , double direction , Point2D.Double position , double batteryLevel , double speed ) {
+			this.i = i;
+			this.direction = direction;
+			this.position = position;
+			this.batteryLevel = batteryLevel;
+			this.speed = speed;
+			this.targetSensor = new AbstractSensor("TargetSensor-"+i) {
+			};
+			this.batterySensor = new AbstractSensor("BatterySensor-"+i) {
+			};
+			this.locationSensor = new AbstractSensor("LocationSensor-"+i) {
+			};
+		}
+		
+		public AbstractSensor getTargetSensor() {
+			return targetSensor;
+		}
+
+		public AbstractSensor getBatterySensor() {
+			return batterySensor;
+		}
+
+		public AbstractSensor getLocationSensor() {
+			return locationSensor;
+		}
+
+		public void setPosition(double x, double y) {
+			this.setPosition(new Point2D.Double(x, y));
+		}
+
+		public double getBatteryLevel() {
+			return batteryLevel;
+		}
+
+		public void setDirection(double d) {
+			this.direction = d;
+		}
+
+		public double getDirection() {
+			return direction;
+		}
+
+		public void setSpeed(double speed) {
+			this.speed = speed;
+		}
+
+		public double getSpeed() {
+			return speed;
+		}
+
+		public void setPosition( Point2D.Double point ) {
+			position = point;
+			targetSensor.setValue( new Tuple( "target" , target[i%2].distance(position)<20 ) );
+			locationSensor.setValue( new Tuple( "gps" , position.getX() , position.getY() ) );
+		}
+		
+		public Point2D.Double getPosition() {
+			return position;			
+		}
+		
+		public void setBatteryLevel( double batteryLevel ) {
+			this.batteryLevel = batteryLevel;
+			batterySensor.setValue( new Tuple( "batteryLevel" , getBarreryPercentage(i) ) );
+		}
+		
 	}
 	
 }

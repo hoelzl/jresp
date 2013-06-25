@@ -27,7 +27,6 @@ import org.cmg.resp.topology.PointToPoint;
 public class GroupPutReply extends UnicastMessage {
 	
 	private int tupleSession;
-	private Attribute[] values;
 	
 	/**
 	 * Creates a new object instance.
@@ -39,19 +38,9 @@ public class GroupPutReply extends UnicastMessage {
 	 * of put.
 	 * @param values values of attributes contained in the associated {@link GroupPutRequest}
 	 */
-	public GroupPutReply(PointToPoint source, int session, String target, int tupleSession , Attribute[] values) {
+	public GroupPutReply(PointToPoint source, int session, String target, int tupleSession) {
 		super(MessageType.GROUP_PUT_REPLY,source,session,target);
-		this.values = values;
 		this.tupleSession = tupleSession;
-	}
-
-	/**
-	 * Returns the values of attributes
-	 * 
-	 * @return values of attributes.
-	 */
-	public Attribute[] getValues() {
-		return values;
 	}
 
 	@Override
@@ -62,19 +51,19 @@ public class GroupPutReply extends UnicastMessage {
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
-			return (tupleSession == ((GroupPutReply) obj).tupleSession)&&Arrays.deepEquals(values, ((GroupPutReply) obj).values); 
+			return (tupleSession == ((GroupPutReply) obj).tupleSession); 
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getType()+"[ "+ super.toString() + " , "+ tupleSession + " , "+ Arrays.toString(values) +"]";
+		return getType()+"[ "+ super.toString() + " , "+ tupleSession + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode()^Arrays.hashCode(values)^tupleSession;
+		return super.hashCode()^tupleSession;
 	}
 
 	public int getTupleSession() {

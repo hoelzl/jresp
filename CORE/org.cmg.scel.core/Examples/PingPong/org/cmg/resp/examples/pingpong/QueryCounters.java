@@ -35,13 +35,13 @@ public class QueryCounters {
 	public static void main(String[] argv) throws IOException {
 		SocketPort portOne = new SocketPort(9999);
 		SocketPort portTwo = new SocketPort(9998);
-		Node<TupleSpace> nodeOne = new Node<TupleSpace>("one", new TupleSpace());
+		Node nodeOne = new Node("one", new TupleSpace());
 		nodeOne.addPort(portOne);
 		nodeOne.put(new Tuple( "COUNTER" , 0 ) );
 		Agent one = new Counter("agentOne", new PointToPoint("two", new SocketPortAddress(9998)));
 		Agent two = new Counter("agentTwo", new PointToPoint("one", new SocketPortAddress(9999)));
 		nodeOne.addAgent(one);
-		Node<TupleSpace> nodeTwo = new Node<TupleSpace>("two", new TupleSpace());
+		Node nodeTwo = new Node("two", new TupleSpace());
 		nodeTwo.addPort(portTwo);
 		nodeTwo.put(new Tuple( "COUNTER" , 0 ) );
 		nodeOne.put(new Tuple( "COUNTER" , 0 ) );
