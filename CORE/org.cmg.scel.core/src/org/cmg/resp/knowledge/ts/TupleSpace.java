@@ -15,7 +15,6 @@ package org.cmg.resp.knowledge.ts;
 import java.util.LinkedList;
 
 import org.cmg.resp.knowledge.KnowledgeManager;
-import org.cmg.resp.knowledge.KnowledgeListener;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 

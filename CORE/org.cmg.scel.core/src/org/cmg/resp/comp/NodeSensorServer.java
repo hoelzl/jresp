@@ -16,13 +16,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
 import org.cmg.resp.RESPFactory;
 import org.cmg.resp.knowledge.AbstractSensor;
-import org.cmg.resp.knowledge.Tuple;
 
 import com.google.gson.Gson;
 

@@ -15,7 +15,7 @@ package org.cmg.resp.topology;
 import java.io.IOException;
 
 import org.cmg.resp.comp.NodeConnection;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.UnicastMessage;
 
 /**
@@ -62,7 +62,7 @@ public class VirtualPort extends AbstractPort {
 	}
 
 	@Override
-	protected synchronized void send(Message m) {
+	protected synchronized void send(jRESPMessage m) {
 		for (MessageDispatcher n: nodes.values()) {
 			if ((connection == null)||(connection.areInTouch(m.getSource().getName(),n.getName()))) {
 				n.addMessage(m);

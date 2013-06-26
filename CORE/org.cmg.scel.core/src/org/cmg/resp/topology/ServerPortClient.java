@@ -19,7 +19,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.cmg.resp.RESPFactory;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.UnicastMessage;
 
 import com.google.gson.Gson;
@@ -48,7 +48,7 @@ public class ServerPortClient extends AbstractPort {
 		return (l instanceof PointToPoint)&&(((PointToPoint) l).getAddress().equals(serverAddress));
 	}
 
-	protected void sendToServer( Message message ) throws IOException {
+	protected void sendToServer( jRESPMessage message ) throws IOException {
 		InetSocketAddress isc = serverAddress.getAddress();
 		Socket socket = new Socket(isc.getAddress(), isc.getPort());
 		PrintWriter writer = new PrintWriter(socket.getOutputStream());
@@ -64,7 +64,7 @@ public class ServerPortClient extends AbstractPort {
 	}
 
 	@Override
-	protected void send(Message message) throws IOException, InterruptedException {
+	protected void send(jRESPMessage message) throws IOException, InterruptedException {
 		sendToServer(message);
 	}
 

@@ -32,7 +32,7 @@ import org.cmg.resp.protocol.GroupPutReply;
 import org.cmg.resp.protocol.GroupPutRequest;
 import org.cmg.resp.protocol.GroupQueryReply;
 import org.cmg.resp.protocol.GroupQueryRequest;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
@@ -64,9 +64,9 @@ public class TestVirtualPort {
 
 	protected VirtualPort port = new VirtualPort(0);
 	
-	protected Message receivedAtOne;
+	protected jRESPMessage receivedAtOne;
 	
-	protected Message receivedAtTwo;
+	protected jRESPMessage receivedAtTwo;
 	
 	protected MessageDispatcher mdOne = new MessageDispatcher() {
 		
@@ -76,7 +76,7 @@ public class TestVirtualPort {
 		}
 		
 		@Override
-		public void addMessage(Message msg) {
+		public void addMessage(jRESPMessage msg) {
 			TestVirtualPort.this.receivedAtOne = msg;
 		}
 	};
@@ -89,7 +89,7 @@ public class TestVirtualPort {
 		}
 		
 		@Override
-		public void addMessage(Message msg) {
+		public void addMessage(jRESPMessage msg) {
 			TestVirtualPort.this.receivedAtTwo = msg;
 		}
 	};

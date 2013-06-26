@@ -21,7 +21,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 import org.cmg.resp.RESPFactory;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 
 import com.google.gson.Gson;
 
@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 public class Forwarder implements MessageDispatcher,Runnable {
 
 	private String name;
-	private LinkedList<Message> fromPortToRemote;
+	private LinkedList<jRESPMessage> fromPortToRemote;
 	private int serverPort;
 	private Gson gson = RESPFactory.getGSon();
 	private AbstractPort port;
@@ -41,12 +41,12 @@ public class Forwarder implements MessageDispatcher,Runnable {
 		this.name = name;
 		this.serverPort = serverPort;
 		this.port = port;
-		this.fromPortToRemote = new LinkedList<Message>();
+		this.fromPortToRemote = new LinkedList<jRESPMessage>();
 		this.port.register(this);
 	}
 	
 	@Override
-	public void addMessage(Message msg) {
+	public void addMessage(jRESPMessage msg) {
 		synchronized (fromPortToRemote) {
 			fromPortToRemote.add(msg);
 			fromPortToRemote.notify();
@@ -91,7 +91,7 @@ public class Forwarder implements MessageDispatcher,Runnable {
 		public void run() {
 			try {
 				while (true) {
-					Message message = getNextMessage();
+					jRESPMessage message = getNextMessage();
 					writer.println(gson.toJson(message));
 					writer.println("%%%");
 					writer.flush();
@@ -103,7 +103,7 @@ public class Forwarder implements MessageDispatcher,Runnable {
 		
 	}
 
-	public Message getNextMessage() throws InterruptedException {
+	public jRESPMessage getNextMessage() throws InterruptedException {
 		synchronized (fromPortToRemote) {
 			while (fromPortToRemote.isEmpty()) {
 				fromPortToRemote.wait();
@@ -127,7 +127,7 @@ public class Forwarder implements MessageDispatcher,Runnable {
 				while (true) {
 					String tmp = reader.readLine();
 					if (tmp.equals("%%%")) {
-						Message msg = gson.fromJson(buffer, Message.class);
+						jRESPMessage msg = gson.fromJson(buffer, jRESPMessage.class);
 						port.deliver(msg);
 						buffer = "";
 					} else {

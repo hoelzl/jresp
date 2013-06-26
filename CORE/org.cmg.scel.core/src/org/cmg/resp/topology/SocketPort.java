@@ -22,7 +22,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.cmg.resp.RESPFactory;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.UnicastMessage;
 
 import com.google.gson.Gson;
@@ -94,7 +94,7 @@ public class SocketPort extends AbstractPort {
 	}
 	
 	@Override
-	protected void send( Message message ) throws IOException {
+	protected void send( jRESPMessage message ) throws IOException {
 		//FIXME: Check if parameters are correctly passed!
 		msocket.send(new DatagramPacket(gson.toJson(message).getBytes() , 0 ));
 	}

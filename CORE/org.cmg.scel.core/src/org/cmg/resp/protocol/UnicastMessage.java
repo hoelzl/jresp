@@ -20,7 +20,7 @@ import org.cmg.resp.topology.PointToPoint;
  * @author Michele Loreti
  *
  */
-public abstract class UnicastMessage extends Message {
+public abstract class UnicastMessage extends jRESPMessage {
 
 	private String target;
 	

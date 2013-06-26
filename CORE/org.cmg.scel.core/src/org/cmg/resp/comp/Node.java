@@ -45,7 +45,7 @@ import org.cmg.resp.protocol.GroupPutReply;
 import org.cmg.resp.protocol.GroupPutRequest;
 import org.cmg.resp.protocol.GroupQueryReply;
 import org.cmg.resp.protocol.GroupQueryRequest;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.MessageHandler;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
@@ -89,14 +89,14 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		/**
 		 * The received message.
 		 */
-		private Message m;
+		private jRESPMessage m;
 		
 		/**
 		 * Creates an instance that is devoted to handle message <code>m</code>.
 		 * 
 		 * @param m message to handle.
 		 */
-		public NodeMessageHandler( Message m ) {
+		public NodeMessageHandler( jRESPMessage m ) {
 			this.m = m;
 		}
 
@@ -203,6 +203,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 				if (pending != null) {
 					pending.add(msg);
 				} else {
+					sendFail(msg.getSource(),msg.getSession(),"Get request completed!");
 				}
 			}
 		}
@@ -268,7 +269,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		public void run() {
 			try {
 			while (isRunning()) {				
-				Message m = getNextMessage();
+				jRESPMessage m = getNextMessage();
 				executor.execute( new NodeMessageHandler(m) );			
 			}
 			} catch (Exception e) {
@@ -295,7 +296,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	 */
 	protected LinkedList<AbstractPort> ports;
 
-	protected Queue<Message> pendingMessages = new LinkedList<Message>();
+	protected Queue<jRESPMessage> pendingMessages = new LinkedList<jRESPMessage>();
 	
 	/**
 	 * Counter used to associate id to agents.
@@ -485,7 +486,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	 * @see org.cmg.scel.topology.MessageDispatcher#addMessage(org.cmg.scel.protocol.Message)
 	 */
 	@Override
-	public synchronized void addMessage( Message msg ) {
+	public synchronized void addMessage( jRESPMessage msg ) {
 		pendingMessages.add(msg);
 		notifyAll();
 	}
@@ -600,7 +601,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	 * @throws InterruptedException  when another thread interrupts current thread
 	 * computation while action is under execution.
 	 */
-	private synchronized Message getNextMessage() throws InterruptedException {
+	private synchronized jRESPMessage getNextMessage() throws InterruptedException {
 		while (pendingMessages.isEmpty()) {
 			wait();
 		}
@@ -980,8 +981,8 @@ public class Node extends Observable implements MessageDispatcher, INode {
 			}
 			synchronized (Node.this.pendigGroupGet) {
 				received = Node.this.pendigGroupGet.get(session);
-				Node.this.outGroupPutPending.remove(session);
 				if (received != null) {
+					Node.this.outGroupPutPending.remove(session);
 					try {
 						doGroupGet( group , received , pending );
 					} catch (InterruptedException e) {
@@ -1049,7 +1050,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 					flag = false;
 					pending.set(reply.getTuple());
 				} else {
-					sendFail(reply.getSource(), reply.getTupleSession(), "Attribute predicate is not satisfied!");
+					sendFail(reply.getSource(), reply.getTupleSession(), "Group get completed!");
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1142,24 +1143,26 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	@Override
 	public void gGet(PointToPoint from, int session, GroupPredicate groupPredicate,
 			Template template) {
-//		MessageSender p = getPort(from);
-//		if (p != null) {
-//			Tuple t = knowledge.getp(template);
-//			if (t != null) {
-//				int tupleSession = getSession();
-//				Pending<Boolean> pending = new Pending<Boolean>();
-//				putPending.put(tupleSession, pending);
-//				try {
-//					p.sendGroupGetReply(from, getName(), session, tupleSession, getAttributes(attributes), t);
-//					if (pending.get()==null) {
-//						knowledge.put(t);
-//					}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					knowledge.put(t);
-//				}
-//			}
-//		}
+		MessageSender p = getPort(from);
+		if (p != null) {
+			if (groupPredicate.evaluate(getInterface())) {			
+				Tuple t = knowledge.getp(template);
+				if (t != null) {
+					int tupleSession = getSession();
+					Pending<Boolean> pending = new Pending<Boolean>();
+					putPending.put(tupleSession, pending);
+					try {
+						p.sendGroupGetReply(from, getName(), session, tupleSession, new Attribute[0] , t);
+						if (pending.get()==null) {
+							knowledge.put(t);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						knowledge.put(t);
+					}
+				}
+			}
+		}
 	}
 
 	/* (non-Javadoc)

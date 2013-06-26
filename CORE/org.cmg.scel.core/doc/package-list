@@ -15,5 +15,6 @@ org.cmg.resp.test
 org.cmg.resp.test.examples
 org.cmg.resp.test.json
 org.cmg.resp.test.knowledge
+org.cmg.resp.test.predicates
 org.cmg.resp.test.topology
 org.cmg.resp.topology

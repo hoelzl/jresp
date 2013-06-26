@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 
 import org.cmg.resp.RESPFactory;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 
 import com.google.gson.Gson;
 
@@ -33,7 +33,7 @@ public class DatagramReceiver implements Runnable {
 				DatagramPacket p = new DatagramPacket(new byte[5000], 5000);
 				msocket.receive(p);
 				String str = new String(p.getData(),p.getOffset(),p.getLength());
-				Message msg = gson.fromJson(str, Message.class);
+				jRESPMessage msg = gson.fromJson(str, jRESPMessage.class);
 				receiver.receiveMessage(msg);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

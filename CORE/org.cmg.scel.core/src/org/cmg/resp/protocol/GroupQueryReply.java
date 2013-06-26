@@ -13,9 +13,7 @@
 package org.cmg.resp.protocol;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 

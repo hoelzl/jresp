@@ -17,7 +17,7 @@ import java.io.IOException;
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 
 /**
  * @author Michele Loreti
@@ -54,6 +54,6 @@ public interface MessageSender {
 
 	void sendGroupQueryReply(PointToPoint l, String name, int session, Tuple t)  throws IOException, InterruptedException;
 
-	void deliver(Message msg) throws IOException, InterruptedException;
+	void deliver(jRESPMessage msg) throws IOException, InterruptedException;
 
 }

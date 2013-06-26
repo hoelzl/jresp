@@ -35,10 +35,9 @@ import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.topology.Address;
 import org.cmg.resp.topology.GroupPredicate;
-import org.cmg.resp.topology.HasValue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -83,7 +82,7 @@ public class RESPFactory {
 		builder.registerTypeHierarchyAdapter(Address.class, new AddressDeserializer());
 		builder.registerTypeAdapter(Attribute.class, new AttributeDeserializer());
 		builder.registerTypeAdapter(FormalTemplateField.class, new FormalTemplateFieldDeserializer());
-		builder.registerTypeHierarchyAdapter(Message.class, new MessageDeserializer());		
+		builder.registerTypeHierarchyAdapter(jRESPMessage.class, new MessageDeserializer());		
 		builder.registerTypeHierarchyAdapter(Template.class, new TemplateDeserializer());
 		builder.registerTypeAdapter(Tuple.class, new TupleDeserializer());
 		builder.registerTypeHierarchyAdapter(GroupPredicate.class, new GroupPredicateDeserializer());

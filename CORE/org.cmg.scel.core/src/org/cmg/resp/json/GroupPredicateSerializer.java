@@ -14,9 +14,7 @@ package org.cmg.resp.json;
 
 import java.lang.reflect.Type;
 
-import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.topology.And;
-import org.cmg.resp.topology.AnyComponent;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.HasValue;
 import org.cmg.resp.topology.IsGreaterOrEqualThan;

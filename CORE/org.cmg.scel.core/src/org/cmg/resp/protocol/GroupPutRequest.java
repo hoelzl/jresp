@@ -13,7 +13,6 @@
 package org.cmg.resp.protocol;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.GroupPredicate;
@@ -26,7 +25,7 @@ import org.cmg.resp.topology.PointToPoint;
  * @author Michele Loreti
  *
  */
-public class GroupPutRequest extends Message {
+public class GroupPutRequest extends jRESPMessage {
 
 	/**
 	 * Tuple argument of put action

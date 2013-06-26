@@ -20,7 +20,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.cmg.resp.RESPFactory;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.UnicastMessage;
 
 import com.google.gson.Gson;
@@ -61,7 +61,7 @@ public class PortForwarder extends AbstractPort {
 	}
 
 	@Override
-	protected void send(Message message) throws IOException, InterruptedException {
+	protected void send(jRESPMessage message) throws IOException, InterruptedException {
 		writer.println(gson.toJson(message));
 		writer.print("%%%");
 		writer.flush();
@@ -81,7 +81,7 @@ public class PortForwarder extends AbstractPort {
 				while (true) {
 					String tmp = reader.readLine();
 					if (tmp.equals("%%%")) {
-						Message msg = gson.fromJson(buffer, Message.class);
+						jRESPMessage msg = gson.fromJson(buffer, jRESPMessage.class);
 						dispatch( msg );
 						buffer = "";
 					} else {
@@ -96,7 +96,7 @@ public class PortForwarder extends AbstractPort {
 		
 	}
 
-	public void dispatch(Message msg) throws IOException, InterruptedException {
+	public void dispatch(jRESPMessage msg) throws IOException, InterruptedException {
 		if (msg instanceof UnicastMessage) {
 			UnicastMessage uMsg = (UnicastMessage) msg;
 			MessageDispatcher n = nodes.get(uMsg.getTarget());

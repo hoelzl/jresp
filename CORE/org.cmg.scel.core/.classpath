@@ -10,5 +10,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GSon"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/json"/>
+	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/pastry-2.1/pastry.jar" sourcepath="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/pastry-2.1/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/pastry-2.1/docs/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,7 +19,7 @@ import org.cmg.resp.protocol.GroupPutReply;
 import org.cmg.resp.protocol.GroupPutRequest;
 import org.cmg.resp.protocol.GroupQueryReply;
 import org.cmg.resp.protocol.GroupQueryRequest;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
@@ -49,7 +49,7 @@ public class MessageSerializationDeserialization {
 		Ack ack = new Ack(new PointToPoint("test", new ServerPortAddress(9999)), 23,"pippo");
 		String txt = gson.toJson(ack);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(ack, msg);
 	}
 
@@ -57,7 +57,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeFail() {
 		Fail fail = new Fail(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo","error");
 		String txt = gson.toJson(fail);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(fail, msg);
 	}
 
@@ -65,7 +65,7 @@ public class MessageSerializationDeserialization {
 	public void testSerializeDeserializeAttributeRequest() {
 		AttributeRequest fail = new AttributeRequest(new PointToPoint("test", new SocketPortAddress(9999)), 23,"pippo", new String[] {"attr1","attr2"});
 		String txt = gson.toJson(fail);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(fail, msg);
 	}
 
@@ -83,7 +83,7 @@ public class MessageSerializationDeserialization {
 				);
 		String txt = gson.toJson(fail);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(fail, msg);
 	}
 
@@ -107,7 +107,7 @@ public class MessageSerializationDeserialization {
 						new Tuple( true ,  34 , new AnObject(2, 3) , new AnObjectWithArrays( new AnObject(1, 2) , new AnObject(3, 4) ) ));
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -121,7 +121,7 @@ public class MessageSerializationDeserialization {
 						new Tuple( true ,  34 , new AnObject(2, 3) , new AnObjectWithArrays( new AnObject(1, 2) , new AnObject(3, 4) ) ));
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -140,7 +140,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -159,7 +159,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -180,7 +180,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -200,7 +200,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -215,7 +215,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -234,7 +234,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -248,7 +248,7 @@ public class MessageSerializationDeserialization {
 			);
 		String txt = gson.toJson(request);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(request, msg);
 	}
 
@@ -263,7 +263,7 @@ public class MessageSerializationDeserialization {
 				);
 		String txt = gson.toJson(fail);
 		System.out.println(txt);
-		Message msg = gson.fromJson(txt, Message.class);
+		jRESPMessage msg = gson.fromJson(txt, jRESPMessage.class);
 		assertEquals(fail, msg);
 	}
 

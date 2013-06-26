@@ -1,10 +1,10 @@
 package org.cmg.resp.topology;
 
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 
 public interface MessageDispatcher {
 
-	public abstract void addMessage(Message msg);
+	public abstract void addMessage(jRESPMessage msg);
 
 	public abstract String getName();
 

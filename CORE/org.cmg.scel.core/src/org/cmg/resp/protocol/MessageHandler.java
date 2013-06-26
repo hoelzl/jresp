@@ -53,7 +53,7 @@ public abstract class MessageHandler {
 	
 	public abstract void handle( Fail msg ) throws IOException;
 	
-	public final void receive( Message msg ) throws IOException, InterruptedException {
+	public final void receive( jRESPMessage msg ) throws IOException, InterruptedException {
 		msg.accept(this);
 	}
 

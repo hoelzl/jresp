@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 import org.cmg.resp.RESPFactory;
 import org.cmg.resp.exceptions.DuplicateNameException;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.UnicastMessage;
 
 import com.google.gson.Gson;
@@ -70,7 +70,7 @@ public class ServerPort implements MessageReceiver {
 		clients.remove(clientName);
 	}
 
-	private void dispatch( String clientName , Message message ) throws IOException {
+	private void dispatch( String clientName , jRESPMessage message ) throws IOException {
 		InetSocketAddress clientAddress = clients.get(clientName);
 		Socket socket = new Socket(clientAddress.getAddress(), clientAddress.getPort());
 		PrintWriter writer = new PrintWriter(socket.getOutputStream());
@@ -79,7 +79,7 @@ public class ServerPort implements MessageReceiver {
 		socket.close();
 	}
 	
-	private synchronized void broadcast( Message message ) {
+	private synchronized void broadcast( jRESPMessage message ) {
 		for (String clientName : clients.keySet()) {
 			try {
 				dispatch( clientName , message);
@@ -91,7 +91,7 @@ public class ServerPort implements MessageReceiver {
 	}
 
 	@Override
-	public void receiveMessage(Message m) throws InterruptedException, IOException {
+	public void receiveMessage(jRESPMessage m) throws InterruptedException, IOException {
 		if (m instanceof UnicastMessage) {
 			receiveUnicastMessage((UnicastMessage) m);
 		} else {

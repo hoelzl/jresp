@@ -7,7 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.cmg.resp.RESPFactory;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 
 import com.google.gson.Gson;
 
@@ -37,7 +37,7 @@ public class SocketReceiver implements Runnable {
 				System.out.println("Waiting for connections at "+ssocket.getInetAddress().getCanonicalHostName()+":"+ssocket.getLocalPort());
 				Socket s = ssocket.accept();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				Message msg = gson.fromJson(reader, Message.class);
+				jRESPMessage msg = gson.fromJson(reader, jRESPMessage.class);
 				receiver.receiveMessage(msg);
 				reader.close();
 				s.close();

@@ -14,7 +14,7 @@ package org.cmg.resp.topology;
 
 import java.io.IOException;
 
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.UnicastMessage;
 
 /**
@@ -23,7 +23,7 @@ import org.cmg.resp.protocol.UnicastMessage;
  */
 public interface MessageReceiver {
 
-	public void receiveMessage( Message m ) throws InterruptedException, IOException;
+	public void receiveMessage( jRESPMessage m ) throws InterruptedException, IOException;
 
 	public void receiveUnicastMessage( UnicastMessage m ) throws InterruptedException, IOException;
 	

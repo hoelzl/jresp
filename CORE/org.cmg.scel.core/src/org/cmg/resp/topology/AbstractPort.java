@@ -30,7 +30,7 @@ import org.cmg.resp.protocol.GroupPutReply;
 import org.cmg.resp.protocol.GroupPutRequest;
 import org.cmg.resp.protocol.GroupQueryReply;
 import org.cmg.resp.protocol.GroupQueryRequest;
-import org.cmg.resp.protocol.Message;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
@@ -86,7 +86,7 @@ public abstract class AbstractPort implements MessageSender, MessageReceiver {
 	 * @throws IOException is thrown when an I/O error occurs in the communciation
 	 * @throws InterruptedException is thrown when the thread is interrupted while is is waiting for action completion.
 	 */
-	protected abstract void send( Message m ) throws IOException, InterruptedException;
+	protected abstract void send( jRESPMessage m ) throws IOException, InterruptedException;
 	
 	/**
 	 * Returns port address. The address obtained by this method is attached to each
@@ -142,7 +142,7 @@ public abstract class AbstractPort implements MessageSender, MessageReceiver {
 	}
 
 	@Override
-	public synchronized void receiveMessage( Message m ) throws InterruptedException {
+	public synchronized void receiveMessage( jRESPMessage m ) throws InterruptedException {
 		if (m instanceof UnicastMessage) {
 			receiveUnicastMessage((UnicastMessage) m) ;
 		} else {
@@ -226,7 +226,7 @@ public abstract class AbstractPort implements MessageSender, MessageReceiver {
 	}
 
 	@Override
-	public void deliver(Message msg) throws IOException, InterruptedException {
+	public void deliver(jRESPMessage msg) throws IOException, InterruptedException {
 		if (msg instanceof UnicastMessage) {
 			send( getAddress() , (UnicastMessage) msg);
 		} else {
