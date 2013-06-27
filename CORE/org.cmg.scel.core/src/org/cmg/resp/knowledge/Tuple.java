@@ -12,6 +12,7 @@
  */
 package org.cmg.resp.knowledge;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -24,7 +25,7 @@ import java.util.Iterator;
  * 
  *
  */
-public class Tuple implements Iterable<Object> {
+public class Tuple implements Iterable<Object>, Serializable {
 
 	/**
 	 * Tuple fields.

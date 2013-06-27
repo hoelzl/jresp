@@ -17,19 +17,26 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 
-import org.cmg.resp.protocol.jRESPMessage;
+import org.cmg.resp.RESPFactory;
 import org.cmg.resp.protocol.UnicastMessage;
+import org.cmg.resp.protocol.jRESPMessage;
 
 import rice.environment.Environment;
 import rice.p2p.commonapi.Application;
+import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.RouteMessage;
-import rice.pastry.NodeHandle;
+import rice.p2p.scribe.ScribeImpl;
+import rice.p2p.scribe.Topic;
 import rice.pastry.NodeIdFactory;
 import rice.pastry.PastryNode;
 import rice.pastry.PastryNodeFactory;
+import rice.pastry.commonapi.PastryIdFactory;
 import rice.pastry.socket.SocketPastryNodeFactory;
 import rice.pastry.standard.RandomNodeIdFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * @author Michele Loreti
@@ -38,28 +45,65 @@ import rice.pastry.standard.RandomNodeIdFactory;
 public class ScribePort extends AbstractPort {
 	
 	private PastryNode pastryNode;
+	private ScribePortApplication application;
+	private Gson gson;
 
 	public ScribePort( PastryNode pastryNode ) {
 		this.pastryNode = pastryNode;
+		this.gson = RESPFactory.getGSon();
+		this.application = new ScribePortApplication();		
 	}
 	
 	public class ScribePortApplication implements Application {
+		
+		private Endpoint endpoint;
+
+		public ScribePortApplication() {
+			this.endpoint = ScribePort.this.pastryNode.buildEndpoint(this,"jRESPPastry");
+			this.endpoint.register();
+		}
 
 		@Override
 		public boolean forward(RouteMessage message) {
+//			System.out.println("FORWARDING: "+message);
+//			System.out.println("My ID: "+pastryNode.getId().toStringFull());
+//			System.out.println("Target ID: "+message.getDestinationId().toStringFull());
 			return true;
 		}
 
 		@Override
 		public void deliver(Id id, rice.p2p.commonapi.Message message) {
-			// TODO Auto-generated method stub
-			
+			if (message instanceof jRESPScribeMessage) {
+				jRESPScribeMessage m = (jRESPScribeMessage) message;
+				try {
+					receiveMessage(m.getMessage());
+				} catch (JsonSyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				//FIXME: Signal an error!
+			}
 		}
 
 		@Override
 		public void update(rice.p2p.commonapi.NodeHandle handle, boolean joined) {			
+//			System.out.println("NEW NODE ID: "+handle.getId().toStringFull()+" ("+joined+")");
 		}
 		
+		public void sendMessage( Id target , jRESPMessage message ) {
+//			System.out.println("TARGET: "+target.toStringFull());
+//			System.out.println("NEIGHBOURS: "+endpoint.neighborSet(100).size());
+			rice.p2p.commonapi.NodeHandle nh = endpoint.neighborSet(100).getHandle(target);
+			if (nh == null) {
+				this.endpoint.route(target, new jRESPScribeMessage(ScribePort.this.pastryNode.getId(), target, message), null);
+			} else {
+				this.endpoint.route(null, new jRESPScribeMessage(ScribePort.this.pastryNode.getId(), target, message), nh);
+			}
+		}
 	}
 	
 	
@@ -69,8 +113,7 @@ public class ScribePort extends AbstractPort {
 	 */
 	@Override
 	public boolean canSendTo(Target l) {
-		// TODO Auto-generated method stub
-		return false;
+		return (l instanceof Group)||((l instanceof PointToPoint)&&(((PointToPoint) l).address instanceof PastryPortAddress));
 	}
 
 	/*
@@ -80,8 +123,8 @@ public class ScribePort extends AbstractPort {
 	@Override
 	protected void send(Address address, UnicastMessage message)
 			throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		
+		Id target = ((PastryPortAddress) address).getId();
+		application.sendMessage(target, message);		
 	}
 
 	/*
@@ -96,8 +139,7 @@ public class ScribePort extends AbstractPort {
 
 	@Override
 	public Address getAddress() {
-		// TODO Auto-generated method stub
-		return null;
+		return new PastryPortAddress(this.pastryNode.getId());
 	}
 	
 	public static ScribePort createScribePort( 
@@ -107,7 +149,7 @@ public class ScribePort extends AbstractPort {
 		) throws IOException, InterruptedException {
 		NodeIdFactory nidFactory = new RandomNodeIdFactory(environment);
 		PastryNodeFactory factory = new SocketPastryNodeFactory(nidFactory, bindAddress , bindport, environment);	
-	    NodeHandle bootHandle = ((SocketPastryNodeFactory)factory).getNodeHandle(bootstrapNode);
+//	    NodeHandle bootHandle = ((SocketPastryNodeFactory)factory).getNodeHandle(bootstrapNode);
 		
 		// construct a node, passing the null boothandle on the first loop will 
 	    // cause the node to start its own ring
@@ -130,7 +172,11 @@ public class ScribePort extends AbstractPort {
 	        }       
 	    }	
 	    System.out.println("NODE STARTED: "+node.isReady());
-		return null;	
+		return new ScribePort(node);	
+	}
+
+	public PastryNode getNode() {
+		return pastryNode;
 	}
 
 }

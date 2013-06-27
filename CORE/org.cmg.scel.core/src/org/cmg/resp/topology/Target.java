@@ -12,12 +12,14 @@
  */
 package org.cmg.resp.topology;
 
+import java.io.Serializable;
+
 /**
  * @author loreti
  * 
  *
  */
-public interface Target {
+public interface Target extends Serializable {
 
 	public boolean isSelf();
 

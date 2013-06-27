@@ -12,6 +12,7 @@
  */
 package org.cmg.resp.knowledge;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -24,7 +25,7 @@ import java.util.Iterator;
  * 
  *
  */
-public class Template implements Iterable<TemplateField> {
+public class Template implements Iterable<TemplateField>, Serializable {
 
 	/**
 	 * A list of template fields. 

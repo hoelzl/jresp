@@ -13,6 +13,7 @@
 package org.cmg.resp.protocol;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.cmg.resp.topology.PointToPoint;
 
@@ -22,7 +23,7 @@ import org.cmg.resp.topology.PointToPoint;
  * @author Michele Loreti
  *
  */
-public abstract class jRESPMessage {
+public abstract class jRESPMessage implements Serializable {
 	
 	private PointToPoint source;
 	private int 	 session;

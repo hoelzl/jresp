@@ -457,12 +457,32 @@ public class Node extends Observable implements MessageDispatcher, INode {
 						Thread.sleep(t);
 					}
 
+					@Override
+					public LinkedList<PointToPoint> getLocalAddresses() {
+						return Node.this.getLocalAddresses();
+					}
+
 				}
 			);
 			agents.add(a);
 			executor.execute(a);
 	}
 	
+	/**
+	 * Returns the list of node's addresses.
+	 * 
+	 * @return the list of node's addresses.
+	 */
+	protected synchronized LinkedList<PointToPoint> getLocalAddresses() {
+		LinkedList<PointToPoint> addresses = new LinkedList<PointToPoint>();
+		for (AbstractPort p : this.ports) {
+			addresses.add(new PointToPoint(this.name, p.getAddress()));
+		}
+		
+		return addresses;
+	}
+
+
 	/**
 	 * This method is used to generate a new fresh identifier.
 	 * 

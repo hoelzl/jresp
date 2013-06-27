@@ -12,6 +12,8 @@
  */
 package org.cmg.resp.knowledge;
 
+import java.io.Serializable;
+
 /**
  * Identifies a generic template field. Each implementation of
  * interface <code>Knowedge</code> should provide specific
@@ -22,7 +24,7 @@ package org.cmg.resp.knowledge;
  * 
  *
  */
-public interface TemplateField {
+public interface TemplateField extends Serializable {
 	
 	/**
 	 * Checks if the object <code>o</code> matches against this field.

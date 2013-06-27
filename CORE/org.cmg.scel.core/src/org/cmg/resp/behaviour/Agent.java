@@ -13,10 +13,12 @@
 package org.cmg.resp.behaviour;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Observable;
 
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
 /**
@@ -193,6 +195,15 @@ public abstract class Agent extends Observable implements Runnable {
 	 */
 	protected Tuple query(Template t, Target l)  throws InterruptedException, IOException {
 		return context.query(this, t, l);
+	}
+	
+	/**
+	 * Returns the list of addresses identifying the node where the agent is running.
+	 * 
+	 * @return the list of addresses identifying the node where the agent is running.
+	 */
+	protected LinkedList<PointToPoint>  getLocalAddresses() {
+		return context.getLocalAddresses();
 	}
 
 //	/**

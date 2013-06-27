@@ -12,6 +12,8 @@
  */
 package org.cmg.resp.knowledge;
 
+import java.io.Serializable;
+
 
 /**
  * Indicates a generic attribute. This is a named value that can be
@@ -21,7 +23,7 @@ package org.cmg.resp.knowledge;
  * @author Michele Loreti
  *
  */
-public class Attribute {
+public class Attribute implements Serializable {
 
 	/**
 	 * Attribute name

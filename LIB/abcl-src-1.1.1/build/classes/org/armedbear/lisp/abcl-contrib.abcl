@@ -1,0 +1,17 @@
+"; -*- Mode: Lisp -*-"
+(SYSTEM:INIT-FASL :VERSION 39)
+(SETQ SYSTEM:*SOURCE* #P"/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-src-1.1.1/src/org/armedbear/lisp/abcl-contrib.lisp")
+
+(SETQ SYSTEM:*FASL-LOADER* (SYSTEM::MAKE-FASL-CLASS-LOADER "org.armedbear.lisp.abcl_contrib"))
+(SYSTEM:%IN-PACKAGE "SYSTEM")
+(REQUIRE :ASDF)
+(FSET 'SYSTEM-JAR-P (GET-FASL-FUNCTION *FASL-LOADER* 0) 38 '(P) NIL)
+(FSET 'FIND-SYSTEM-JAR (GET-FASL-FUNCTION *FASL-LOADER* 1) 560 'NIL "Return the pathname of the system jar, one of `abcl.jar` or `abcl-m.n.p.jar` or `abcl-m.n.p[.~-]something.jar`.")
+(DEFVAR *ABCL-JAR* NIL "Pathname of the jar that ABCL was loaded from.
+Initialized via SYSTEM::FIND-SYSTEM-JAR.")
+(DEFVAR *ABCL-CONTRIB* NIL "Pathname of the ABCL contrib.
+Initialized via SYSTEM:FIND-CONTRIB")
+(FSET 'FIND-AND-ADD-CONTRIB (GET-FASL-FUNCTION *FASL-LOADER* 2) 1071 '(&KEY (VERBOSE 
+NIL)) "Attempt to find the ABCL contrib jar and add its contents to ASDF.
+Returns the pathname of the contrib if it can be found.")
+(FUNCALL (GET-FASL-FUNCTION *FASL-LOADER* 5))

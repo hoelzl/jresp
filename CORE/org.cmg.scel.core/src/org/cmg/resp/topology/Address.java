@@ -12,6 +12,8 @@
  */
 package org.cmg.resp.topology;
 
+import java.io.Serializable;
+
 
 /**
  * 
@@ -19,7 +21,7 @@ package org.cmg.resp.topology;
  * @author Michele Loreti
  *
  */
-public abstract class Address {
+public abstract class Address implements Serializable {
 
 	private String addressCode;
 		

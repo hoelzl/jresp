@@ -13,9 +13,11 @@
 package org.cmg.resp.behaviour;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
 /**
@@ -97,5 +99,12 @@ public interface AgentContext {
 	 * @throws InterruptedException 
 	 */
 	public void suspend(long t) throws InterruptedException;
+
+	/**
+	 * Returns the list of addresses identifying the node where the context is operating.
+	 * 
+	 * @return the list of addresses identifying the node where the context is operating.
+	 */
+	public LinkedList<PointToPoint> getLocalAddresses();
 
 }
