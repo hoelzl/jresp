@@ -26,7 +26,7 @@ public class PoemList implements PoemCommandArgument {
 	
 	@Override
 	public String getString() {
-		String toReturn = "'(";
+		String toReturn = "(";
 		for (PoemCommandArgument arg : args) {
 			toReturn += arg.getString()+" ";
 		}

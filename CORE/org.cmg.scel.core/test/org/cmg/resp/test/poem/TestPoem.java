@@ -29,7 +29,9 @@ public class TestPoem {
 	public static void main(String[] argv) throws InterruptedException {
 		PoemAdaptor adaptor = new PoemAdaptor();
 		PoemNonce nonce = adaptor.getNonce();
-		adaptor.poemAssert( new PoemList( new PoemSymbol("foo") , new PoemSymbol("x")) , nonce);
+		adaptor.poemAssert( new PoemList( new PoemSymbol("foo") , new PoemSymbol("a")) , nonce);
+		adaptor.poemAssert( new PoemList( new PoemSymbol("foo") , new PoemSymbol("b")) , nonce);
+		adaptor.poemAssert( new PoemList( new PoemSymbol("foo") , new PoemSymbol("z")) , nonce);
 		adaptor.poemAssert( 
 				new PoemList( 
 					new PoemSymbol("implies") , 
@@ -49,8 +51,15 @@ public class TestPoem {
 				new PoemSymbol("bar") ,
 				new PoemVariable("y") 				
 			), 				
+			new PoemList(
+					new PoemSymbol("RES") ,
+					new PoemVariable("y") 				
+				), 				
 			nonce
 		);
+		adaptor.poemClosure(nonce);
+		adaptor.poemClosure(nonce);
+		adaptor.poemClosure(nonce);
 	}
 
 }

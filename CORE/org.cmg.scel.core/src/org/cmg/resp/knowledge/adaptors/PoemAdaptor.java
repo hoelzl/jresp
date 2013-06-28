@@ -214,22 +214,31 @@ public class PoemAdaptor implements KnowledgeAdapter {
 	
 	public void poemAssert( PoemCommandArgument arg , PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
-		String command = "(assert "+arg.getString()+")";
+		String command = "(assert '"+arg.getString()+")";
 		LispObject o  = doeval(command);
 		System.out.println(o);
 	}
 
 	public void poemNewProve( PoemCommandArgument arg , PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
-		String command = "(assert "+arg.getString()+")";
+		String command = "(new-prove '"+arg.getString()+")";
 		LispObject o  = doeval(command);
 		System.out.println(o);
 	}
 	
 	public void poemNewProve( PoemCommandArgument arg , PoemCommandArgument answer , PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
-		String command = "(newprove "+arg.getString()+" :answer "+answer.getString()+")";
+		String command = "(new-prove '"+arg.getString()+" :answer '"+answer.getString()+")";
 		LispObject o  = doeval(command);
+		System.out.println(o);
+	}
+
+	public void poemClosure( PoemNonce nonce ) throws InterruptedException {
+		checkNonce(nonce);
+		String command = "(closure)";
+		LispObject o  = doeval(command);
+		command = "(answer)";
+		o  = doeval(command);
 		System.out.println(o);
 	}
 }
