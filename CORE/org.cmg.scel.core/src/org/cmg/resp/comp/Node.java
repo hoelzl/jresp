@@ -210,7 +210,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 
 		@Override
 		public void handle(GroupQueryRequest msg) throws IOException, InterruptedException {
-			policy.acceptGroupQuery(msg.getSource(), msg.getSession(), msg.getAttributes(), msg.getTemplate());
+			policy.acceptGroupQuery(msg.getSource(), msg.getSession(), msg.getGroupPredicate(), msg.getTemplate());
 		}
 
 		@Override

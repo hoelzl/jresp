@@ -72,7 +72,8 @@ public class GroupQueryRequest extends jRESPMessage {
 	 * @return the attribute names used to evaluate if a node is involved
 	 * or not in the communication.
 	 */
-	public GroupPredicate getAttributes() {
+	@Override
+	public GroupPredicate getGroupPredicate() {
 		return groupPredicate;
 	}
 	

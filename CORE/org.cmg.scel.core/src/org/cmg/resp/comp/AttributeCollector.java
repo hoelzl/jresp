@@ -12,6 +12,8 @@
  */
 package org.cmg.resp.comp;
 
+import java.util.Observable;
+
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.KnowledgeListener;
 import org.cmg.resp.knowledge.Template;

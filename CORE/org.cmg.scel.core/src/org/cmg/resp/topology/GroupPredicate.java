@@ -12,6 +12,7 @@
  */
 package org.cmg.resp.topology;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import org.cmg.resp.knowledge.Attribute;
@@ -21,7 +22,7 @@ import org.cmg.resp.knowledge.Attribute;
  *
  */
 
-public abstract class GroupPredicate {
+public abstract class GroupPredicate implements Serializable {
 
 	public enum PredicateType {		
 		TRUE,

@@ -15,9 +15,16 @@ package org.cmg.resp.topology;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 import org.cmg.resp.RESPFactory;
+import org.cmg.resp.comp.AttributeListener;
+import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.Attribute;
+import org.cmg.resp.knowledge.KnowledgeListener;
+import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.protocol.UnicastMessage;
 import org.cmg.resp.protocol.jRESPMessage;
 
@@ -25,8 +32,12 @@ import rice.environment.Environment;
 import rice.p2p.commonapi.Application;
 import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.NodeHandle;
 import rice.p2p.commonapi.RouteMessage;
+import rice.p2p.scribe.ScribeClient;
+import rice.p2p.scribe.ScribeContent;
 import rice.p2p.scribe.ScribeImpl;
+import rice.p2p.scribe.ScribeMultiClient;
 import rice.p2p.scribe.Topic;
 import rice.pastry.NodeIdFactory;
 import rice.pastry.PastryNode;
@@ -46,28 +57,36 @@ public class ScribePort extends AbstractPort {
 	
 	private PastryNode pastryNode;
 	private ScribePortApplication application;
-	private Gson gson;
 
-	public ScribePort( PastryNode pastryNode ) {
+	public ScribePort( PastryNode pastryNode , GroupPredicate[] predicates ) {
 		this.pastryNode = pastryNode;
-		this.gson = RESPFactory.getGSon();
-		this.application = new ScribePortApplication();		
+		this.application = new ScribePortApplication(predicates);		
 	}
 	
-	public class ScribePortApplication implements Application {
+	public class ScribePortApplication implements Application, ScribeMultiClient {
 		
 		private Endpoint endpoint;
+		private Topic generalTopic;
+		private ScribeImpl scribeInstance;
+		private HashMap<GroupPredicate, Topic> topics;
+		private HashMap<GroupPredicate, Boolean> subscribed;
+		private boolean allEnabled = false;
 
-		public ScribePortApplication() {
+		public ScribePortApplication(GroupPredicate[] predicates) {
 			this.endpoint = ScribePort.this.pastryNode.buildEndpoint(this,"jRESPPastry");
+			this.scribeInstance = new ScribeImpl(pastryNode, "jRESPScribe");
+			this.generalTopic = new Topic(new PastryIdFactory(pastryNode.getEnvironment()), "jRESPMainTopic");			
+			this.topics = new HashMap<GroupPredicate, Topic>();
+			this.subscribed = new HashMap<GroupPredicate, Boolean>();
+			for (GroupPredicate p : predicates) {
+				topics.put(p, new Topic(new PastryIdFactory(pastryNode.getEnvironment()), p.toString() ));
+				subscribed.put(p, false);
+			}			
 			this.endpoint.register();
 		}
 
 		@Override
 		public boolean forward(RouteMessage message) {
-//			System.out.println("FORWARDING: "+message);
-//			System.out.println("My ID: "+pastryNode.getId().toStringFull());
-//			System.out.println("Target ID: "+message.getDestinationId().toStringFull());
 			return true;
 		}
 
@@ -84,26 +103,113 @@ public class ScribePort extends AbstractPort {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} else {
-				//FIXME: Signal an error!
-			}
+			} 
 		}
 
 		@Override
 		public void update(rice.p2p.commonapi.NodeHandle handle, boolean joined) {			
-//			System.out.println("NEW NODE ID: "+handle.getId().toStringFull()+" ("+joined+")");
 		}
 		
 		public void sendMessage( Id target , jRESPMessage message ) {
-//			System.out.println("TARGET: "+target.toStringFull());
-//			System.out.println("NEIGHBOURS: "+endpoint.neighborSet(100).size());
-			rice.p2p.commonapi.NodeHandle nh = endpoint.neighborSet(100).getHandle(target);
-			if (nh == null) {
-				this.endpoint.route(target, new jRESPScribeMessage(ScribePort.this.pastryNode.getId(), target, message), null);
-			} else {
-				this.endpoint.route(null, new jRESPScribeMessage(ScribePort.this.pastryNode.getId(), target, message), nh);
+			this.endpoint.route(target, new jRESPScribeMessage(ScribePort.this.pastryNode.getId(), target, message), null);
+		}
+
+		@Override
+		public boolean anycast(Topic topic, ScribeContent content) {
+			return false;
+		}
+
+		@Override
+		public void deliver(Topic topic, ScribeContent content) {
+			if (content instanceof ScribeGroupMessage) {
+				try {
+					ScribePort.this.receiveMessage(((ScribeGroupMessage) content).getMessage());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+
+		@Override
+		public void childAdded(Topic topic, NodeHandle child) {
+		}
+
+		@Override
+		public void childRemoved(Topic topic, NodeHandle child) {
+		}
+
+		@Override
+		public void subscribeFailed(Topic topic) {
+		}
+
+		@Override
+		public void subscribeFailed(Collection<Topic> topics) {
+		}
+
+		@Override
+		public void subscribeSuccess(Collection<Topic> topics) {
+			for (Topic t : topics) {
+				System.out.println("SUCCESS TOPIC: "+t);				
+			}
+		}
+		
+		public void sendMessage( jRESPMessage message , GroupPredicate g ) {
+			Topic t = null;
+			if (g!=null) {
+				t = topics.get(g);
+			} 
+			if (t != null) {
+				scribeInstance.publish(t, new ScribeGroupMessage(pastryNode.getId(), message) );
+			} else {
+				scribeInstance.publish(generalTopic, new ScribeGroupMessage(pastryNode.getId(), message) );				
+			}
+		}
+
+		public void subscribe() {
+			this.scribeInstance.subscribe(generalTopic, this);
+		}
+
+		public synchronized void revalidateAttributes() {
+			if (allEnabled) {
+				return ;
+			}
+			for (GroupPredicate p: topics.keySet()) {
+				int satCounter = 0;
+				for (MessageDispatcher n : ScribePort.this.nodes.values()) {
+					if (n instanceof Node) {
+						if (p.evaluate(((Node) n).getInterface())) {
+							satCounter++;
+						}
+					} else {
+						satCounter++;
+						break;
+					}
+				}
+				if ((satCounter>0)&&(!subscribed.get(p))) {
+					this.scribeInstance.subscribe(topics.get(p), this);					
+					subscribed.put(p, true);
+				} else {
+					if (subscribed.get(p)) {
+						this.scribeInstance.unsubscribe(topics.get(p), this);
+						subscribed.put(p, false);
+					}
+				}
+			}
+		}
+
+		public synchronized void enableAllPredicate() {
+			if (!allEnabled ) {
+				allEnabled = true;
+				for (GroupPredicate p : subscribed.keySet()) {
+					if (!subscribed.get(p)) {
+						this.scribeInstance.subscribe(topics.get(p), this);						
+						subscribed.put(p, true);
+					}
+				}
+			}
+		}
+		
+		
 	}
 	
 	
@@ -113,7 +219,7 @@ public class ScribePort extends AbstractPort {
 	 */
 	@Override
 	public boolean canSendTo(Target l) {
-		return (l instanceof Group)||((l instanceof PointToPoint)&&(((PointToPoint) l).address instanceof PastryPortAddress));
+		return (l instanceof Group)||((l instanceof PointToPoint)&&(((PointToPoint) l).address instanceof ScribePortAddress));
 	}
 
 	/*
@@ -123,7 +229,7 @@ public class ScribePort extends AbstractPort {
 	@Override
 	protected void send(Address address, UnicastMessage message)
 			throws IOException, InterruptedException {
-		Id target = ((PastryPortAddress) address).getId();
+		Id target = ((ScribePortAddress) address).getId();
 		application.sendMessage(target, message);		
 	}
 
@@ -132,20 +238,28 @@ public class ScribePort extends AbstractPort {
 	 * @see org.cmg.resp.topology.AbstractPort#send(org.cmg.resp.protocol.Message)
 	 */
 	@Override
-	protected void send(jRESPMessage m) throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		
+	protected void send(jRESPMessage m) throws IOException, InterruptedException {		
+		application.sendMessage(m,m.getGroupPredicate());
 	}
 
 	@Override
 	public Address getAddress() {
-		return new PastryPortAddress(this.pastryNode.getId());
+		return new ScribePortAddress(this.pastryNode.getId());
 	}
 	
 	public static ScribePort createScribePort( 
 			InetAddress bindAddress, int bindport , 
 			InetSocketAddress bootstrapNode , 
-			Environment environment
+			Environment environment  
+		) throws IOException, InterruptedException {
+		return createScribePort(bindAddress, bindport, bootstrapNode, environment, new GroupPredicate[0]);
+	}
+		
+	public static ScribePort createScribePort( 
+			InetAddress bindAddress, int bindport , 
+			InetSocketAddress bootstrapNode , 
+			Environment environment ,
+			GroupPredicate[] predicates 
 		) throws IOException, InterruptedException {
 		NodeIdFactory nidFactory = new RandomNodeIdFactory(environment);
 		PastryNodeFactory factory = new SocketPastryNodeFactory(nidFactory, bindAddress , bindport, environment);	
@@ -172,11 +286,40 @@ public class ScribePort extends AbstractPort {
 	        }       
 	    }	
 	    System.out.println("NODE STARTED: "+node.isReady());
-		return new ScribePort(node);	
+		return new ScribePort(node,predicates);	
 	}
 
 	public PastryNode getNode() {
 		return pastryNode;
 	}
+
+	public void subscribe() {
+		application.subscribe();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.topology.AbstractPort#register(org.cmg.resp.topology.MessageDispatcher)
+	 */
+	@Override
+	public synchronized void register(final MessageDispatcher n) {
+		super.register(n);
+		if (n instanceof Node) {
+			((Node) n).addKnowledgeListener( new KnowledgeListener() {
+				
+				@Override
+				public void putOfTuple(Tuple t) {
+					application.revalidateAttributes();
+				}
+				
+				@Override
+				public void getOfTuple(Tuple t) {
+					application.revalidateAttributes();
+				}
+			});
+		} else {
+			application.enableAllPredicate();
+		}
+	}
+
 
 }

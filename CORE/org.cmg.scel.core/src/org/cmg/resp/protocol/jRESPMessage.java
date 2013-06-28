@@ -15,6 +15,7 @@ package org.cmg.resp.protocol;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 
 /**
@@ -98,4 +99,9 @@ public abstract class jRESPMessage implements Serializable {
 	public int hashCode() {
 		return type.hashCode()^source.hashCode()^session;
 	}
+	
+	public GroupPredicate getGroupPredicate() {
+		return null;
+	}
+
 }

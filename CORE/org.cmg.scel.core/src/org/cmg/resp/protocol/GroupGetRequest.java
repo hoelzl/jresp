@@ -74,6 +74,7 @@ public class GroupGetRequest extends jRESPMessage {
 	 * 
 	 * @return the predicate used to identify target nodes.
 	 */
+	@Override
 	public GroupPredicate getGroupPredicate() {
 		return groupPredicate;
 	}

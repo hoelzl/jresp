@@ -65,6 +65,7 @@ public class GroupPutRequest extends jRESPMessage {
 	 * 
 	 * @return the names of attributes used to select target nodes.
 	 */
+	@Override
 	public GroupPredicate getGroupPredicate() {
 		return groupPredicate;
 	}

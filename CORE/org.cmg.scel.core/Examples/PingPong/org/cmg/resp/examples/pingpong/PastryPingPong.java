@@ -24,8 +24,6 @@ import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.ScribePort;
 import org.cmg.resp.topology.Self;
-import org.cmg.resp.topology.SocketPort;
-import org.cmg.resp.topology.SocketPortAddress;
 
 import rice.environment.Environment;
 
@@ -43,9 +41,9 @@ public class PastryPingPong {
 
 	    ScribePort pongPort = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9998).getAddress(),9998, null, env);
 	    ScribePort pingPort = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9999).getAddress(),9999, new InetSocketAddress("127.0.0.1", 9998), env);
-	    for( int i=0 ; i<10 ; i++ ) {
-	    	ScribePort foo = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 10000+i).getAddress(),10000+i, new InetSocketAddress("127.0.0.1", 9998), env);
-	    }
+//	    for( int i=0 ; i<10 ; i++ ) {
+//	    	ScribePort foo = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 10000+i).getAddress(),10000+i, new InetSocketAddress("127.0.0.1", 9998), env);
+//	    }
 	    
 //	    ScribePort fooPort1 = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9997).getAddress(),9997, new InetSocketAddress("127.0.0.1", 9999), env);
 //	    ScribePort fooPort2 = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9996).getAddress(),9996, new InetSocketAddress("127.0.0.1", 9999), env);
