@@ -16,7 +16,12 @@ package org.cmg.resp.knowledge.adaptors;
  * @author Michele Loreti
  *
  */
-public class PoemVariable implements PoemCommandArgument {
+public class PoemVariable implements PoemValue {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String symbol;
 	
@@ -33,5 +38,37 @@ public class PoemVariable implements PoemCommandArgument {
 	public int size() {
 		return 1;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object arg0) {
+		if (arg0 == null) {
+			return false;
+		}
+		if (arg0 instanceof PoemVariable) {
+			return symbol.equals(((PoemVariable) arg0).symbol );
+		}
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return symbol.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return symbol;
+	}
+	
+	
 
 }

@@ -1,7 +1,0 @@
-"; -*- Mode: Lisp -*-"
-(SYSTEM:INIT-FASL :VERSION 39)
-(SETQ SYSTEM:*SOURCE* #P"/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-src-1.1.1/src/org/armedbear/lisp/autoloads.lisp")
-
-
-(SYSTEM:%IN-PACKAGE "SYSTEM")
-(AUTOLOAD 'SIMPLE-FORMAT "format")

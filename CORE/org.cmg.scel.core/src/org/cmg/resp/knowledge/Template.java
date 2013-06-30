@@ -108,5 +108,9 @@ public class Template implements Iterable<TemplateField>, Serializable {
 			public void remove() {}
 		};
 	}
+
+	public TemplateField getElementAt(int i) {
+		return fields[i];
+	}
 	
 }

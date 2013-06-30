@@ -16,7 +16,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-bin-1.2.0/abcl-contrib.jar"/>
-	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-bin-1.2.0/abcl.jar"/>
+	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-bin-1.2.0/abcl.jar" sourcepath="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-bin-1.2.0/src"/>
 	<classpathentry kind="lib" path="/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/pastry-2.1/jars/freepastry"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

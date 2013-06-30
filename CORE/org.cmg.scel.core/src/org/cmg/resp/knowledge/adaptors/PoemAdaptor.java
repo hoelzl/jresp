@@ -12,12 +12,17 @@
  */
 package org.cmg.resp.knowledge.adaptors;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
+import org.armedbear.lisp.Cons;
 import org.armedbear.lisp.Interpreter;
 import org.armedbear.lisp.LispObject;
+import org.armedbear.lisp.StructureObject;
+import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.KnowledgeAdapter;
 import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.TemplateField;
 import org.cmg.resp.knowledge.Tuple;
 
 /**
@@ -43,24 +48,78 @@ public class PoemAdaptor implements KnowledgeAdapter {
 
 	public enum PoemCommand {
 		INITIALIZE , 
-		ANSWER ,
+		NEXTANSWER ,
 		NEWPROVE ,
 		ASSERT ,
 		LOCK , 
-		UNLOCK;
+		UNLOCK , 
+		NONCE ,
+		EVAL ;
+	}
+	
+	public static Tuple getInitilizeTuple( PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.INITIALIZE , nonce );		
+	}
+	
+	public static Tuple getNextAnswerTuple( PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.NEXTANSWER , nonce );
 	}
 
-	public class PoemNonce {
+	public static Tuple getNewProveTuple( PoemList list , PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.NEWPROVE , list , nonce );
+	}
+
+	public static Tuple getNewProveTuple( PoemList list , PoemList answer , PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.NEWPROVE , list , answer , nonce );
+	}
+
+	public static Tuple getAssertTuple( PoemList list , PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.ASSERT , list , nonce );
+	}
+
+	public static Tuple getLockTuple( PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.LOCK , nonce );
+	}
+
+	public static Tuple getUnLockTuple( PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.UNLOCK , nonce );
+	}
+
+	public static Tuple getNonceTuple( ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.NONCE );
+	}
+
+	public static Tuple getEvalTuple( String string , PoemNonce nonce ) {
+		return new Tuple( PoemAdaptor.POEM_KEY , PoemCommand.EVAL , string , nonce );
+	}
+
+
+	public class PoemNonce implements PoemValue {
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		
 		private int id;
 		
 		PoemNonce( int id ) {
 			this.id = id;
 		}
+
+		@Override
+		public String getString() {
+			return id+"";
+		}
+
+		@Override
+		public int size() {
+			return 1;
+		}
 				
 	}
 	
-	private static final String POEM_KEY = "POEM";
+	public static final String POEM_KEY = "POEM";
 	
 	private static String[] INIT_COMMANDS = new String[] {
 		"(require :asdf)" ,
@@ -88,14 +147,14 @@ public class PoemAdaptor implements KnowledgeAdapter {
 		}
 	}
 
-	private LispObject doeval(String cmd) {
+	private PoemValue doeval(String cmd) {
 		System.out.print("Executing command: "+cmd);
 		System.out.flush();
 		long startTime = System.currentTimeMillis();
 		LispObject o = this.interpreter.eval(cmd);
 		long endTime = System.currentTimeMillis();
 		System.out.println("   DONE! (Time: "+((endTime-startTime)/1000.0)+"sec)");
-		return o;
+		return PoemValueFactory.getValue(o);
 	}
 
 
@@ -106,50 +165,86 @@ public class PoemAdaptor implements KnowledgeAdapter {
 
 	@Override
 	public boolean put(Tuple t) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			_execute(t);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
+	protected PoemValue _execute( Tuple t ) throws InterruptedException {
+		if (!checkCommand(t)) {
+			throw new IllegalArgumentException();
+		}
+		switch (t.getElementAt(PoemCommand.class, 1)) {
+		case INITIALIZE:
+			return poemInitialize( t.getElementAt(PoemNonce.class , 2) );
+		case NEXTANSWER:
+			return poemClosure( t.getElementAt(PoemNonce.class , 2) );
+		case NEWPROVE:
+			if (t.length() == 3) { //A tuple without "answer" parameter!
+				return poemNewProve(t.getElementAt(PoemList.class , 2),  t.getElementAt(PoemNonce.class, 3));
+			} else { // Invocation to checkCommand guatantees that t.length() is 5!
+				return poemNewProve(t.getElementAt(PoemList.class , 2), t.getElementAt(PoemList.class , 3),  t.getElementAt(PoemNonce.class, 4));
+			}
+		case LOCK:
+			poemLock(t.getElementAt(PoemNonce.class , 2));
+			return new PoemSymbol("NIL");
+		case UNLOCK:
+			poemUnLock(t.getElementAt(PoemNonce.class , 2));
+			return new PoemSymbol("NIL");
+		case EVAL:
+			return poemEval(t.getElementAt(String.class , 2), t.getElementAt(PoemNonce.class,3));
+		case NONCE:
+			return getNonce();
+		case ASSERT:
+			return poemAssert(t.getElementAt(PoemList.class , 2), t.getElementAt(PoemNonce.class, 3));
+		}
+		//This code should not be nevered executed!
+		return null;
+	}
+	
 	@Override
 	public Tuple get(Template template) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Tuple( _execute(getTupleFromTemplate(template)) );
 	}
 
 	@Override
 	public Tuple getp(Template template) {
-		// TODO Auto-generated method stub
-		return null;
+		Tuple tuple;
+		try {
+			tuple = get(template);
+			return tuple;
+		} catch (InterruptedException e) {
+			return null;
+		}
 	}
 
 	@Override
 	public LinkedList<Tuple> getAll(Template template) {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<Tuple>();
 	}
 
 	@Override
 	public Tuple query(Template template) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		return get(template);
 	}
 
 	@Override
 	public Tuple queryp(Template template) {
-		// TODO Auto-generated method stub
-		return null;
+		return getp(template);
 	}
 
 	@Override
 	public LinkedList<Tuple> queryAll(Template template) {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<Tuple>();
 	}
 
 	@Override
 	public Tuple[] getKnowledgeItems() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Tuple[0];
 	}
 
 	@Override
@@ -161,17 +256,57 @@ public class PoemAdaptor implements KnowledgeAdapter {
 		if ((o==null)||!(o instanceof String)||(!o.equals(POEM_KEY))) {
 			return false;
 		}
-		o = t.getElementAt(1);
-		if (!(o instanceof PoemCommand)) {
-			return false;
-		}
 		return true;
 	}
 
 	@Override
-	public boolean isResponsibleFor(Template t) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isResponsibleFor(Template template) {
+		Tuple tuple = getTupleFromTemplate(template);
+		if (tuple == null) {
+			return false;
+		}
+		return isResponsibleFor(tuple);
+	}
+	
+	
+	public boolean checkCommand( Tuple t ) {
+		if (!(t.getElementAt(1) instanceof PoemCommand)) {
+			return false;
+		}
+		switch (t.getElementAt(PoemCommand.class, 1)) {
+		case INITIALIZE:
+		case NEXTANSWER:
+			return (t.length() == 3)&&(t.getElementAt(2) instanceof PoemNonce);
+		case NEWPROVE:
+			return ((t.length() == 4)&&(t.getElementAt(2) instanceof PoemList)&&(t.getElementAt(3) instanceof PoemNonce))
+					||((t.length() == 5)&&(t.getElementAt(2) instanceof PoemList)&&(t.getElementAt(3) instanceof PoemList)&&(t.getElementAt(4) instanceof PoemNonce));
+		case ASSERT:			
+			return ((t.length() == 4)&&(t.getElementAt(2) instanceof PoemList)&&(t.getElementAt(3) instanceof PoemNonce));
+		case LOCK:
+		case UNLOCK:
+			return (t.length() == 3)&&(t.getElementAt(2) instanceof PoemNonce);
+		case EVAL:
+			return (t.length() == 4)&&(t.getElementAt(2) instanceof String)&&(t.getElementAt(3) instanceof PoemNonce);
+		case NONCE:
+			return (t.length() == 2);
+		default:
+			break;
+		}
+		
+		return false;		
+	}
+	
+	private Tuple getTupleFromTemplate( Template field ) {
+		Object[] fields = new Object[field.length()];
+		for (int i=0 ; i<fields.length ; i++) {
+			TemplateField f = field.getElementAt(i);
+			if (f instanceof ActualTemplateField) {
+				fields[i] = ((ActualTemplateField) f).getValue();
+			} else {
+				return null;
+			}
+		}
+		return new Tuple(fields);
 	}
 
 
@@ -206,39 +341,40 @@ public class PoemAdaptor implements KnowledgeAdapter {
 		}
 	}
 	
-	public void poemInitialize( PoemNonce nonce ) throws InterruptedException {
+	public PoemValue poemInitialize( PoemNonce nonce ) throws InterruptedException {
 		checkNonce( nonce );
-		LispObject o  = doeval("(initialize)");
-		System.out.println(o);
+		return doeval("(initialize)");
 	}
 	
-	public void poemAssert( PoemCommandArgument arg , PoemNonce nonce ) throws InterruptedException {
+	public PoemValue poemAssert( PoemValue arg , PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
 		String command = "(assert '"+arg.getString()+")";
-		LispObject o  = doeval(command);
-		System.out.println(o);
+		return doeval(command);
 	}
 
-	public void poemNewProve( PoemCommandArgument arg , PoemNonce nonce ) throws InterruptedException {
+	public PoemValue poemNewProve( PoemValue arg , PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
 		String command = "(new-prove '"+arg.getString()+")";
-		LispObject o  = doeval(command);
-		System.out.println(o);
+		return doeval(command);
 	}
 	
-	public void poemNewProve( PoemCommandArgument arg , PoemCommandArgument answer , PoemNonce nonce ) throws InterruptedException {
+	public PoemValue poemNewProve( PoemValue arg , PoemValue answer , PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
 		String command = "(new-prove '"+arg.getString()+" :answer '"+answer.getString()+")";
-		LispObject o  = doeval(command);
-		System.out.println(o);
+		return doeval(command);
 	}
 
-	public void poemClosure( PoemNonce nonce ) throws InterruptedException {
+	public PoemValue poemClosure( PoemNonce nonce ) throws InterruptedException {
 		checkNonce(nonce);
 		String command = "(closure)";
-		LispObject o  = doeval(command);
+		doeval(command);
 		command = "(answer)";
-		o  = doeval(command);
-		System.out.println(o);
+		return doeval(command);
 	}
+	
+	public PoemValue poemEval( String command , PoemNonce nonce ) throws InterruptedException {
+		checkNonce(nonce);
+		return doeval(command);
+	}
+	
 }

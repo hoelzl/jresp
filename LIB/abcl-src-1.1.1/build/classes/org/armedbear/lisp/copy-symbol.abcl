@@ -1,8 +1,0 @@
-"; -*- Mode: Lisp -*-"
-(SYSTEM:INIT-FASL :VERSION 39)
-(SETQ SYSTEM:*SOURCE* #P"/Users/loreti/Documents/Workspaces/ECLIPSE/PROJECTS/SCEL/LIB/abcl-src-1.1.1/src/org/armedbear/lisp/copy-symbol.lisp")
-
-(SETQ SYSTEM:*FASL-LOADER* (SYSTEM::MAKE-FASL-CLASS-LOADER "org.armedbear.lisp.copy_symbol"))
-(SYSTEM:%IN-PACKAGE "SYSTEM")
-(FSET 'COPY-SYMBOL (GET-FASL-FUNCTION *FASL-LOADER* 0) 1649 '(SYMBOL &OPTIONAL (COPY-PROPS 
-NIL) &AUX NEW-SYMBOL) NIL)

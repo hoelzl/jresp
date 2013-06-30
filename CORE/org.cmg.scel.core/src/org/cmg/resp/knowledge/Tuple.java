@@ -134,4 +134,12 @@ public class Tuple implements Iterable<Object>, Serializable {
 		};
 	}
 
+	public Template toTemplate() {
+		TemplateField[] fields = new TemplateField[length()];
+		for (int i=0 ; i<fields.length ; i++) {
+			fields[i] = new ActualTemplateField(getElementAt(i));
+		}
+		return new Template(fields);
+	}
+
 }
