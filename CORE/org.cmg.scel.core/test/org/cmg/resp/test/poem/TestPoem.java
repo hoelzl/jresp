@@ -12,12 +12,14 @@
  */
 package org.cmg.resp.test.poem;
 
+import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.adaptors.PoemAdaptor;
 import org.cmg.resp.knowledge.adaptors.PoemAdaptor.PoemNonce;
 import org.cmg.resp.knowledge.adaptors.PoemList;
 import org.cmg.resp.knowledge.adaptors.PoemSymbol;
 import org.cmg.resp.knowledge.adaptors.PoemVariable;
+import org.cmg.resp.topology.Self;
 
 /**
  * @author Michele Loreti
@@ -195,5 +197,35 @@ public class TestPoem {
 //		adaptor.poemClosure(nonce);
 //		adaptor.poemClosure(nonce);
 
+	}
+	
+	public class PoemAgent extends Agent {
+
+		public PoemAgent(String name) {
+			super(name);
+		}
+
+		@Override
+		protected void doRun() throws Exception {
+			put( new Tuple( 
+					"POEM" ,
+					"ASSERT" , 
+					new PoemList( 
+						new PoemSymbol("implies") , 
+						new PoemList(
+							new PoemSymbol("foo") ,
+							new PoemVariable("x")
+						) ,
+						new PoemList(
+							new PoemSymbol("bar") ,
+							new PoemVariable("x")
+						) 
+					)
+				), 				
+				Self.SELF
+			);
+			
+		}
+		
 	}
 }
