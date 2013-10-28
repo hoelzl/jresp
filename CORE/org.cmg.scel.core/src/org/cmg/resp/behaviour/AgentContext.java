@@ -21,7 +21,7 @@ import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
 
 /**
- * Identifies a generic context are an agent is executed. A context
+ * Identifies a generic context where an agent is executed. A context
  * provides the mean used by agents to perform SCEL actions. 
  * 
  * @author Michele Loreti

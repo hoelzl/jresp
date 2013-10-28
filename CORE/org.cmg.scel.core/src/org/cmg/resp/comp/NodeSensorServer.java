@@ -48,7 +48,7 @@ public class NodeSensorServer extends AbstractSensor implements Observer {
 	private Gson gson = RESPFactory.getGSon();
 
 	public NodeSensorServer(AbstractSensor sensor , int port ) throws IOException {
-		super( sensor.getName() );
+		super( sensor.getName() , sensor.getTemplate() );
 		this.sensor = sensor;
 		this.ssocket = new ServerSocket(port);
 		new Thread(new SensorThread()).start();
@@ -62,10 +62,13 @@ public class NodeSensorServer extends AbstractSensor implements Observer {
 				try {
 					Socket s = ssocket.accept();
 					PrintWriter writer = new PrintWriter(s.getOutputStream());
-					writer.println( gson.toJson(getValue()) ); 
+					writer.println( gson.toJson(getValue(template)) ); 
 					writer.close();
 					s.close();
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -77,7 +80,12 @@ public class NodeSensorServer extends AbstractSensor implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		setValue(this.sensor.getValue());
+		try {
+			setValue(this.sensor.getValue(template));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

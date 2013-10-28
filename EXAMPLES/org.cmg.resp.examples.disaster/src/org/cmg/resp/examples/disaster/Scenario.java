@@ -73,10 +73,9 @@ public class Scenario extends Observable {
 		this.numberOfVictims = numberOfVictims;
 		this.height = height;
 		this.width = width;
-		init();
 	}
 
-	private void init() {
+	public void init() {
 		nestLocation = new Point2D.Double( width/2 , height-50 );
 		this.victims = new Point2D.Double[numberOfVictims];
 		for( int i=0 ; i<numberOfVictims ; i++ ) {
@@ -84,11 +83,11 @@ public class Scenario extends Observable {
 		}
 		robots = new Robot[numberOfLandmarks+numberOfWorkers];
 		for( int i=0 ; i<numberOfLandmarks ; i++ ) {
-			robots[i] = new Robot(i, 5.0);
+			robots[i] = new Robot(i, 0.5);
 			robots[i].setPosition( width/4+(this.r.nextDouble()*width/4)  , height-(this.r.nextDouble()*100)  );
 		}
 		for( int i=+numberOfLandmarks  ; i<numberOfLandmarks+numberOfWorkers ; i++ ) {
-			robots[i] = new Robot(i, 3.0);
+			robots[i] = new Robot(i, 0.5);
 			robots[i].setPosition( width/4+(this.r.nextDouble()*width/4)  , height-(this.r.nextDouble()*100)  );
 		}
 		
@@ -272,8 +271,8 @@ public class Scenario extends Observable {
 			this.collisionSensor = new AbstractSensor("CollisionSensor-"+i,
 					new Template( new ActualTemplateField("COLLISION") , new FormalTemplateField(Boolean.class) )) {
 			};
-			detectCollisions();
-			detectVictims();
+			updateCollisionSensor();
+			updateVictimSensor();
 		}
 		
 		public void stop() {
@@ -313,23 +312,28 @@ public class Scenario extends Observable {
 		
 		public void setPosition( Point2D.Double point ) {
 			position = point;
-			detectCollisions();
-			detectVictims();
+			updateCollisionSensor();
+			updateVictimSensor();
 		}
 		
-		private void detectVictims() {
+		
+		public boolean detectVictim() {
 			if (position != null) {
 				for (Point2D.Double p : victims) {
 					if (p.distance(this.position) <= VICTIM_SENSOR_RANGE) {
-						victimSensor.setValue( new Tuple("VICTIM_PERCEIVED" , true ));
-						return ;
+						return true;
 					}
 				}
 			}
-			victimSensor.setValue( new Tuple("VICTIM_PERCEIVED" , false ));
+			return false;
+		}
+		
+		
+		private void updateVictimSensor() {
+			victimSensor.setValue( new Tuple("VICTIM_PERCEIVED" , detectVictim() ));
 		}
 
-		private void detectCollisions() {
+		private void updateCollisionSensor() {
 			if ((position != null)&&((position.x <= 0)||(position.x>=width)||(position.y<=0)||(position.y>=height))) {
 				collisionSensor.setValue( new Tuple( "COLLISION" , true ) );
 				walking = false;
@@ -399,6 +403,15 @@ public class Scenario extends Observable {
 
 	public int getNumberOfLandmarks() {
 		return numberOfLandmarks;
+	}
+
+	public boolean goalReached() {
+		for ( int i=numberOfLandmarks ; i<numberOfLandmarks+numberOfWorkers ; i++ ) {
+			if (!robots[i].detectVictim()) {
+				return false;
+			}
+		} 
+		return true;
 	}
 	
 }

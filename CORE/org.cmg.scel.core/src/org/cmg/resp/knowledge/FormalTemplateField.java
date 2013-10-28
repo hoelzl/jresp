@@ -73,4 +73,16 @@ public class FormalTemplateField implements TemplateField {
 		return type;
 	}
 
+
+	@Override
+	public boolean implies(TemplateField templateField) {
+		if (this.equals(templateField)) {
+			return true;
+		}
+		if (templateField instanceof ActualTemplateField) {
+			return this.match(( (ActualTemplateField) templateField).getValue() );
+		}
+		return false;
+	}
+
 }

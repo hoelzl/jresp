@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
@@ -32,7 +31,7 @@ public class VictimSeeker extends Agent {
 			if (found) {
 				put( new Tuple( "stop" ) , Self.SELF );
 //				put( new Tuple( "stop" , Scenario.VICTIM_FOUND ) , Self.SELF );
-				System.out.print("Robot "+robotId+" has found the victim\n");
+//				System.out.print("Robot "+robotId+" has found the victim\n");
 				found();
 			} 
 		}

@@ -34,5 +34,7 @@ public interface TemplateField extends Serializable {
 	 */
 	public boolean match( Object o );
 
+	public boolean implies(TemplateField templateField);
+
 	
 }

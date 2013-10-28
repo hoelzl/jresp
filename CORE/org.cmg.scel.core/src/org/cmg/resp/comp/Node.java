@@ -511,10 +511,11 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		notifyAll();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.cmg.resp.comp.INode#addPort(org.cmg.resp.topology.AbstractPort)
+	/**
+	 * Add a port to the node.
+	 * 
+	 * @param p the port to add 
 	 */
-	@Override
 	public synchronized void addPort( AbstractPort p ) {
 		p.register(this);
 		ports.add(p);
@@ -626,19 +627,6 @@ public class Node extends Observable implements MessageDispatcher, INode {
 			wait();
 		}
 		return pendingMessages.poll();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cmg.resp.comp.INode#getNodeInterface()
-	 */
-	@Override
-	public synchronized Hashtable<String, Attribute> getNodeInterface() {
-		Hashtable<String, Attribute> toReturn = new Hashtable<String, Attribute>();
-		for (String a : attributes.keySet()) {
-			toReturn.put(a, attributes.get(a).eval());
-		}
-		toReturn.put(ID_ATTRIBUTE_NAME,new Attribute(ID_ATTRIBUTE_NAME, getName()));
-		return toReturn;
 	}
 
 	/* (non-Javadoc)
@@ -1195,7 +1183,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		if (p != null) {
 			HashMap<String, Attribute> nodeInterface = getInterface();
 			if (groupPredicate.evaluate(nodeInterface)) {
-				System.out.println(getName()+": "+groupPredicate+" SATISFIED with "+nodeInterface);				
+//				System.out.println(getName()+": "+groupPredicate+" SATISFIED with "+nodeInterface);				
 				Tuple t = knowledge.queryp(template);
 				if (t != null) {
 					try {
@@ -1205,7 +1193,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 					}
 				}
 			} else {
-				System.out.println(getName()+": "+groupPredicate+" UNSATISFIED with "+nodeInterface);				
+//				System.out.println(getName()+": "+groupPredicate+" UNSATISFIED with "+nodeInterface);				
 			}
 //			p.sendGroupPutReply(from, getName(), session,tupleSession, getAttributes(attributes));
 		}

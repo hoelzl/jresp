@@ -65,4 +65,9 @@ public class ActualTemplateField implements TemplateField {
 		return value;
 	}
 
+	@Override
+	public boolean implies(TemplateField templateField) {
+		return this.equals(templateField);
+	}
+
 }

@@ -60,7 +60,7 @@ public class VirtualPort extends AbstractPort {
 			throw new IllegalArgumentException();
 		}
 	}
-
+	
 	@Override
 	protected synchronized void send(jRESPMessage m) {
 		for (MessageDispatcher n: nodes.values()) {

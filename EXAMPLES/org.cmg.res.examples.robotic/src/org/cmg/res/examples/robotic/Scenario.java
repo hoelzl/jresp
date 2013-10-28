@@ -286,11 +286,15 @@ public class Scenario extends Observable {
 			this.position = position;
 			this.batteryLevel = batteryLevel;
 			this.speed = speed;
-			this.targetSensor = new AbstractSensor("TargetSensor-"+i) {
+			this.targetSensor = new AbstractSensor(
+					"TargetSensor-"+i ,
+					new Template( new ActualTemplateField("target") , new FormalTemplateField(Boolean.class) )) {
 			};
-			this.batterySensor = new AbstractSensor("BatterySensor-"+i) {
+			this.batterySensor = new AbstractSensor("BatterySensor-"+i,
+					new Template( new ActualTemplateField("batteryLevel") , new FormalTemplateField(Double.class))) {
 			};
-			this.locationSensor = new AbstractSensor("LocationSensor-"+i) {
+			this.locationSensor = new AbstractSensor("LocationSensor-"+i,
+					new Template( new ActualTemplateField("gps") , new FormalTemplateField(Double.class) , new FormalTemplateField(Double.class) )) {
 			};
 		}
 		

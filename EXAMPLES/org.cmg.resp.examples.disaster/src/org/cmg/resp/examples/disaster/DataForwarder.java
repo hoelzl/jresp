@@ -37,6 +37,13 @@ public class DataForwarder extends Agent {
 	private void forward(int distance) throws InterruptedException, IOException {
 		int d = distance+1;
 		put( new Tuple( "victim" , robotId , d ) , Self.SELF );
-		System.out.print("Robot "+robotId+" becomes a landmark with distance: "+d+"\n");
+//		System.out.print("Robot "+robotId+" becomes a landmark with distance: "+d+"\n");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cmg.resp.behaviour.Agent#doHandle(java.lang.Exception)
+	 */
+	@Override
+	protected void doHandle(Exception e) {
 	}
 }

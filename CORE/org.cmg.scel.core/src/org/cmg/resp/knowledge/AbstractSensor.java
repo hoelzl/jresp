@@ -25,23 +25,50 @@ public abstract class AbstractSensor extends Observable {
 	protected String name;
 	
 	protected Tuple value;
+
+	protected Template template;
 	
-	public AbstractSensor(String name) {
+	public AbstractSensor(String name , Template template) {
 		this.name = name;
+		this.template = template;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
-	public final Tuple getValue() {
-		return value;
+	public synchronized final Tuple getValue( Template t ) throws InterruptedException {
+		return getValue( t , true );
 	}
-	
-	public final void setValue( Tuple t ) {
+
+	public synchronized final Tuple getValue( Template t , boolean blocking ) throws InterruptedException {
+		if ((value != null)&&(t.match(value))) {
+			return value;
+		}
+		if (!blocking) {
+			return null;
+		}
+		if (template.implies(t)) {			
+			while ((value == null)||(!t.match(value))) {
+				wait();
+			}
+			return value;
+		}
+		return null;
+	}
+
+	public synchronized final void setValue( Tuple t ) {
+		if (!template.match(t)) {
+			throw new IllegalArgumentException();
+		}
 		this.value = t;
 		this.setChanged();
 		this.notifyObservers(t);
+		this.notifyAll();
+	}
+
+	public Template getTemplate() {
+		return template;
 	}
 	
 }

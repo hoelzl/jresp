@@ -143,6 +143,9 @@ public abstract class AttributeCollector implements KnowledgeListener {
 			}
 		}
 	}
-	
+
+	public void refresh() {
+		retrieveTuples();
+	}
 	
 }

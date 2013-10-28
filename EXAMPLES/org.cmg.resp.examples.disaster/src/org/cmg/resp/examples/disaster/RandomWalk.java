@@ -37,18 +37,15 @@ public class RandomWalk extends Agent {
 	@Override
 	protected void doRun() throws IOException, InterruptedException{
 //		boolean flag = true;
-		System.out.println("START");
 		while (true) {
 			double dir = r.nextDouble()*2*Math.PI;
 			put( new Tuple( "direction" ,  dir) , Self.SELF );			
-			System.out.println("NEW DIRECTION SELECTED");
 //			do {
 //				if (!flag) {
 //					System.out.println("NO COLLISION!");
 //				}
 //				Thread.sleep(1000);
 				query( new Template( new ActualTemplateField( "COLLISION" ) , new ActualTemplateField( true ) ) , Self.SELF );			
-				System.out.println("COLLISION!");
 //				flag = t.getElementAt(Boolean.class, 1);
 //			} while (!flag);
 //			System.out.println("COLLISION");

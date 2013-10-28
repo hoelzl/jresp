@@ -12,18 +12,19 @@
  */
 package org.cmg.resp.examples.pingpong;
 
+import java.util.Random;
+
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.core.simulation.ExponentialDelayFactory;
-import org.cmg.resp.core.simulation.SimNode;
-import org.cmg.resp.core.simulation.SimTupleSpace;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.simulation.DeterministicDelayFactory;
+import org.cmg.resp.simulation.RandomSelector;
+import org.cmg.resp.simulation.SimulationAction;
+import org.cmg.resp.simulation.SimulationEnvironment;
+import org.cmg.resp.simulation.SimulationNode;
+import org.cmg.resp.simulation.SimulationScheduler;
 import org.cmg.resp.topology.Self;
-
-import umontreal.iro.lecuyer.simevents.Event;
-import umontreal.iro.lecuyer.simprocs.ProcessSimulator;
-import umontreal.iro.lecuyer.simprocs.ThreadProcessSimulator;
 
 /**
  * @author Michele Loreti
@@ -32,24 +33,24 @@ import umontreal.iro.lecuyer.simprocs.ThreadProcessSimulator;
 public class LocalPingPong {
 	
 	public static void main(String[] argv) {
-		
-		ProcessSimulator sim = new ThreadProcessSimulator();
-		sim.init();
-		SimNode node = new SimNode("pingpong", new SimTupleSpace(sim),sim,new ExponentialDelayFactory(1.0));
+
+		Random r = new Random();
+		SimulationScheduler sim = new SimulationScheduler();
+		SimulationEnvironment env = new SimulationEnvironment(sim, new RandomSelector(r), new DeterministicDelayFactory(1.0));
+		SimulationNode node = new SimulationNode("pingpong",env);
+		sim.schedulePeriodicAction( new SimulationAction( ) {
+			
+			@Override
+			public void doAction(double time ) {
+				System.out.println("\n####\n####\nTICK: "+time+"\n####\n####\n");
+			}
+		}, 0.0, 2.0);
 		Agent ping = new PingAgent();
 		Agent pong = new PongAgent();
 		node.addAgent(ping);		
 		node.addAgent(pong);
 		System.out.println("START!");
-		node.start();
-		new Event(sim) {
-			
-			@Override
-			public void actions() {
-				sim.stop();
-			}
-		}.schedule(20.0);
-		sim.start();
+		env.simulate(3000);
 	}
 	
 	
@@ -60,19 +61,15 @@ public class LocalPingPong {
 		}
 
 		@Override
-		protected void doRun() {
-			try {
-				while (true) {
-					System.out.println("PING!");
-					put(new Tuple( "PING" ) , Self.SELF);
-					query(new Template(new ActualTemplateField( "PONG" )) , Self.SELF);
-					System.out.println("QUERY PONG!");
-					get(new Template(new ActualTemplateField( "PONG")) , Self.SELF);
-					System.out.println("GET PONG!");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		protected void doRun() throws Exception {
+//			while (true) {
+				System.out.println("PING!");
+				put(new Tuple( "PING" ) , Self.SELF);
+				query(new Template(new ActualTemplateField( "PONG" )) , Self.SELF);
+				System.out.println("QUERY PONG!");
+				get(new Template(new ActualTemplateField( "PONG")) , Self.SELF);
+				System.out.println("GET PONG!");
+//			}
 		}
 		
 	}
@@ -85,16 +82,12 @@ public class LocalPingPong {
 		}
 	
 		@Override
-		protected void doRun() {
-			try {
-				while (true) {
-					get(new Template(new ActualTemplateField( "PING" )) , Self.SELF);
-					System.out.println("PONG!");
-					put(new Tuple( "PONG" ) , Self.SELF);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		protected void doRun() throws Exception {
+//			while (true) {
+				get(new Template(new ActualTemplateField( "PING" )) , Self.SELF);
+				System.out.println("PONG!");
+				put(new Tuple( "PONG" ) , Self.SELF);
+//			}
 		}
 		
 	}

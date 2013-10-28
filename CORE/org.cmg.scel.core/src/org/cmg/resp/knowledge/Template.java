@@ -112,5 +112,17 @@ public class Template implements Iterable<TemplateField>, Serializable {
 	public TemplateField getElementAt(int i) {
 		return fields[i];
 	}
+
+	public boolean implies(Template t) {
+		if (this.fields.length != t.fields.length) {
+			return false;
+		}
+		for ( int i=0 ; i<this.fields.length ; i++ ) {
+			if (!this.fields[i].implies(t.fields[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 }

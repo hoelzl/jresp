@@ -10,10 +10,11 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.resp.examples.disaster;
+package org.cmg.resp.example.disaster.simulation;
 
 import java.awt.BorderLayout;
 import java.util.Hashtable;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,12 +25,24 @@ import javax.swing.JTable;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.AttributeCollector;
 import org.cmg.resp.comp.Node;
+import org.cmg.resp.examples.disaster.DataForwarder;
+import org.cmg.resp.examples.disaster.GoToVictim;
+import org.cmg.resp.examples.disaster.RandomWalk;
+import org.cmg.resp.examples.disaster.Scenario;
+import org.cmg.resp.examples.disaster.SpatialPanel;
+import org.cmg.resp.examples.disaster.VictimSeeker;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.simulation.DeterministicDelayFactory;
+import org.cmg.resp.simulation.RandomSelector;
+import org.cmg.resp.simulation.SimulationAction;
+import org.cmg.resp.simulation.SimulationEnvironment;
+import org.cmg.resp.simulation.SimulationNode;
+import org.cmg.resp.simulation.SimulationScheduler;
 import org.cmg.resp.topology.VirtualPort;
 
 
@@ -60,35 +73,28 @@ public class Main extends JFrame {
 		scenario.init();
 		init();
 		setVisible(true);
-		new Thread( new Runnable() {
-
-			@Override
-			public void run() {
-				while( true ) {
-					try {
-						Thread.sleep(10);
-						scenario.step(0.1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}				
-			}
-			
-		}).start();
 		instantiateNet();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
 	
 	private void instantiateNet() {
-		VirtualPort vp = new VirtualPort(10 , scenario.getNodeConnection());
-		//VirtualPort vp = new VirtualPort(10, new ConnectionWithRange());
-		Hashtable<String, Node> nodes = new Hashtable<String, Node>();
+		Random r = new Random();
+		SimulationScheduler sim = new SimulationScheduler();
+		SimulationEnvironment env = new SimulationEnvironment(sim, new RandomSelector(r), new DeterministicDelayFactory(1.0),scenario.getNodeConnection());
+
+		Hashtable<String, SimulationNode> nodes = new Hashtable<String, SimulationNode>();
+		sim.schedulePeriodicAction(new SimulationAction() {
+			
+			@Override
+			public void doAction(double time) {
+				scenario.step(0.1);
+			}
+			
+		}, 0.1, 0.1);
 		
 	for (int i=0 ;i<scenario.getLandmarks();i++) {
-			Node n = new Node(""+i, new TupleSpace());
-			n.addPort(vp);
-			n.setGroupActionWaitingTime(250);
+			SimulationNode n = new SimulationNode(""+i, env);
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addSensor(scenario.getCollisionSensor(i));
 			n.addActuator(scenario.getStopActuator(i));
@@ -119,9 +125,7 @@ public class Main extends JFrame {
 		}
 		
 		for (int i=scenario.getLandmarks() ;i<(scenario.getLandmarks()+scenario.getWorkers());i++) {
-			Node n = new Node(""+i, new TupleSpace());
-			n.setGroupActionWaitingTime(100);
-			n.addPort(vp);
+			SimulationNode n = new SimulationNode(""+i, env);
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addSensor(scenario.getCollisionSensor(i));
 			n.addActuator(scenario.getStopActuator(i));
@@ -148,9 +152,7 @@ public class Main extends JFrame {
 //			n.addAgent(a);
 		}
 		
-		for (Node n: nodes.values()) {
-			n.start();
-		}
+		env.simulate(3000);
 	}
 
 

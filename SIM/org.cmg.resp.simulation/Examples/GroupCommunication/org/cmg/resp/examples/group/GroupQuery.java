@@ -13,25 +13,21 @@
 package org.cmg.resp.examples.group;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.core.simulation.ExponentialDelayFactory;
-import org.cmg.resp.core.simulation.SimNode;
-import org.cmg.resp.core.simulation.SimTupleSpace;
-import org.cmg.resp.examples.group.GroupGet.GGetAgent;
-import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.simulation.DeterministicDelayFactory;
+import org.cmg.resp.simulation.RandomSelector;
+import org.cmg.resp.simulation.SimulationEnvironment;
+import org.cmg.resp.simulation.SimulationNode;
+import org.cmg.resp.simulation.SimulationScheduler;
+import org.cmg.resp.topology.AnyComponent;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.VirtualPort;
-
-import umontreal.iro.lecuyer.simevents.Event;
-import umontreal.iro.lecuyer.simprocs.ProcessSimulator;
-import umontreal.iro.lecuyer.simprocs.ThreadProcessSimulator;
 
 /**
  * @author Michele Loreti
@@ -41,12 +37,7 @@ public class GroupQuery {
 
 	public static VirtualPort vp = new VirtualPort(10);
 
-	public static GroupPredicate any = new GroupPredicate() {		
-		@Override
-		public boolean evaluate(Attribute[] data) {
-			return true;
-		}
-	};
+	public static GroupPredicate any = new AnyComponent();
 	
 	
 	public static class GGetAgent extends Agent {
@@ -76,34 +67,17 @@ public class GroupQuery {
 	}
 
 	public static void main(String[] argv) {
-		ProcessSimulator sim = new ThreadProcessSimulator();
-		sim.init();
-		SimNode node1 = new SimNode("node1", new SimTupleSpace(sim),sim, new ExponentialDelayFactory(1.0));
-		SimTupleSpace ts2 =new SimTupleSpace(sim);
-		ts2.put(new Tuple(("TEST_1") ) );
-		SimNode node2 = new SimNode("node2", ts2 ,sim , new ExponentialDelayFactory(1.0));
-		SimTupleSpace ts3 =new SimTupleSpace(sim);
-		ts3.put(new Tuple(("TEST_2") ) );
-		SimNode node3 = new SimNode("node3", ts3, sim, new ExponentialDelayFactory(1.0));
-		node1.addPort(vp);
-		node1.setGroupActionWaitingTime(10);
-		node2.addPort(vp);
-		node2.setGroupActionWaitingTime(10);
-		node3.addPort(vp);
-		node3.setGroupActionWaitingTime(10);
+		Random r = new Random();
+		SimulationScheduler sim = new SimulationScheduler();
+		SimulationEnvironment env = new SimulationEnvironment(sim, new RandomSelector(r), new DeterministicDelayFactory(1.0));
+		SimulationNode node1 = new SimulationNode( "node1" , env );
+		SimulationNode node2 = new SimulationNode( "node2" , env );
+		node2.put(new Tuple(("TEST_1") ) );
+		SimulationNode node3 = new SimulationNode( "node3" , env );
+		node3.put(new Tuple(("TEST_2") ) );
 		Agent agent1 = new GGetAgent();
 		node1.addAgent(agent1);
-		node3.start();
-		node2.start();
-		node1.start();
-		new Event(sim) {
-			
-			@Override
-			public void actions() {
-				sim.stop();
-			}
-		}.schedule(200.0);
-		sim.start();
+		env.simulate(100.0);
 		
 	}
 	

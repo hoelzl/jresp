@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Copyright (c) 2013 Concurrency and Mobility Group.
  * Universitˆ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
@@ -10,26 +10,22 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.resp.core.simulation;
+package org.cmg.resp.simulation;
+
+import java.util.ArrayList;
 
 /**
  * @author loreti
  *
  */
-public class Shared<T> {
+public class SelectFirst implements ElementSelector {
 
-	private T value;
-	
-	public Shared(T value) {
-		this.value = value;
+	@Override
+	public <T> T select(ArrayList<T> elements) {
+		if (elements.size()<=0) {
+			return null;
+		}
+		return elements.get(0);
 	}
-	
-	public T get() {
-		return value;
-	}
-	
-	public void set(T value) {
-		this.value = value;
-	}
-	
+
 }

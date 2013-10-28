@@ -82,7 +82,7 @@ public class Knowledge {
 		return result;
 	}
 
-	private synchronized boolean putToActuator(Tuple t) {
+	private boolean putToActuator(Tuple t) {
 		for (AbstractActuator a : this.actuators) {
 			if (a.getTemplate().match(t)) {
 				a.send(t);
@@ -119,7 +119,7 @@ public class Knowledge {
 	}
 
 	public Tuple query( Template t ) throws InterruptedException {
-		Tuple result = queryFromSensors(t);
+		Tuple result = queryFromSensors(t,true);
 		if (result != null) {
 			return result;
 		}
@@ -133,7 +133,12 @@ public class Knowledge {
 	}
 
 	public Tuple queryp( Template t ) {
-		Tuple result = queryFromSensors(t);
+		Tuple result = null;
+		try {
+			result = queryFromSensors(t,false);
+		} catch (InterruptedException e) {
+			//This exception cannot be raised!
+		}
 		if (result != null) {
 			return result;
 		}
@@ -146,10 +151,10 @@ public class Knowledge {
 		return result;
 	}
 
-	private synchronized Tuple queryFromSensors(Template template) {
+	private Tuple queryFromSensors(Template template , boolean blocking ) throws InterruptedException {
 		for (AbstractSensor s : this.sensors) {
-			Tuple result = s.getValue();
-			if ((result!=null)&&(template.match(result))) {
+			Tuple result = s.getValue(template,blocking);
+			if (result!=null) {
 				return result;
 			}
 		}

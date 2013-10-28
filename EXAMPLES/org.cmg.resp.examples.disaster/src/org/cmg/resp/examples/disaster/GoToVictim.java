@@ -65,7 +65,7 @@ public class GoToVictim extends Agent {
 				if (found) {
 					put( new Tuple( "stop" ) , Self.SELF );
 //					put( new Tuple( "stop" , Scenario.WORKER_ARRIVED ) , Self.SELF );
-					System.out.print("Worker "+robotId+" is arrived at the victim\n");					
+//					System.out.print("Worker "+robotId+" is arrived at the victim\n");					
 				} 
 			}
 						

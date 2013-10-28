@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 
 import org.cmg.resp.RESPFactory;
 import org.cmg.resp.knowledge.AbstractSensor;
+import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 
 import com.google.gson.Gson;
@@ -35,8 +36,8 @@ public class NodeSensorClient extends AbstractSensor {
 	private Gson gson = RESPFactory.getGSon();
 	private long refreshTime;
 	
-	public NodeSensorClient(String name , String serverAddress , int serverPort , long refreshTime ) throws IOException {
-		super( name );
+	public NodeSensorClient(String name , Template template , String serverAddress , int serverPort , long refreshTime ) throws IOException {
+		super( name , template );
 		this.serverAddress = serverAddress;
 		this.serverPort = serverPort;
 		this.refreshTime = refreshTime;

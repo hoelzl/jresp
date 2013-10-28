@@ -12,28 +12,24 @@
  */
 package org.cmg.resp.examples.pingpong;
 
+import java.awt.Event;
 import java.io.IOException;
+import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.core.simulation.ExponentialDelayFactory;
-import org.cmg.resp.core.simulation.SimNode;
-import org.cmg.resp.core.simulation.SimTupleSpace;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.simulation.DeterministicDelayFactory;
+import org.cmg.resp.simulation.RandomSelector;
+import org.cmg.resp.simulation.SimulationEnvironment;
+import org.cmg.resp.simulation.SimulationNode;
+import org.cmg.resp.simulation.SimulationScheduler;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
-import org.cmg.resp.topology.SocketPort;
-import org.cmg.resp.topology.SocketPortAddress;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
-
-import umontreal.iro.lecuyer.simevents.Event;
-import umontreal.iro.lecuyer.simprocs.ProcessSimulator;
-import umontreal.iro.lecuyer.simprocs.ThreadProcessSimulator;
 
 /**
  * @author Michele Loreti
@@ -42,29 +38,22 @@ import umontreal.iro.lecuyer.simprocs.ThreadProcessSimulator;
 public class QueryCounters {
 
 	public static void main(String[] argv) throws IOException {
-		ProcessSimulator sim = new ThreadProcessSimulator();
-		sim.init();
-		VirtualPort vp = new VirtualPort(10);
-		SimNode nodeOne = new SimNode("one", new SimTupleSpace(sim), sim , new ExponentialDelayFactory(1.0));
-		nodeOne.addPort(vp);
+		Random r = new Random();
+		SimulationScheduler scheduler = new SimulationScheduler();
+		SimulationEnvironment environment = new SimulationEnvironment(scheduler, new RandomSelector(r), new DeterministicDelayFactory(1.0));
+
+		SimulationNode nodeOne = new SimulationNode("one", environment);
+
 		nodeOne.put(new Tuple( "COUNTER" , 0 ) );
 		Agent one = new Counter("agentOne", new PointToPoint("two", new VirtualPortAddress(10)));
 		Agent two = new Counter("agentTwo", new PointToPoint("one", new VirtualPortAddress(10)));
 		nodeOne.addAgent(one);
-		SimNode nodeTwo = new SimNode("two", new SimTupleSpace(sim), sim , new ExponentialDelayFactory(1.0));
-		nodeTwo.addPort(vp);
+		SimulationNode nodeTwo = new SimulationNode("two", environment);
+
 		nodeTwo.put(new Tuple( "COUNTER" , 0 ) );
 		nodeTwo.addAgent(two);
-		nodeTwo.start();
-		nodeOne.start();
-		new Event(sim) {
-			
-			@Override
-			public void actions() {
-				sim.stop();
-			}
-		}.schedule(20.0);
-		sim.start();
+
+		scheduler.start();
 	}
 	
 	

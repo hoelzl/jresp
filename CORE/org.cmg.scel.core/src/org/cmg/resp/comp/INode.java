@@ -41,13 +41,6 @@ public interface INode {
 	public abstract void addAttributeCollector(AttributeCollector ac);
 
 	/**
-	 * Add a port to the node.
-	 * 
-	 * @param p the port to add 
-	 */
-	public abstract void addPort(AbstractPort p);
-
-	/**
 	 * Adds a sensor to the current node
 	 * 
 	 * @param sensor the sensor to add
@@ -104,14 +97,6 @@ public interface INode {
 	 * @see org.cmg.scel.topology.MessageDispatcher#getName()
 	 */
 	public abstract String getName();
-
-	/**
-	 * Returns the node interface. This is rendered as an hash-table associating to
-	 * each name the corresponding attribute.
-	 * 
-	 * @return an hash-table with the node interface.
-	 */
-	public abstract Hashtable<String, Attribute> getNodeInterface();
 
 	/**
 	 * Returns the array of sensors attached to the node.
@@ -183,6 +168,12 @@ public interface INode {
 			throws InterruptedException, IOException;
 
 	
+	/**
+	 * Returns the node interface. This is rendered as an hash-table associating to
+	 * each name the corresponding attribute.
+	 * 
+	 * @return an hash map with the node interface.
+	 */
 	public abstract HashMap<String,Attribute> getInterface();
 	
 	/**

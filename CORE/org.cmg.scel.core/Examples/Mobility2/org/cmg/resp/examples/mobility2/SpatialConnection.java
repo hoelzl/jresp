@@ -237,8 +237,13 @@ public class SpatialConnection extends Observable implements NodeConnection {
 
 		public RobotLocation(String name, Point2D.Double point) {
 			this.name = name;
-			this.locationSensor = new AbstractSensor(name+"-LocationSensor") {};
-			this.targetSensor = new AbstractSensor(name+"-TargetSensor") {};
+			this.locationSensor = new AbstractSensor(
+					name+"-LocationSensor",
+					new Template( new ActualTemplateField("GPS") , new FormalTemplateField(Double.class) , new FormalTemplateField(Double.class ))
+				) {};
+			this.targetSensor = new AbstractSensor(
+				name+"-TargetSensor",
+				new Template( new ActualTemplateField("TARGET") , new FormalTemplateField(Boolean.class) )) {};
 			setPoint(point);
 		}
 
