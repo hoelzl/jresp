@@ -1,0 +1,52 @@
+/**
+ * Copyright (c) 2013 Concurrency and Mobility Group.
+ * Universitˆ di Firenze
+ *	
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *      Michele Loreti
+ */
+package org.cmg.resp.examples.cloud;
+
+import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
+import org.cmg.resp.topology.Target;
+
+/**
+ * @author loreti
+ *
+ */
+public class ServiceCaller extends Agent {
+	
+	private CloudService service;
+
+	private int sessionId;
+
+	private Target clientAddress;
+	
+	public ServiceCaller( int sessionId , CloudService service , Target clientAddress ) {
+		super("CALLER");
+		this.service = service;
+		this.sessionId = sessionId;
+		this.clientAddress = clientAddress;
+	}
+
+	@Override
+	protected void doRun() throws Exception {
+		put( new Tuple("SERVICE_CALL" , sessionId , service) , Self.SELF );
+//		get( 
+//				new Template( 
+//						new ActualTemplateField("RESULT") , 
+//						new ActualTemplateField(sessionId)
+//				) , Self.SELF);
+		put( new Tuple("DONE" , sessionId) , clientAddress );
+	}
+
+}

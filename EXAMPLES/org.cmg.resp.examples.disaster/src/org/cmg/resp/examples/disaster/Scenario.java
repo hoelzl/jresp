@@ -36,7 +36,7 @@ public class Scenario extends Observable {
 	
 	public static final int LANDMARK = 0;
 	public static final int WORKER = 1;
-	protected static final double COMMUNICATION_RANGE = 200.0;
+	protected static final double COMMUNICATION_RANGE = 100.0;
 
 	private Random r = new Random();
 

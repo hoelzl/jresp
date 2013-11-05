@@ -72,6 +72,7 @@ public class Main extends JFrame {
 		scenario = new Scenario(landmarks , workers , 1 , height, width);
 		scenario.init();
 		init();
+		setLocation(550, 100);
 		setVisible(true);
 		instantiateNet();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -152,7 +153,7 @@ public class Main extends JFrame {
 //			n.addAgent(a);
 		}
 		
-		env.simulate(3000);
+		env.simulate(5000);
 	}
 
 

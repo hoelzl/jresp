@@ -40,6 +40,8 @@ import org.cmg.resp.simulation.SimulationScheduler;
 
 
 /**
+ * Schell class for simulation of Disaster Scenario.
+ * 
  * @author Michele Loreti
  *
  */
@@ -163,10 +165,10 @@ public class ShellMain {
 //			}
 //			count += dt;
 //		}
-//		modelCheck(100,5,5000,10,1024);
-		modelCheck(50,5,5000,10,1024);
-		modelCheck(20,5,5000,10,1024);
-		modelCheck(10,5,5000,10,1024);
+		modelCheck(100,5,5000,10,1024);
+//		modelCheck(50,5,5000,10,1024);
+//		modelCheck(20,5,5000,10,1024);
+//		modelCheck(10,5,5000,10,1024);
 	}
 	
 	public static void modelCheck( int numLandmarks , int numWorkers , double deadline , double dt , int iterations ) throws InterruptedException, FileNotFoundException {
