@@ -284,9 +284,14 @@ public class SimulationNode implements INode {
 		
 	}
 
-	public LinkedList<PointToPoint> getLocalAddresses() {
-		// TODO Auto-generated method stub
-		return null;
+	public LinkedList< PointToPoint >  getLocalAddresses() {
+		LinkedList<PointToPoint> l = new LinkedList<PointToPoint>();
+		l.add(getLocalAddress());
+		return l;
+	}
+
+	public PointToPoint getLocalAddress() {
+		return new PointToPoint(this.name, SimulationNodeAddress.getInstance());
 	}
 
 }

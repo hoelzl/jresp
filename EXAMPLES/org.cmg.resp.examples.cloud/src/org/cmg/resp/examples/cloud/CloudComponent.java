@@ -72,7 +72,7 @@ public class CloudComponent {
 	
 	private void updateSensorsValue() {
 		this.memorySensor.setValue( new Tuple( "MEMORY" , availableMemory ));
-		this.cpuSensor.setValue( new Tuple( "CPU_LOAD" , cpuLoad ));
+		this.cpuSensor.setValue( new Tuple( "CPU" , cpuLoad ));
 	}
 	
 	public int getAvailableMemory() {
@@ -123,6 +123,10 @@ public class CloudComponent {
 
 	public AbstractSensor getCpuSenros() {
 		return cpuSensor;
+	}
+
+	public double getMemoryLoad() {
+		return (totalMemory - availableMemory)/((double) totalMemory);
 	}
 	
 	

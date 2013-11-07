@@ -31,18 +31,22 @@ public class Scenario {
 	
 	protected static final double LOAD_TO_TIME_FACTOR = 100.0;
 	private CloudComponent[] components;	
-	
+	private int size; 
 	public Scenario( CloudComponent ... components ) {
 		this.components = components;
 	}
 	
 	public Scenario( int size , Random r , int minMem , int maxMem , int minCpuRate , int maxCpuRate ) {
+		this.size=size;
 		this.components = new CloudComponent[size];
 		for( int i=0 ; i<size ; i++ ) {
 			this.components[i] = new CloudComponent(i , minMem + r.nextInt(maxMem-minMem) , minCpuRate+(r.nextDouble()*(maxCpuRate-minCpuRate)) );
 		}
 	}
 	
+	public int getSize(){
+		return size;
+	}
 	public AbstractSensor getMemorySensor( int id ) {
 		return components[id].getMemorySensor();
 	}
@@ -121,6 +125,28 @@ public class Scenario {
 				return new Template( new ActualTemplateField("SERVICE_CALL") , new FormalTemplateField(Integer.class) , new FormalTemplateField(CloudService.class));
 			}
 		};
+	}
+
+	public String getInfo() {
+		double averageLoad = getAverageCPULoad();
+		double averageMemory = getAverageMemoryUsage();
+		return "CPU: "+averageLoad+" MEM: "+averageMemory;
+	}
+
+	private double getAverageCPULoad() {
+		double totalLoad = 0.0;
+		for(  int i=0 ; i<components.length ; i++ ) {
+			totalLoad += components[i].getCPULoad();
+		}	
+		return totalLoad/components.length;
+	}
+
+	private double getAverageMemoryUsage() {
+		double totalLoad = 0.0;
+		for(  int i=0 ; i<components.length ; i++ ) {
+			totalLoad += components[i].getMemoryLoad();
+		}	
+		return totalLoad/components.length;
 	}
 
 }

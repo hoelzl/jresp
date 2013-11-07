@@ -44,7 +44,7 @@ public class FormalTemplateField implements TemplateField {
 	 */
 	@Override
 	public boolean match(Object o) {
-		return type.isInstance(o);
+		return (type.isInstance(o));
 	}
 
 
