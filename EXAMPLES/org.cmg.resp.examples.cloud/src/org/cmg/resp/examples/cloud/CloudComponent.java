@@ -95,7 +95,7 @@ public class CloudComponent {
 		if (s.getMemory()>availableMemory) {
 			return false;
 		}
-		if ((s.getCPULoad()/cpuRate)>(cpuLoad - 100)) {
+		if ((s.getCPULoad()/cpuRate)>(100-cpuLoad)) {
 			return false;
 		}
 		availableMemory -= s.getMemory();

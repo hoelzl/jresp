@@ -40,12 +40,16 @@ public class ServiceCaller extends Agent {
 
 	@Override
 	protected void doRun() throws Exception {
+		System.out.println("Executing: "+service.getName());
 		put( new Tuple("SERVICE_CALL" , sessionId , service) , Self.SELF );
-//		get( 
-//				new Template( 
-//						new ActualTemplateField("RESULT") , 
-//						new ActualTemplateField(sessionId)
-//				) , Self.SELF);
+		get(
+			new Template( 
+				new ActualTemplateField("RESULT") , 
+				new ActualTemplateField(sessionId)
+			) 
+			, Self.SELF
+		);
+		System.out.println("Done: "+service.getName());
 		put( new Tuple("DONE" , sessionId) , clientAddress );
 	}
 

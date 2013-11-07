@@ -257,7 +257,7 @@ public class SimulationNode implements INode {
 
 	@Override
 	public Tuple queryp(Template template) {
-		return tupleSpace.queryp(template);
+		return query(template);
 	}
 
 	@Override

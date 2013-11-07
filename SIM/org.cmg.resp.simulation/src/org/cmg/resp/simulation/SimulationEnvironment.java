@@ -301,6 +301,14 @@ public class SimulationEnvironment {
 		
 		scheduler.start( );
 	}
+	
+	public void schedule( SimulationAction action , double time ) {
+		schedule( action , time , 0 );
+	}
+
+	public void schedule(SimulationAction action, double time, int priority) {
+		scheduler.schedule(action, time, priority);
+	}
 
 	public void join() throws InterruptedException {
 		scheduler.join();

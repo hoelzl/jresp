@@ -127,7 +127,7 @@ public abstract class Agent extends Observable implements Runnable {
 	}
 	
 	protected void doHandle(Exception e) {
-		//e.printStackTrace();//FIXME!!!!
+		e.printStackTrace();//FIXME!!!!
 	}
 	
 	/**

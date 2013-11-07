@@ -22,6 +22,9 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.simulation.SimulationAction;
+import org.cmg.resp.simulation.SimulationEnvironment;
+import org.cmg.resp.topology.Self;
 
 /**
  * @author loreti
@@ -32,8 +35,12 @@ public class Scenario {
 	protected static final double LOAD_TO_TIME_FACTOR = 100.0;
 	private CloudComponent[] components;	
 	private int size; 
+	
+	private SimulationEnvironment environment;
+	
 	public Scenario( CloudComponent ... components ) {
 		this.components = components;
+		this.size = components.length;
 	}
 	
 	public Scenario( int size , Random r , int minMem , int maxMem , int minCpuRate , int maxCpuRate ) {
@@ -66,6 +73,7 @@ public class Scenario {
 				try {
 					return t[0].getElementAt(Integer.class, 1);
 				} catch (Exception e) {
+					e.printStackTrace();
 					return null;
 				}
 			}
@@ -83,6 +91,7 @@ public class Scenario {
 				try {
 					return t[0].getElementAt(Double.class, 1);
 				} catch (Exception e) {
+					e.printStackTrace();
 					return null;
 				}
 			}
@@ -106,18 +115,29 @@ public class Scenario {
 			public void send(final Tuple t) {
 				final CloudService service = t.getElementAt(CloudService.class , 2 );
 				components[id].execute(service);
-				new Thread( new Runnable() {
-
+//				new Thread( new Runnable() {
+//
+//					@Override
+//					public void run() {
+//						try {
+//							Thread.sleep((long) (service.getCPULoad()*Scenario.LOAD_TO_TIME_FACTOR));
+//						} catch (Exception e) {
+//						}
+//						n.put( new Tuple( "DONE" , t.getElementAt(1)));
+//					}
+//					
+//				}).start();
+				Scenario.this.environment.schedule( new SimulationAction() {
+					
 					@Override
-					public void run() {
-						try {
-							Thread.sleep((long) (service.getCPULoad()*Scenario.LOAD_TO_TIME_FACTOR));
-						} catch (Exception e) {
-						}
-						n.put( new Tuple( "DONE" , t.getElementAt(1)));
+					public void doAction(double time) {
+						System.out.println("Time: "+time+" Service "+service.getName()+" completed!");
+						components[id].completed(service);
+						n.put( new Tuple( "DONE" , t.getElementAt(1)));						
 					}
 					
-				}).start();
+				} , service.getCPULoad()*Scenario.LOAD_TO_TIME_FACTOR );				
+				System.out.println("EXECUTINON SCHEDULED AT :"+(service.getCPULoad()*Scenario.LOAD_TO_TIME_FACTOR ));
 			}
 			
 			@Override
@@ -147,6 +167,10 @@ public class Scenario {
 			totalLoad += components[i].getMemoryLoad();
 		}	
 		return totalLoad/components.length;
+	}
+
+	public void setEnvironment(SimulationEnvironment env) {
+		this.environment = env;
 	}
 
 }

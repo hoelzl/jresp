@@ -30,10 +30,14 @@ public class Main {
 	private Target id;
 	
 	public Main(int size){
-		scenario=new Scenario(size, r , 0, 1000, 0, 100);
-		instantiateNet();
+		this( new Scenario(size, new Random() , 900, 1000, 99, 100) );
 	}
 	
+	public Main(Scenario scenario) {
+		this.scenario = scenario;
+		instantiateNet();
+	}
+
 	private void instantiateNet() {
 		Random r = new Random();
 		SimulationScheduler sim = new SimulationScheduler();
@@ -46,6 +50,7 @@ public class Main {
 			}
 			
 		}, 0.0 , 1000.0);
+		scenario.setEnvironment( env );
 		Hashtable<String, SimulationNode> nodes = new Hashtable<String, SimulationNode>();
 		for(int i=0; i<scenario.getSize(); i++){
 			SimulationNode n = new SimulationNode("Nodo"+i, env );
@@ -55,14 +60,17 @@ public class Main {
 			n.addAttributeCollector(scenario.getCpuLoadAttributeCollector());
 			n.addAttributeCollector(scenario.getCpuRateAttributeCollector(i));
 			n.addAttributeCollector(scenario.getMemoryAttributeCollector());
-			n.put(new Tuple("REQUEST", 1, new CloudService("1", 10, 2.0), n.getLocalAddress() ));
+			if (i==0) {
+				n.put(new Tuple("REQUEST", 1, new CloudService("1", 10, 2.0), n.getLocalAddress() ));
+			}
+			n.put( new Tuple( "LOCATION" , n.getLocalAddress() ) ); 
 		    Agent a= new RequestHandler(); 
 			n.addAgent(a);
 			a=new OfferAgent();
 			n.addAgent(a);
 			nodes.put(n.getName(), n);
 		}
-		env.simulate(5000);
+		env.simulate(10000);
 	}
 
 	/**
@@ -70,12 +78,11 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		int size=3;
-		//CloudService a= new CloudService("1", 10, 2.0);
-		//CloudService b= new CloudService("2", 30, 10.0);
-		//CloudService c= new CloudService("3", 50, 25.0);
-		//CloudService d= new CloudService("4", 250, 30.0);
-		//CloudService e= new CloudService("5", 500, 50.0);
-		new Main(size);
+		CloudComponent c0 = new CloudComponent( 0 , 0 , 1 );
+		CloudComponent c1 = new CloudComponent( 1 , 100 , 1 );
+		CloudComponent c2 = new CloudComponent( 2 , 100 , 1 );
+		new Main( new Scenario( c0 , c1 , c2 ));
+//		new Main(size);
 
 	}
 
