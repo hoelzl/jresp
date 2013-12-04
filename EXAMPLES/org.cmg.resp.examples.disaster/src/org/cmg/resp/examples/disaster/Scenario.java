@@ -14,7 +14,10 @@ package org.cmg.resp.examples.disaster;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Shape;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Observable;
 import java.util.Random;
 
@@ -36,7 +39,7 @@ public class Scenario extends Observable {
 	
 	public static final int LANDMARK = 0;
 	public static final int WORKER = 1;
-	protected static final double COMMUNICATION_RANGE = 100.0;
+	protected static final double COMMUNICATION_RANGE = 75.0;
 
 	private Random r = new Random();
 
@@ -66,14 +69,23 @@ public class Scenario extends Observable {
 	private int numberOfWorkers;
 
 	private int numberOfVictims;
+	
+	private Rectangle2D[] walls;
 
 	public Scenario( int numberOfSeekers , int numberOfRescuers , int numberOfVictims , double height , double width ) {
+		this(null,numberOfSeekers,numberOfRescuers,numberOfVictims,height,width);
+	}
+
+	public Scenario( Rectangle2D[] walls , int numberOfSeekers , int numberOfRescuers , int numberOfVictims , double height , double width ) {
 		this.numberOfLandmarks = numberOfSeekers;
 		this.numberOfWorkers = numberOfRescuers;
 		this.numberOfVictims = numberOfVictims;
 		this.height = height;
 		this.width = width;
+		this.walls = walls;
 	}
+
+	
 
 	public void init() {
 		nestLocation = new Point2D.Double( width/2 , height-50 );
@@ -84,11 +96,11 @@ public class Scenario extends Observable {
 		robots = new Robot[numberOfLandmarks+numberOfWorkers];
 		for( int i=0 ; i<numberOfLandmarks ; i++ ) {
 			robots[i] = new Robot(i, 0.5);
-			robots[i].setPosition( width/4+(this.r.nextDouble()*width/4)  , height-(this.r.nextDouble()*100)  );
+			robots[i].setPosition( width/4+(this.r.nextDouble()*width/2)  , height-(this.r.nextDouble()*100)  );
 		}
 		for( int i=+numberOfLandmarks  ; i<numberOfLandmarks+numberOfWorkers ; i++ ) {
 			robots[i] = new Robot(i, 0.5);
-			robots[i].setPosition( width/4+(this.r.nextDouble()*width/4)  , height-(this.r.nextDouble()*100)  );
+			robots[i].setPosition( width/4+(this.r.nextDouble()*width/2)  , height-(this.r.nextDouble()*100)  );
 		}
 		
 	}
@@ -388,17 +400,33 @@ public class Scenario extends Observable {
 				try {
 					int idSrc = Integer.parseInt(src);
 					int idTrg = Integer.parseInt(target);
-					Point2D.Double locationSrc = robots[idSrc].getPosition();
-					Point2D.Double locationTarget = robots[idTrg].getPosition();
-					if ((locationSrc == null)||(locationTarget==null)) {
-						return false;
-					}
-					return locationSrc.distance(locationTarget)<COMMUNICATION_RANGE;
+					return Scenario.this.areInTouch(idSrc, idTrg);
 				} catch (Exception e) {
 					return false;
 				}
 			}
 		};
+	}
+
+	protected boolean areInTouch(int idSrc, int idTrg) {
+		Point2D.Double locationSrc = robots[idSrc].getPosition();
+		Point2D.Double locationTarget = robots[idTrg].getPosition();
+		if ((locationSrc == null)||(locationTarget==null)) {
+			return false;
+		}
+		if (!(locationSrc.distance(locationTarget)<COMMUNICATION_RANGE)) {
+			return false;
+		}
+		if (walls != null) {
+			Line2D.Double communicationLine = new Line2D.Double(locationSrc, locationTarget);
+			for( int i=0 ; i<walls.length ; i++ ) {
+				if (communicationLine.intersects(walls[i])) {
+					return false;
+				}
+			}
+			
+		}
+		return true; 
 	}
 
 	public int getNumberOfLandmarks() {
@@ -412,6 +440,10 @@ public class Scenario extends Observable {
 			}
 		} 
 		return true;
+	}
+
+	public Shape[] getWalls() {
+		return walls;
 	}
 	
 }

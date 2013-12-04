@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -51,6 +52,13 @@ public class SpatialPanel extends JPanel implements Observer {
 	public void paint(Graphics arg0) {
 		super.paint(arg0);
 		Graphics2D g2 = (Graphics2D) arg0;
+		g2.setColor(Color.BLACK);
+		Shape[] walls = scenario.getWalls();
+		if (walls != null) {
+			for( int i=0 ; i<walls.length ; i++ ) {
+				g2.fill(walls[i]);
+			}
+		}
 		g2.setColor(Color.RED);
 		for(  int i=0 ; i<scenario.getVictims() ; i++ ) {
 			Point2D.Double target = scenario.getVictimPosition(i);

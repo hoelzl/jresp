@@ -318,5 +318,9 @@ public class SimulationEnvironment {
 			double interval) {
 		scheduler.schedulePeriodicAction(action, from, interval);
 	}
+
+	public void stopSimulation() {
+		scheduler.stopSimulation();
+	}
 	
 }

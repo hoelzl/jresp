@@ -16,6 +16,7 @@ import java.awt.geom.Point2D;
 import java.util.Observable;
 import java.util.Random;
 
+import org.cmg.resp.comp.NodeConnection;
 import org.cmg.resp.knowledge.AbstractActuator;
 import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -57,21 +58,26 @@ public class Scenario extends Observable {
 
 	private BatteryConsumptionFunction batteryDischargingFunction;
 
+	protected double COMMUNICATION_RANGE = 100;
+
 	public Scenario( int size , double height , double width , BatteryConsumptionFunction batteryDischargingFunction ) {
 		this.size = size;
 		this.height = height;
 		this.width = width;
 		this.batteryDischargingFunction = batteryDischargingFunction;
+		System.out.println("SIZE: "+size+" HEIGHT: "+height+" WIDTH: "+width);
 		init();
 	}
 
-	private void init() {
+	void init() {
 		target = new Point2D.Double[2];
-		target[0] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
-		target[1] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+//		target[0] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+//		target[1] = new Point2D.Double( 20+r.nextDouble()*(width-40) , 20+r.nextDouble()*(height-40) );
+		target[0] = new Point2D.Double( 20+(width/4.0)-40 , 20+(height/2.0)-40 );
+		target[1] = new Point2D.Double( 20+(3*width/4.0)-40 , 20+(height/2.0)-40 );
 		robots = new Robot[size];
 		for( int i=0 ; i<size ; i++ ) {
-			robots[i] = new Robot(i, r.nextDouble(), new Point2D.Double(r.nextDouble()*width, r.nextDouble()*height) , r.nextDouble(), 5.0);
+			robots[i] = new Robot(i, r.nextDouble(), new Point2D.Double(r.nextDouble()*width, r.nextDouble()*height) , r.nextDouble(), 1.0);
 		}
 		
 	}
@@ -291,7 +297,7 @@ public class Scenario extends Observable {
 					new Template( new ActualTemplateField("target") , new FormalTemplateField(Boolean.class) )) {
 			};
 			this.batterySensor = new AbstractSensor("BatterySensor-"+i,
-					new Template( new ActualTemplateField("batteryLevel") , new FormalTemplateField(Double.class))) {
+					new Template( new ActualTemplateField("batteryLevel") , new FormalTemplateField(Integer.class))) {
 			};
 			this.locationSensor = new AbstractSensor("LocationSensor-"+i,
 					new Template( new ActualTemplateField("gps") , new FormalTemplateField(Double.class) , new FormalTemplateField(Double.class) )) {
@@ -349,6 +355,36 @@ public class Scenario extends Observable {
 			batterySensor.setValue( new Tuple( "batteryLevel" , getBarreryPercentage(i) ) );
 		}
 		
+	}
+
+	public NodeConnection getNodeConnection() {
+		return new NodeConnection() {
+			
+			@Override
+			public void waitInTouch(String src, String target)
+					throws InterruptedException {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public boolean areInTouch(String src, String target) {
+				int srcIdx = Integer.parseInt(src);
+				int srcTrg = Integer.parseInt(target);
+				return robots[srcIdx].position.distance(robots[srcTrg].position)<COMMUNICATION_RANGE ;
+			}
+		};
+	}
+
+	public boolean goalReached() {
+		double count = 0.0;
+		for ( int i=0 ; i<robots.length ; i++ ) {
+			if ((robots[i].getPosition().distance(target[i%2])) < 20) {
+				count = count + 1.0;
+			}
+		}
+		//System.out.println("Reached: "+count);
+		return (count/robots.length)>=0.25;
 	}
 	
 }

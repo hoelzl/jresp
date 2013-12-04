@@ -32,7 +32,7 @@ public class ManagedElement extends Agent {
 	@Override
 	protected void doRun() throws Exception {
 		while (true) {
-			Thread.sleep(1000);
+//			Thread.sleep(1000);
 			Tuple t = query(new Template( 
 									new ActualTemplateField("controlStep") , 
 									new FormalTemplateField(Agent.class)) , 

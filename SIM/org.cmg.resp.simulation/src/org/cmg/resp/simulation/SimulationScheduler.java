@@ -93,7 +93,7 @@ public class SimulationScheduler {
 		}
 	}
 	
-	private void doStop() {
+	private synchronized void doStop() {
 		for (SchedulableEvent e : eventQueue) {
 			e.cancelled();
 		}

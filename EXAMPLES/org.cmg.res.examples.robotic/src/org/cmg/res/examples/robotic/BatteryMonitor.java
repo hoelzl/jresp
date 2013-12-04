@@ -34,7 +34,7 @@ public class BatteryMonitor extends Agent {
 	@Override
 	protected void doRun() throws IOException, InterruptedException{
 	    while (true) {
-	    	Thread.sleep(10);
+//	    	Thread.sleep(10);
 	        Tuple t = query( new Template( 
 	 	         new ActualTemplateField("batteryLevel") , 
 	 	         new FormalTemplateField(Integer.class)) , 
