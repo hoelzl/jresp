@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -326,6 +326,10 @@ public abstract class Agent extends Observable implements Runnable {
 	
 	public void exec( Agent b ) throws InterruptedException {
 		context.exec(this, b);
+	}
+	
+	public Tuple exec( Action a ) throws InterruptedException, IOException {
+		return a.execute(this);
 	}
 
 }
