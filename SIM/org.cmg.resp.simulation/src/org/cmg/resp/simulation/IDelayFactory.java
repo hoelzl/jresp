@@ -22,24 +22,24 @@ import org.cmg.resp.topology.GroupPredicate;
  */
 public interface IDelayFactory {
 
-	double getRetryTime(String string);
+	double getRetryTime(SimulationNode node);
 
-	double getLocalGetTime(String name);
+	double getLocalGetTime(SimulationNode node , Template t );
 
-	double getRemoteGetTime(String name, Template t, String name2);
+	double getRemoteGetTime(SimulationNode src, Template t, SimulationNode trg);
 
-	double getGroupGetTime(String name, Template t, GroupPredicate target);
+	double getGroupGetTime(SimulationNode src, Template t, GroupPredicate target , SimulationNode trg );
 
-	double getLocalPutTime(String name);
+	double getLocalPutTime(SimulationNode node, Tuple t );
 
-	double getRemotePutTime(String name, Tuple t, String name2);
+	double getRemotePutTime(SimulationNode src, Tuple t, SimulationNode trg);
 
-	double getGroupPutTime(String name, Tuple t, GroupPredicate target);
+	double getGroupPutTime(SimulationNode src, Tuple t, GroupPredicate target );
 
-	double getLocalQueryTime(String name);
+	double getLocalQueryTime(SimulationNode node , Template t );
 
-	double getRemoteQueryTime(String name, Template t, String name2);
+	double getRemoteQueryTime(SimulationNode src, Template t, SimulationNode trg);
 
-	double getGroupQueryTime(String name, Template t, GroupPredicate target);
+	double getGroupQueryTime(SimulationNode src, Template t, GroupPredicate target, SimulationNode trg);
 
 }

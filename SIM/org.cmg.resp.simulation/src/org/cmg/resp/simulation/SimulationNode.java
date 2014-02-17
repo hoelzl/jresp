@@ -26,6 +26,7 @@ import org.cmg.resp.knowledge.AbstractActuator;
 import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.KnowledgeListener;
+import org.cmg.resp.knowledge.KnowledgeManager;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.GroupPredicate;
@@ -55,9 +56,13 @@ public class SimulationNode implements INode {
 	
 	protected LinkedList<AbstractSensor> sensors;
 	
-	protected SimulationTupleSpace tupleSpace;
+	protected KnowledgeManager knowledgeManager;
 	
 	public SimulationNode( String name , SimulationEnvironment environment ) {
+		this( name , environment , new SimulationTupleSpace(environment.getElementSelector()) );
+	}
+
+	public SimulationNode( String name , SimulationEnvironment environment , KnowledgeManager knowledgeManager ) {
 		this.name = name;
 		this.environment = environment;
 		this.environment.register( this );
@@ -65,9 +70,9 @@ public class SimulationNode implements INode {
 		this.agents = new LinkedList<Agent>();
 		this.collectors = new LinkedList<AttributeCollector>();
 		this.sensors = new LinkedList<AbstractSensor>();
-		this.tupleSpace = new SimulationTupleSpace(environment.getElementSelector());
+		this.knowledgeManager = knowledgeManager;
 	}
-	
+
 	@Override
 	public void addActuator(AbstractActuator actuator) {
 		this.actuators.add(actuator);
@@ -92,7 +97,7 @@ public class SimulationNode implements INode {
 
 	@Override
 	public Tuple get(Template template) throws InterruptedException {
-		return tupleSpace.get(template);
+		return knowledgeManager.get(template);
 	}
 
 	@Override
@@ -108,11 +113,13 @@ public class SimulationNode implements INode {
 
 	@Override
 	public Attribute getAttribute(String name) {
+		_computeInterface();
 		return interfaze.get(name);
 	}
 
 	@Override
 	public Attribute[] getAttributes(String[] attributes) {
+		_computeInterface();
 		Attribute[] values = new Attribute[attributes.length];
 		for ( int i=0 ; i<attributes.length ; i++ ) {
 			values[i] = getAttribute(attributes[i]);
@@ -150,7 +157,7 @@ public class SimulationNode implements INode {
 				return ;
 			}
 		}
-		tupleSpace.put(tuple);
+		knowledgeManager.put(tuple);
 	}
 
 	@Override
@@ -170,7 +177,12 @@ public class SimulationNode implements INode {
 			} catch (InterruptedException e) {
 			}
 		}
-		return tupleSpace.query(template);
+		try {
+			return knowledgeManager.query(template);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override

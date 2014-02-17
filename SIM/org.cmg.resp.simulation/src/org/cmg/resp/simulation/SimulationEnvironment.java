@@ -15,6 +15,7 @@ package org.cmg.resp.simulation;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.behaviour.AgentContext;
@@ -135,11 +136,11 @@ public class SimulationEnvironment {
 		}
 		while (true) {
 			if (areInTouch(simulationNode , target )) {
-				scheduler.schedule( delayFactory.getRemoteGetTime( simulationNode.getName() , t , l.getName() ) );			
+				scheduler.schedule( delayFactory.getRemoteGetTime( simulationNode , t , target ) );			
 				toReturn = target.get(t);
 			}
 			if (toReturn == null) {
-				scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+				scheduler.schedule( delayFactory.getRetryTime( simulationNode ) ); 
 			} else {
 				return toReturn;
 			}
@@ -154,29 +155,39 @@ public class SimulationEnvironment {
 	}
 
 	private Tuple _getAtGroup(SimulationNode simulationNode, Template t, Group l) throws InterruptedException {
-		GroupPredicate target =  l.getPredicate();
+		GroupPredicate target =  l.getPredicate();		
 		while (true) {
-			scheduler.schedule( delayFactory.getGroupGetTime( simulationNode.getName() , t , target ) );			
+			PriorityQueue<TimedElement> queue = new PriorityQueue<SimulationEnvironment.TimedElement>();
 			Tuple toReturn = null;
 			for (SimulationNode n : nodes.values()) {
-				if ((n!=simulationNode)&&(areInTouch(simulationNode , n ))&&(target.evaluate(n.getInterface()))) {
-					toReturn = n.get(t);
-				}				
+				double foo = delayFactory.getGroupGetTime( simulationNode , t , target , n );
+				if (foo >= 0) {
+					queue.add(new TimedElement(n,foo));
+				}
+			}
+			double time = 0.0;
+			for (TimedElement te : queue) {
+				scheduler.schedule(te.time-time);
+				if ((te.node!=simulationNode)&&(areInTouch(simulationNode , te.node ))&&(target.evaluate(te.node.getInterface()))) {
+					toReturn = te.node.get(t);					
+				}
 				if (toReturn != null) {
 					return toReturn;
 				}
+				time = te.time;
 			}
-			scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+//			scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+//			System.out.println("Retry...");
 		}
 	}
 
 	private Tuple _getAtSelf(SimulationNode simulationNode, Template t) throws InterruptedException {
 		Tuple toReturn = null;
 		while (toReturn == null) {
-			scheduler.schedule( delayFactory.getLocalGetTime( simulationNode.getName() ) );
+			scheduler.schedule( delayFactory.getLocalGetTime( simulationNode , t ) );
 			toReturn = simulationNode.get(t);
 			if (toReturn == null) {
-				scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+				scheduler.schedule( delayFactory.getRetryTime( simulationNode ) ); 
 			}
 		}
 		return toReturn;
@@ -199,18 +210,18 @@ public class SimulationEnvironment {
 		}
 		while (true) {
 			if (areInTouch(simulationNode , target )) {
-				scheduler.schedule( delayFactory.getRemotePutTime(simulationNode.getName(),t,target.getName()));
+				scheduler.schedule( delayFactory.getRemotePutTime(simulationNode ,t,target ));
 				target.put(t);
 				return true;
 			} else {
-				delayFactory.getRetryTime( simulationNode.getName() );
+				delayFactory.getRetryTime( simulationNode );
 			}
 		}
 	}
 
 	private boolean _putAtGroup(SimulationNode simulationNode, Tuple t, Group l) throws InterruptedException {
 		GroupPredicate predicate = l.getPredicate();
-		scheduler.schedule( delayFactory.getGroupPutTime(simulationNode.getName(), t, predicate) );
+		scheduler.schedule( delayFactory.getGroupPutTime(simulationNode , t, predicate) );
 		for (SimulationNode n : nodes.values()) {
 			if ((n!=simulationNode)&&(areInTouch(simulationNode , n ))&&(predicate.evaluate(n.getInterface()))) {
 				n.put(t);
@@ -220,7 +231,7 @@ public class SimulationEnvironment {
 	}
 
 	private boolean _putAtSelf(SimulationNode simulationNode, Tuple t) throws InterruptedException {
-		scheduler.schedule( delayFactory.getLocalPutTime( simulationNode.getName() ));
+		scheduler.schedule( delayFactory.getLocalPutTime( simulationNode , t  ));
 		simulationNode.put(t);		
 		return true;
 	}
@@ -244,11 +255,11 @@ public class SimulationEnvironment {
 		}
 		while (true) {
 			if (areInTouch(simulationNode , target )) {
-				scheduler.schedule( delayFactory.getRemoteQueryTime( simulationNode.getName() , t , l.getName() ) );			
+				scheduler.schedule( delayFactory.getRemoteQueryTime( simulationNode , t , target ) );			
 				toReturn = target.query(t);
 			}
 			if (toReturn == null) {
-				scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+				scheduler.schedule( delayFactory.getRetryTime( simulationNode ) ); 
 			} else {
 				return toReturn;
 			}
@@ -257,29 +268,39 @@ public class SimulationEnvironment {
 
 	private Tuple _queryAtGroup(SimulationNode simulationNode, Template t,
 			Group l) throws InterruptedException {
-		GroupPredicate target =  l.getPredicate();
+		GroupPredicate target =  l.getPredicate();		
 		while (true) {
-			scheduler.schedule( delayFactory.getGroupQueryTime( simulationNode.getName() , t , target ) );			
+			PriorityQueue<TimedElement> queue = new PriorityQueue<SimulationEnvironment.TimedElement>();
 			Tuple toReturn = null;
 			for (SimulationNode n : nodes.values()) {
-				if ((n!=simulationNode)&&(areInTouch(simulationNode , n ))&&(target.evaluate(n.getInterface()))) {
-					toReturn = n.query(t);
-				}				
+				double foo = delayFactory.getGroupQueryTime( simulationNode , t , target , n );
+				if (foo >= 0) {
+					queue.add(new TimedElement(n,foo));
+				}
+			}
+			double time = 0.0;
+			for (TimedElement te : queue) {
+				scheduler.schedule(te.time-time);
+				if ((te.node!=simulationNode)&&(areInTouch(simulationNode , te.node ))&&(target.evaluate(te.node.getInterface()))) {
+					toReturn = te.node.query(t);					
+				}
 				if (toReturn != null) {
 					return toReturn;
 				}
+				time = te.time;
 			}
-			scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+//			scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+//			System.out.println("Retry...");
 		}
 	}
 
 	private Tuple _queryAtSelf(SimulationNode simulationNode, Template t) throws InterruptedException {
 		Tuple toReturn = null;
 		while (toReturn == null) {
-			scheduler.schedule( delayFactory.getLocalQueryTime( simulationNode.getName() ) );
+			scheduler.schedule( delayFactory.getLocalQueryTime( simulationNode , t ) );
 			toReturn = simulationNode.query(t);
 			if (toReturn == null) {
-				scheduler.schedule( delayFactory.getRetryTime( simulationNode.getName() ) ); 
+				scheduler.schedule( delayFactory.getRetryTime( simulationNode ) ); 
 			}
 		}
 		return toReturn;
@@ -323,4 +344,28 @@ public class SimulationEnvironment {
 		scheduler.stopSimulation();
 	}
 	
+	public class TimedElement implements Comparable<TimedElement>{
+		
+		double time;
+		
+		SimulationNode node;
+
+		public TimedElement(SimulationNode node, double time) {
+			this.node = node;
+			this.time = time;
+		}
+
+		@Override
+		public int compareTo(TimedElement o) {
+			if (time == o.time) {
+				return 0;
+			}
+			if (time < o.time) {
+				return -1;
+			}
+			return 1;
+		}
+		
+		
+	}
 }

@@ -31,54 +31,59 @@ public class DeterministicDelayFactory implements IDelayFactory {
 	}
 
 	@Override
-	public double getRetryTime(String string) {
+	public double getRetryTime(SimulationNode node) {
 		return delay;
 	}
 
 	@Override
-	public double getLocalGetTime(String name) {
+	public double getLocalGetTime(SimulationNode node,Template t ) {
 		return delay;
 	}
 
 	@Override
-	public double getRemoteGetTime(String name, Template t, String name2) {
+	public double getRemoteGetTime(SimulationNode src, Template t,
+			SimulationNode trg) {
 		return delay;
 	}
 
 	@Override
-	public double getGroupGetTime(String name, Template t, GroupPredicate target) {
+	public double getGroupGetTime(SimulationNode src, Template t,
+			GroupPredicate target, SimulationNode trg) {
 		return delay;
 	}
 
 	@Override
-	public double getLocalPutTime(String name) {
+	public double getLocalPutTime(SimulationNode node, Tuple t) {
 		return delay;
 	}
 
 	@Override
-	public double getRemotePutTime(String name, Tuple t, String name2) {
+	public double getRemotePutTime(SimulationNode src, Tuple t,
+			SimulationNode trg) {
 		return delay;
 	}
 
 	@Override
-	public double getGroupPutTime(String name, Tuple t, GroupPredicate target) {
+	public double getGroupPutTime(SimulationNode src, Tuple t, GroupPredicate target) {
 		return delay;
 	}
 
 	@Override
-	public double getLocalQueryTime(String name) {
+	public double getLocalQueryTime(SimulationNode node, Template t) {
 		return delay;
 	}
 
 	@Override
-	public double getRemoteQueryTime(String name, Template t, String name2) {
+	public double getRemoteQueryTime(SimulationNode src, Template t,
+			SimulationNode trg) {
 		return delay;
 	}
 
 	@Override
-	public double getGroupQueryTime(String name, Template t,
-			GroupPredicate target) {
+	public double getGroupQueryTime(SimulationNode src, Template t,
+			GroupPredicate target, SimulationNode trg) {
 		return delay;
 	}
+
 	
 }

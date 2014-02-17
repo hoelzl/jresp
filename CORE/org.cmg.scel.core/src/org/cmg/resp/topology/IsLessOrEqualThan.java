@@ -36,8 +36,9 @@ public class IsLessOrEqualThan extends GroupPredicate {
 	 */
 	@Override
 	public boolean evaluate(HashMap<String, Attribute> data) {
-		Object v = data.get(attribute).getValue();
-		if (v instanceof Number) {
+		Attribute a = data.get(attribute);
+		Object v = (a!=null?a.getValue():null);
+		if ((v != null)&&(v instanceof Number)) {
 			return ((Number) v).doubleValue() <= value.doubleValue();
 		}
 		return false;
