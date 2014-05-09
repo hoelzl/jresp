@@ -310,9 +310,10 @@ public abstract class Agent extends Observable implements Runnable {
 	 * This method is used to generate a new fresh identifier.
 	 * 
 	 * @return a new fresh identifier.
+	 * @throws InterruptedException 
 	 */
-	public String fresh() {
-		return context.fresh();
+	public String fresh() throws InterruptedException {
+		return context.fresh( this );
 	}
 	
 	public void call( Agent a ) {
@@ -325,11 +326,9 @@ public abstract class Agent extends Observable implements Runnable {
 	}
 	
 	public void exec( Agent b ) throws InterruptedException {
-		context.exec(this, b);
+		if (b != null) {
+			context.exec(this, b);
+		}
 	}
 	
-	public Tuple exec( Action a ) throws InterruptedException, IOException {
-		return a.execute(this);
-	}
-
 }

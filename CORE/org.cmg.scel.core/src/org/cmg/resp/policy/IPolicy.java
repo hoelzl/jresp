@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ package org.cmg.resp.policy;
 import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.GroupPredicate;
@@ -29,6 +30,8 @@ import org.cmg.resp.topology.Target;
  *
  */
 public interface IPolicy {
+	
+	
 
 	/**
 	 * This method is invoked when a remote node asks for adding a tuple in the local knowledge
@@ -161,7 +164,15 @@ public interface IPolicy {
 	 * This method is invoked when a fresh action is performed.
 	 * 
 	 * @return a new fresh identifier.
+	 * @throws InterruptedException 
 	 */
-	String fresh();
+	String fresh( Agent a ) throws InterruptedException;
+
+	/**
+	 * Set the reference to the a node in the policy.
+	 * 
+	 * @param node the reference to the SCEL node.
+	 */
+	void setNode(Node node);
 
 }

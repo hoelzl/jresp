@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -82,8 +82,9 @@ public interface AgentContext {
 	 * This method is used to generate a new fresh identifier.
 	 * 
 	 * @return a new fresh identifier.
+	 * @throws InterruptedException 
 	 */
-	public String fresh();
+	public String fresh( Agent a ) throws InterruptedException;
 
 	/**
 	 * This method is invoked when agent a terminates its computation.

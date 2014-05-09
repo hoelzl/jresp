@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,7 @@ import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.cmg.resp.behaviour.Action;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.behaviour.AgentContext;
 import org.cmg.resp.behaviour.ContextState;
@@ -398,6 +399,11 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	}
 	
 
+	protected void setPolicy( IPolicy policy ) {
+		this.policy = policy;
+		this.policy.setNode( this );
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.cmg.resp.comp.INode#addActuator(org.cmg.resp.comp.NodeActuator)
 	 */
@@ -444,8 +450,8 @@ public class Node extends Observable implements MessageDispatcher, INode {
 					}
 
 					@Override
-					public String fresh() {
-						return policy.fresh();
+					public String fresh( Agent a ) throws InterruptedException {
+						return policy.fresh( a );
 					}
 
 					@Override

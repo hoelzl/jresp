@@ -114,6 +114,16 @@ public class Main extends JFrame {
 					return t[0].getElementAt(Integer.class, 1);
 				}
 			});
+			n.addAttributeCollector( new AttributeCollector("victim_perceived", 
+					new Template( new ActualTemplateField("VICTIM_PERCEIVED") , new FormalTemplateField(Boolean.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Boolean.class, 1);
+				}
+			});
+
 			
 						
 			Agent a = new RandomWalk();
