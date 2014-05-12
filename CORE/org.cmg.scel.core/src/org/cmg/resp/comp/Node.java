@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.cmg.resp.behaviour.Action;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.behaviour.AgentContext;
 import org.cmg.resp.behaviour.ContextState;
@@ -29,9 +29,9 @@ import org.cmg.resp.knowledge.AbstractActuator;
 import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.Knowledge;
-import org.cmg.resp.knowledge.KnowledgeManager;
 import org.cmg.resp.knowledge.KnowledgeAdapter;
 import org.cmg.resp.knowledge.KnowledgeListener;
+import org.cmg.resp.knowledge.KnowledgeManager;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.policy.IPolicy;
@@ -46,11 +46,11 @@ import org.cmg.resp.protocol.GroupPutReply;
 import org.cmg.resp.protocol.GroupPutRequest;
 import org.cmg.resp.protocol.GroupQueryReply;
 import org.cmg.resp.protocol.GroupQueryRequest;
-import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.protocol.MessageHandler;
 import org.cmg.resp.protocol.PutRequest;
 import org.cmg.resp.protocol.QueryRequest;
 import org.cmg.resp.protocol.TupleReply;
+import org.cmg.resp.protocol.jRESPMessage;
 import org.cmg.resp.topology.AbstractPort;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.GroupPredicate;
@@ -381,6 +381,8 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	 */
 	private int nameCounter = 0;
 
+	private HashMap<String, Attribute> interfaze;
+
 	/**
 	 * Creates a new instance of a nome named <code>name</code> with knowledge repository
 	 * <code>knowledge</code>.
@@ -396,8 +398,17 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		this.state = ContextState.READY;
 		this.ports = new LinkedList<AbstractPort>();
 		this.waiting = new LinkedList<Agent>();
+		this.interfaze = new HashMap<String, Attribute>();
+		this.knowledge.addObserver( new Observer() {
+			
+			@Override
+			public void update(Observable o, Object arg) {
+				recomputeInterface();
+			}
+			
+		});
 	}
-	
+
 
 	protected void setPolicy( IPolicy policy ) {
 		this.policy = policy;
@@ -587,14 +598,13 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	 */
 	@Override
 	public synchronized Attribute getAttribute( String name ) {
-		AttributeCollector ac = attributes.get(name);
-		if (ac == null) {
-			return new Attribute(name, null);
-		}
 		if (ID_ATTRIBUTE_NAME.equals(name)) {
 			return new Attribute(name, getName());
 		}
-		return ac.eval();
+		if (interfaze == null) {
+			return null;
+		}
+		return interfaze.get(name);
 	}
 
 	/* (non-Javadoc)
@@ -904,6 +914,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	}
 
 	public synchronized void start() {
+		recomputeInterface();
 		for (Agent a : waiting) {
 			_addAgent(a);
 		}
@@ -1206,41 +1217,32 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	}
 	
 	@Override
-	public void addKnowledgeListener(KnowledgeListener listener) {
-		knowledge.addKnowledgeListener(listener);
-	}
-
-	@Override
-	public void removeKnowledgeListener(KnowledgeListener listener) {
-		knowledge.removeKnowledgeListener(listener);
-	}
-
-
-	@Override
-	public void addAttributeListener(AttributeListener listener) {
-		//FIXME: !!!!!
-	}
-
-	@Override
-	public void removeAttributeListener(AttributeListener listener) {
-		//FIXME: !!!!!
-	}
-
-
-	@Override
 	public Tuple queryp(Template template) {
 		return knowledge.queryp(template);
 	}
 
 
 	@Override
-	public HashMap<String, Attribute> getInterface() {
+	public synchronized HashMap<String, Attribute> getInterface() {
+		return interfaze;
+	}
+
+	protected synchronized void recomputeInterface() {
+		boolean changed = false;
 		HashMap<String,Attribute> values = new HashMap<String, Attribute>();
 		values.put("ID", new Attribute("ID", getName()));
 		for (String attributeName : attributes.keySet() ) {
-			values.put(attributeName, attributes.get(attributeName).eval());
+			Attribute a = attributes.get(attributeName).eval();
+			if (!a.equals(interfaze.get(attributeName))) {
+				changed = true;
+			}
+			values.put(attributeName, a);
 		}		
-		return values;
+		if (changed) {
+			setChanged();
+			notifyObservers();
+		}
+		interfaze = values;
 	}
 
 }

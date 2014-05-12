@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,8 @@
 package org.cmg.resp.knowledge;
 
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * This class handles the knowledge installed in a SCEL component. 
@@ -21,7 +23,7 @@ import java.util.LinkedList;
  * @author Michele Loreti
  *
  */
-public class Knowledge {
+public class Knowledge extends Observable {
 
 	/**
 	 * A reference to a <code>KnowledgeManager</code>.
@@ -34,12 +36,6 @@ public class Knowledge {
 	 * used to include external knowledge repositories in the knowledge. 
 	 */
 	protected LinkedList<KnowledgeAdapter> adapters;
-
-	/**
-	 * Active listeners registered to the knowledge. When a knowledge item
-	 * is inserted/removed to/from the knowledge, all listeners are notified.
-	 */
-	protected LinkedList<KnowledgeListener> listeners;
 	
 	/**
 	 * A list of <code>AbstractSensors</code>. These objects let available
@@ -63,7 +59,6 @@ public class Knowledge {
 		}
 		this.sensors = new LinkedList<AbstractSensor>();
 		this.actuators = new LinkedList<AbstractActuator>();
-		this.listeners = new LinkedList<KnowledgeListener>();
 		this.adapters = new LinkedList<KnowledgeAdapter>();
 	}
 	
@@ -78,7 +73,8 @@ public class Knowledge {
 		} else {
 			result = this.knowledgeManager.put(t);
 		}		
-		notifyListernersOfAPut(t);
+		setChanged();
+		notifyObservers( t );
 		return result;
 	}
 
@@ -100,7 +96,8 @@ public class Knowledge {
 		} else {
 			result = this.knowledgeManager.get(t);
 		}
-		notifyListernersOfAGet(result);
+		setChanged();
+		notifyObservers( result );
 		return result;
 	}
 
@@ -113,7 +110,8 @@ public class Knowledge {
 			result = this.knowledgeManager.getp(t);
 		}
 		if (result != null) {
-			notifyListernersOfAGet(result);
+			setChanged();
+			notifyObservers( result );
 		}
 		return result;
 	}
@@ -161,18 +159,6 @@ public class Knowledge {
 		return null;
 	}
 
-	private synchronized void notifyListernersOfAGet(Tuple t) {
-		for (KnowledgeListener listener : this.listeners) {
-			listener.getOfTuple(t);
-		}		
-	}
-
-	private synchronized void notifyListernersOfAPut(Tuple t) {
-		for (KnowledgeListener listener : this.listeners) {
-			listener.putOfTuple(t);
-		}		
-	}
-
 	private synchronized KnowledgeAdapter getAdapterFor(Tuple t) {
 		for (KnowledgeAdapter knowledgeAdapter : this.adapters) {
 			if (knowledgeAdapter.isResponsibleFor(t)) {
@@ -191,16 +177,21 @@ public class Knowledge {
 		return null;
 	}
 
-	public synchronized void addSensor( AbstractSensor s ) {
+	public synchronized void addSensor( final AbstractSensor s ) {
 		this.sensors.add(s);
+		s.addObserver( new Observer() {
+			
+			@Override
+			public void update(Observable o, Object arg) {
+				setChanged();
+				notifyObservers();
+			}
+			
+		});
 	}
 	
 	public synchronized void addActuator( AbstractActuator a ) {
 		this.actuators.add(a);
-	}
-	
-	public synchronized void addKnowledgeListener( KnowledgeListener listener ) {
-		this.listeners.add(listener);
 	}
 	
 	public synchronized void addKnowledgeAdapter( KnowledgeAdapter adapter ) {
@@ -215,8 +206,5 @@ public class Knowledge {
 		return sensors.toArray(new AbstractSensor[sensors.size()]);
 	}
 
-	public void removeKnowledgeListener(KnowledgeListener listener) {
-		this.listeners.remove(listener);
-	}
 	
 }

@@ -16,16 +16,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.behaviour.ContextState;
 import org.cmg.resp.comp.AttributeCollector;
-import org.cmg.resp.comp.AttributeListener;
 import org.cmg.resp.comp.INode;
 import org.cmg.resp.knowledge.AbstractActuator;
 import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Attribute;
-import org.cmg.resp.knowledge.KnowledgeListener;
+import org.cmg.resp.knowledge.Knowledge;
 import org.cmg.resp.knowledge.KnowledgeManager;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
@@ -37,7 +38,7 @@ import org.cmg.resp.topology.Target;
  * @author loreti
  *
  */
-public class SimulationNode implements INode {
+public class SimulationNode extends Observable implements INode {
 	
 	/**
 	 * Node name.
@@ -50,7 +51,10 @@ public class SimulationNode implements INode {
 	
 	protected LinkedList<Agent> agents;
 	
-	protected LinkedList<AttributeCollector> collectors;
+	/**
+	 * The collection of attributes exposed by the node.
+	 */
+	protected Hashtable<String,AttributeCollector> attributes = new Hashtable<String, AttributeCollector>();
 	
 	protected HashMap<String, Attribute> interfaze;
 	
@@ -68,7 +72,6 @@ public class SimulationNode implements INode {
 		this.environment.register( this );
 		this.actuators = new LinkedList<AbstractActuator>();
 		this.agents = new LinkedList<Agent>();
-		this.collectors = new LinkedList<AttributeCollector>();
 		this.sensors = new LinkedList<AbstractSensor>();
 		this.knowledgeManager = knowledgeManager;
 	}
@@ -87,17 +90,26 @@ public class SimulationNode implements INode {
 	@Override
 	public void addAttributeCollector(AttributeCollector ac) {
 		ac.setNode(this);
-		this.collectors.add(ac);
+		this.attributes.put(ac.getName() , ac);
 	}
 
 	@Override
 	public void addSensor(AbstractSensor sensor) {
 		this.sensors.add(sensor);
+		sensor.addObserver( new Observer() {
+			
+			@Override
+			public void update(Observable o, Object arg) {
+				recomputeInterface();
+			}
+		});
 	}
 
 	@Override
 	public Tuple get(Template template) throws InterruptedException {
-		return knowledgeManager.get(template);
+		Tuple t = knowledgeManager.get(template);
+		recomputeInterface();
+		return t;
 	}
 
 	@Override
@@ -113,13 +125,14 @@ public class SimulationNode implements INode {
 
 	@Override
 	public Attribute getAttribute(String name) {
-		_computeInterface();
+		if (interfaze == null) {
+			recomputeInterface();
+		}
 		return interfaze.get(name);
 	}
 
 	@Override
 	public Attribute[] getAttributes(String[] attributes) {
-		_computeInterface();
 		Attribute[] values = new Attribute[attributes.length];
 		for ( int i=0 ; i<attributes.length ; i++ ) {
 			values[i] = getAttribute(attributes[i]);
@@ -158,6 +171,7 @@ public class SimulationNode implements INode {
 			}
 		}
 		knowledgeManager.put(tuple);
+		recomputeInterface();
 	}
 
 	@Override
@@ -192,19 +206,27 @@ public class SimulationNode implements INode {
 
 	@Override
 	public HashMap<String, Attribute> getInterface() {
-		_computeInterface();
-		//FIXME: Replicated method!
 		return interfaze;
 	}
 
-	private void _computeInterface() {
-		interfaze = new HashMap<String, Attribute>();
-		for (AttributeCollector ac : collectors) {
-			ac.refresh();
-			interfaze.put(ac.getName(), ac.eval());
+	protected synchronized void recomputeInterface() {
+		boolean changed = false;
+		HashMap<String,Attribute> values = new HashMap<String, Attribute>();
+		values.put("ID", new Attribute("ID", getName()));
+		for (String attributeName : attributes.keySet() ) {
+			Attribute a = attributes.get(attributeName).eval();
+			if (!a.equals(interfaze.get(attributeName))) {
+				changed = true;
+			}
+			values.put(attributeName, a);
+		}		
+		interfaze = values;
+		if (changed) {
+			setChanged();
+			notifyObservers();
 		}
 	}
-
+	
 	@Override
 	public void sendAttibutes(PointToPoint to, int session, String[] attributes)
 			throws IOException, InterruptedException {
@@ -270,30 +292,6 @@ public class SimulationNode implements INode {
 	@Override
 	public Tuple queryp(Template template) {
 		return query(template);
-	}
-
-	@Override
-	public void addKnowledgeListener(KnowledgeListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeKnowledgeListener(KnowledgeListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addAttributeListener(AttributeListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeAttributeListener(AttributeListener listener) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public LinkedList< PointToPoint >  getLocalAddresses() {

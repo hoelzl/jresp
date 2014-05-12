@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ import org.cmg.resp.knowledge.Tuple;
  * @author Michele Loreti
  *
  */
-public abstract class AttributeCollector implements KnowledgeListener {
+public abstract class AttributeCollector {
 	
 	/**
 	 * Name of the collected attribute.
@@ -73,7 +73,6 @@ public abstract class AttributeCollector implements KnowledgeListener {
 			throw new NullPointerException();
 		}
 		this.node = n;
-		this.node.addKnowledgeListener(this);
 		this.retrieveTuples();
 	}
 	
@@ -96,7 +95,7 @@ public abstract class AttributeCollector implements KnowledgeListener {
 	 * @return the attribute value.
 	 */
 	public final Attribute eval() {
-//		Tuple[] tuples = retrieveTuples();
+		Tuple[] tuples = retrieveTuples();
 		return new Attribute( name , doEval(tuples));
 	}
 
@@ -116,32 +115,6 @@ public abstract class AttributeCollector implements KnowledgeListener {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.cmg.resp.knowledge.KnowledgeListener#putOfTuple(org.cmg.resp.knowledge.Tuple)
-	 */
-	@Override
-	public void putOfTuple(Tuple t) {
-		for( int i=0 ; i<templates.length ; i++ ) {
-			if (templates[i].match(t)) {
-				tuples[i] = t;
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.cmg.resp.knowledge.KnowledgeListener#getOfTuple(org.cmg.resp.knowledge.Tuple)
-	 */
-	@Override
-	public void getOfTuple(Tuple t) {
-		for( int i=0 ; i<templates.length ; i++ ) {
-			if (templates[i].match(t)) {
-				tuples[i] = node.queryp(templates[i]);
-			}
-		}
 	}
 
 	public void refresh() {

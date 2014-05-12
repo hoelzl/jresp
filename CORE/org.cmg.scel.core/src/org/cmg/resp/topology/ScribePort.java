@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,13 +18,10 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
-import org.cmg.resp.RESPFactory;
-import org.cmg.resp.comp.AttributeListener;
 import org.cmg.resp.comp.Node;
-import org.cmg.resp.knowledge.Attribute;
-import org.cmg.resp.knowledge.KnowledgeListener;
-import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.protocol.UnicastMessage;
 import org.cmg.resp.protocol.jRESPMessage;
 
@@ -34,7 +31,6 @@ import rice.p2p.commonapi.Endpoint;
 import rice.p2p.commonapi.Id;
 import rice.p2p.commonapi.NodeHandle;
 import rice.p2p.commonapi.RouteMessage;
-import rice.p2p.scribe.ScribeClient;
 import rice.p2p.scribe.ScribeContent;
 import rice.p2p.scribe.ScribeImpl;
 import rice.p2p.scribe.ScribeMultiClient;
@@ -46,7 +42,6 @@ import rice.pastry.commonapi.PastryIdFactory;
 import rice.pastry.socket.SocketPastryNodeFactory;
 import rice.pastry.standard.RandomNodeIdFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -304,17 +299,13 @@ public class ScribePort extends AbstractPort {
 	public synchronized void register(final MessageDispatcher n) {
 		super.register(n);
 		if (n instanceof Node) {
-			((Node) n).addKnowledgeListener( new KnowledgeListener() {
-				
+			((Node) n).addObserver( new Observer() {
+
 				@Override
-				public void putOfTuple(Tuple t) {
+				public void update(Observable o, Object arg) {
 					application.revalidateAttributes();
 				}
 				
-				@Override
-				public void getOfTuple(Tuple t) {
-					application.revalidateAttributes();
-				}
 			});
 		} else {
 			application.enableAllPredicate();

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -172,7 +172,6 @@ public class Scenario extends Observable {
 	 * @param dt
 	 */
 	private void _updatePosition(double dt) {
-//		System.out.println("Update positions...");
 		for( int i=0 ; i<numberOfLandmarks+numberOfWorkers ; i++ ) {
 			if (robots[i].walking) {
 				Point2D.Double position = robots[i].getPosition();
@@ -253,7 +252,14 @@ public class Scenario extends Observable {
 	public AbstractSensor getCollisionSensor(final int i) {
 		return robots[i].getCollisionSensor();
 	}
+	
+	public AbstractSensor getDirectionSensor(final int i) {
+		return robots[i].getDirectionSensor();
+	}
 
+	public AbstractSensor getWalkingSensor(int i) {
+		return robots[i].getWalkingSensor();
+	}
 
 	public class Robot {
 		
@@ -272,6 +278,10 @@ public class Scenario extends Observable {
 		private AbstractSensor victimSensor;
 		
 		private AbstractSensor collisionSensor;
+
+		private AbstractSensor directionSensor;
+
+		private AbstractSensor walkingSensor;
 		
 		public Robot( int i , double speed ) {
 			this.i = i;
@@ -283,10 +293,36 @@ public class Scenario extends Observable {
 			this.collisionSensor = new AbstractSensor("CollisionSensor-"+i,
 					new Template( new ActualTemplateField("COLLISION") , new FormalTemplateField(Boolean.class) )) {
 			};
+			this.directionSensor = new AbstractSensor("DirectionSensor-"+i,
+					new Template( new ActualTemplateField("DIRECTION") , new FormalTemplateField(Double.class) )) {
+			}; 
+			this.walkingSensor = new AbstractSensor("WalkingSensor-"+i,
+					new Template( new ActualTemplateField("WALKING") , new FormalTemplateField(Boolean.class) )) {
+			}; 
 			updateCollisionSensor();
 			updateVictimSensor();
+			updateWalkingSensor();
+			updateDirectionSensor();
 		}
 		
+		private void updateWalkingSensor() {
+			walkingSensor.setValue(new Tuple( "WALKING" , walking ));
+		}
+
+		private void updateDirectionSensor() {
+			directionSensor.setValue(new Tuple( "DIRECTION" , direction ));
+		}
+
+
+		public AbstractSensor getDirectionSensor() {
+			return directionSensor;
+		}
+		
+		
+		public AbstractSensor getWalkingSensor() {
+			return walkingSensor;
+		}
+
 		public void stop() {
 			this.walking = false;
 		}
@@ -304,6 +340,8 @@ public class Scenario extends Observable {
 //			detectCollisions();
 //			detectVictims();
 			this.walking = true;
+			updateWalkingSensor();
+			updateDirectionSensor();
 		}
 
 		public double getDirection() {
@@ -349,6 +387,7 @@ public class Scenario extends Observable {
 			if ((position != null)&&((position.x <= 0)||(position.x>=width)||(position.y<=0)||(position.y>=height))) {
 				collisionSensor.setValue( new Tuple( "COLLISION" , true ) );
 				walking = false;
+				updateWalkingSensor();
 			} else {
 				collisionSensor.setValue( new Tuple( "COLLISION" , false ));
 			}
@@ -445,5 +484,6 @@ public class Scenario extends Observable {
 	public Shape[] getWalls() {
 		return walls;
 	}
+
 	
 }

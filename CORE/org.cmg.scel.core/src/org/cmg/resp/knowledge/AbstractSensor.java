@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,9 +61,11 @@ public abstract class AbstractSensor extends Observable {
 		if (!template.match(t)) {
 			throw new IllegalArgumentException();
 		}
-		this.value = t;
-		this.setChanged();
-		this.notifyObservers(t);
+		if (((value == null)&&(t != null))||(!value.equals(t))) {
+			this.value = t;
+			this.setChanged();
+			this.notifyObservers(t);
+		}
 		this.notifyAll();
 	}
 

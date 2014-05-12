@@ -14,6 +14,8 @@ package org.cmg.resp.example.disaster.simulation;
 
 import java.awt.BorderLayout;
 import java.util.Hashtable;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -95,11 +97,13 @@ public class Main extends JFrame {
 		}, 0.1, 0.1);
 		
 	for (int i=0 ;i<scenario.getLandmarks();i++) {
-			SimulationNode n = new SimulationNode(""+i, env);
+			final SimulationNode n = new SimulationNode(""+i, env);
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addSensor(scenario.getCollisionSensor(i));
 			n.addActuator(scenario.getStopActuator(i));
 			n.addSensor(scenario.getVictimSensor(i));			
+			n.addSensor(scenario.getWalkingSensor(i));
+			n.addSensor(scenario.getDirectionSensor(i));
 			
 			n.put(new Tuple( "role" , LANDMARK) );
 			
@@ -123,7 +127,50 @@ public class Main extends JFrame {
 					return t[0].getElementAt(Boolean.class, 1);
 				}
 			});
+			n.addAttributeCollector( new AttributeCollector("walking_attribute", 
+					new Template( new ActualTemplateField("WALKING") , new FormalTemplateField(Boolean.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Boolean.class, 1);
+				}
+			});
 
+			n.addAttributeCollector( new AttributeCollector("direction_attribute", 
+					new Template( new ActualTemplateField("DIRECTION") , new FormalTemplateField(Double.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Double.class, 1);
+				}
+			});
+
+
+			n.addAttributeCollector( new AttributeCollector("collision_attribute", 
+					new Template( new ActualTemplateField("COLLISION") , new FormalTemplateField(Boolean.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Boolean.class, 1);
+				}
+			});
+
+
+			n.addObserver(new Observer() {
+				
+				@Override
+				public void update(Observable o, Object arg) {
+					System.out.println(n.getName() + "->" + 
+							n.getAttribute("victim_perceived") +
+							n.getAttribute("waling_attribute") +
+							n.getAttribute("collision_attribute") +
+							n.getAttribute("direction_attribute")
+					);
+				}
+			});
 			
 						
 			Agent a = new RandomWalk();

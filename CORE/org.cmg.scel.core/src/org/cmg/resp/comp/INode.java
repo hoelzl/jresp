@@ -213,22 +213,4 @@ public interface INode {
 
 	public abstract Tuple queryp(Template template);
 	
-	/**
-	 * Add a knowledge listener to the knowledge repository.
-	 * 
-	 * @param listener a knowledge listener.
-	 */
-	public void addKnowledgeListener( KnowledgeListener listener );
-
-	/**
-	 * Remove a knowledge listener from the knowledge repository.
-	 * 
-	 * @param listener a knowledge listener.
-	 */
-	public void removeKnowledgeListener( KnowledgeListener listener );
-	
-	
-	public void addAttributeListener( AttributeListener listener );
-
-	public void removeAttributeListener( AttributeListener listener );
 }
