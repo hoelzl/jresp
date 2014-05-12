@@ -383,6 +383,10 @@ public class Node extends Observable implements MessageDispatcher, INode {
 
 	private HashMap<String, Attribute> interfaze;
 
+	private boolean updateInterfaceFlag = false;
+
+	private Object nodeLock = new Object();
+	
 	/**
 	 * Creates a new instance of a nome named <code>name</code> with knowledge repository
 	 * <code>knowledge</code>.
@@ -403,7 +407,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 			
 			@Override
 			public void update(Observable o, Object arg) {
-				recomputeInterface();
+				updateInterface( true );
 			}
 			
 		});
@@ -918,10 +922,44 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		for (Agent a : waiting) {
 			_addAgent(a);
 		}
+		executor.execute(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+
+					while (isRunning()) {
+						synchronized (nodeLock) {
+							while (!updateInterface()) {
+								nodeLock.wait();
+							}
+						}	
+						recomputeInterface();
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}			
+			}
+			
+		});
 		executor.execute(new NodeThread());
 		state = ContextState.RUNNING;
 	}
 	
+	protected boolean updateInterface() {
+		synchronized (nodeLock) {
+			return updateInterfaceFlag ;
+		}
+	}
+	
+	protected void updateInterface( boolean flag ) {
+		synchronized (nodeLock) {
+			this.updateInterfaceFlag = flag;
+			nodeLock.notifyAll();
+		}
+	}
+
+
 	public synchronized void stop() {
 		if (state != ContextState.RUNNING) {
 			throw new IllegalStateException();

@@ -148,7 +148,7 @@ public class Knowledge extends Observable {
 		}
 		return result;
 	}
-
+	
 	private Tuple queryFromSensors(Template template , boolean blocking ) throws InterruptedException {
 		for (AbstractSensor s : this.sensors) {
 			Tuple result = s.getValue(template,blocking);
