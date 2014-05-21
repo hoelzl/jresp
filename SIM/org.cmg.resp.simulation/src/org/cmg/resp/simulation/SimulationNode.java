@@ -303,5 +303,7 @@ public class SimulationNode extends Observable implements INode {
 	public PointToPoint getLocalAddress() {
 		return new PointToPoint(this.name, SimulationNodeAddress.getInstance());
 	}
+	
+	
 
 }

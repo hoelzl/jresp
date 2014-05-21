@@ -65,8 +65,8 @@ public class Main extends JFrame {
 	private static final double HEIGHT= 700;
 	private static final double WIDTH= 550;
 	
-	private static final int LANDMARK= 0;
-	private static final int WORKER= 1;
+	private static final String LANDMARK = "Landmark";
+	private static final String WORKER = "Worker";
 
 
 	public Main( int landmarks , int workers , double height , double width  ) {
@@ -109,13 +109,13 @@ public class Main extends JFrame {
 			
 			n.addAttributeCollector( new AttributeCollector("role", 
 					new Template( new ActualTemplateField( "role"),
-								new FormalTemplateField(Integer.class)
+								new FormalTemplateField(String.class)
 							)
 			) {
 				
 				@Override
 				protected Object doEval(Tuple ... t) {
-					return t[0].getElementAt(Integer.class, 1);
+					return t[0].getElementAt(String.class, 1);
 				}
 			});
 			n.addAttributeCollector( new AttributeCollector("victim_perceived", 
@@ -163,11 +163,8 @@ public class Main extends JFrame {
 				
 				@Override
 				public void update(Observable o, Object arg) {
-					System.out.println(n.getName() + "->" + 
-							n.getAttribute("victim_perceived") +
-							n.getAttribute("waling_attribute") +
-							n.getAttribute("collision_attribute") +
-							n.getAttribute("direction_attribute")
+					System.out.println(n.getName() + "> Interface updated: " +
+							n.getInterface()
 					);
 				}
 			});
@@ -193,13 +190,13 @@ public class Main extends JFrame {
 			
 			n.addAttributeCollector( new AttributeCollector("role", 
 					new Template( new ActualTemplateField( "role"),
-								new FormalTemplateField(Integer.class)
+								new FormalTemplateField(String.class)
 							)
 			) {
 				
 				@Override
 				protected Object doEval(Tuple ... t) {
-					return t[0].getElementAt(Integer.class, 1);
+					return t[0].getElementAt(String.class, 1);
 				}
 			});			
 			

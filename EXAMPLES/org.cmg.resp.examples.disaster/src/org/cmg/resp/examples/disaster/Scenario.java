@@ -37,8 +37,8 @@ import org.cmg.resp.knowledge.Tuple;
 public class Scenario extends Observable {
 	
 	
-	public static final int LANDMARK = 0;
-	public static final int WORKER = 1;
+	public static final String LANDMARK = "Landmark";
+	public static final String WORKER = "Worker";
 	protected static final double COMMUNICATION_RANGE = 75.0;
 
 	private Random r = new Random();
