@@ -10,6 +10,7 @@ import org.cmg.resp.knowledge.AbstractActuator;
 import org.cmg.resp.knowledge.AbstractSensor;
 import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.KnowledgeListener;
+import org.cmg.resp.knowledge.KnowledgeManager;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.AbstractPort;

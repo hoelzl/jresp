@@ -65,9 +65,6 @@ public class Main extends JFrame {
 	private static final double HEIGHT= 700;
 	private static final double WIDTH= 550;
 	
-	private static final String LANDMARK = "Landmark";
-	private static final String WORKER = "Worker";
-
 
 	public Main( int landmarks , int workers , double height , double width  ) {
 		super( "Disaster scenario in jRESP");
@@ -105,7 +102,7 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
 			
-			n.put(new Tuple( "role" , LANDMARK) );
+			n.put(new Tuple( "role" , Scenario.LANDMARK ) );
 			
 			n.addAttributeCollector( new AttributeCollector("role", 
 					new Template( new ActualTemplateField( "role"),
@@ -159,15 +156,15 @@ public class Main extends JFrame {
 			});
 
 
-			n.addObserver(new Observer() {
-				
-				@Override
-				public void update(Observable o, Object arg) {
-					System.out.println(n.getName() + "> Interface updated: " +
-							n.getInterface()
-					);
-				}
-			});
+//			n.addObserver(new Observer() {
+//				
+//				@Override
+//				public void update(Observable o, Object arg) {
+//					System.out.println(n.getName() + "> Interface updated: " +
+//							n.getInterface()
+//					);
+//				}
+//			});
 			
 						
 			Agent a = new RandomWalk();
@@ -180,13 +177,15 @@ public class Main extends JFrame {
 		}
 		
 		for (int i=scenario.getLandmarks() ;i<(scenario.getLandmarks()+scenario.getWorkers());i++) {
-			SimulationNode n = new SimulationNode(""+i, env);
+			final SimulationNode n = new SimulationNode(""+i, env);
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addSensor(scenario.getCollisionSensor(i));
 			n.addActuator(scenario.getStopActuator(i));
 			n.addSensor(scenario.getVictimSensor(i));			
+			n.addSensor(scenario.getWalkingSensor(i));
+			n.addSensor(scenario.getDirectionSensor(i));
 			
-			n.put(new Tuple( "role" , WORKER) );
+			n.put(new Tuple( "role" , Scenario.WORKER ) );
 			
 			n.addAttributeCollector( new AttributeCollector("role", 
 					new Template( new ActualTemplateField( "role"),
@@ -199,7 +198,36 @@ public class Main extends JFrame {
 					return t[0].getElementAt(String.class, 1);
 				}
 			});			
-			
+			n.addAttributeCollector( new AttributeCollector("walking_attribute", 
+					new Template( new ActualTemplateField("WALKING") , new FormalTemplateField(Boolean.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Boolean.class, 1);
+				}
+			});
+
+			n.addAttributeCollector( new AttributeCollector("direction_attribute", 
+					new Template( new ActualTemplateField("DIRECTION") , new FormalTemplateField(Double.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Double.class, 1);
+				}
+			});
+
+			//			n.addObserver(new Observer() {
+//				
+//				@Override
+//				public void update(Observable o, Object arg) {
+//					System.out.println(n.getName() + "> Interface updated: " +
+//							n.getInterface()
+//					);
+//				}
+//			});
+
 			Agent a = new GoToVictim(i,scenario);
 			n.addAgent(a);			
 			nodes.put(n.getName(), n);
