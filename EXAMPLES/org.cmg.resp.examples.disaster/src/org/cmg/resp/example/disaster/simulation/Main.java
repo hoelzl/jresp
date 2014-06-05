@@ -167,15 +167,15 @@ public class Main extends JFrame {
 			});
 
 
-			n.addObserver(new Observer() {
-				
-				@Override
-				public void update(Observable o, Object arg) {
-					System.out.println(n.getName() + "> Interface updated: " +
-							n.getInterface()
-					);
-				}
-			});
+//			n.addObserver(new Observer() {
+//				
+//				@Override
+//				public void update(Observable o, Object arg) {
+//					System.out.println(n.getName() + "> Interface updated: " +
+//							n.getInterface()
+//					);
+//				}
+//			});
 			
 						
 			Agent a = new RandomWalk();
@@ -250,7 +250,8 @@ public class Main extends JFrame {
 			});
 
 			Agent a = new GoToVictim(i,scenario);
-			n.addAgent(a);			
+			n.addAgent(a);	
+			System.out.println(n.getName() + "> Interface updated: " +n.getInterface());
 			nodes.put(n.getName(), n);
 //			a = new VictimSeeker(i);
 //			n.addAgent(a);

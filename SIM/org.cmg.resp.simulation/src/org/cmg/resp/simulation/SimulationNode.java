@@ -91,6 +91,7 @@ public class SimulationNode extends Observable implements INode {
 	public void addAttributeCollector(AttributeCollector ac) {
 		ac.setNode(this);
 		this.attributes.put(ac.getName() , ac);
+		recomputeInterface();
 	}
 
 	@Override
@@ -302,6 +303,10 @@ public class SimulationNode extends Observable implements INode {
 
 	public PointToPoint getLocalAddress() {
 		return new PointToPoint(this.name, SimulationNodeAddress.getInstance());
+	}
+
+	public void refreshInterface() {
+		recomputeInterface();
 	}
 	
 	
