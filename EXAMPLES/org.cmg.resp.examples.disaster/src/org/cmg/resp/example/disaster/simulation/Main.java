@@ -13,6 +13,7 @@
 package org.cmg.resp.example.disaster.simulation;
 
 import java.awt.BorderLayout;
+import java.awt.geom.Point2D;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
@@ -101,6 +102,7 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getVictimSensor(i));			
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
+			n.addSensor(scenario.getPositionSensor(i));
 			
 			n.put(new Tuple( "role" , Scenario.LANDMARK ) );
 			
@@ -133,6 +135,15 @@ public class Main extends JFrame {
 					return t[0].getElementAt(Boolean.class, 1);
 				}
 			});
+			n.addAttributeCollector( new AttributeCollector("position_attribute", 
+					new Template( new ActualTemplateField("POSITION") , new FormalTemplateField(Point2D.Double.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Point2D.class, 1);
+				}
+			});
 
 			n.addAttributeCollector( new AttributeCollector("direction_attribute", 
 					new Template( new ActualTemplateField("DIRECTION") , new FormalTemplateField(Double.class) )
@@ -156,15 +167,15 @@ public class Main extends JFrame {
 			});
 
 
-//			n.addObserver(new Observer() {
-//				
-//				@Override
-//				public void update(Observable o, Object arg) {
-//					System.out.println(n.getName() + "> Interface updated: " +
-//							n.getInterface()
-//					);
-//				}
-//			});
+			n.addObserver(new Observer() {
+				
+				@Override
+				public void update(Observable o, Object arg) {
+					System.out.println(n.getName() + "> Interface updated: " +
+							n.getInterface()
+					);
+				}
+			});
 			
 						
 			Agent a = new RandomWalk();
@@ -184,6 +195,7 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getVictimSensor(i));			
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
+			n.addSensor(scenario.getPositionSensor(i));
 			
 			n.put(new Tuple( "role" , Scenario.WORKER ) );
 			
@@ -207,6 +219,15 @@ public class Main extends JFrame {
 					return t[0].getElementAt(Boolean.class, 1);
 				}
 			});
+			n.addAttributeCollector( new AttributeCollector("position_attribute", 
+					new Template( new ActualTemplateField("POSITION") , new FormalTemplateField(Point2D.Double.class) )
+			) {
+				
+				@Override
+				protected Object doEval(Tuple ... t) {
+					return t[0].getElementAt(Point2D.class, 1);
+				}
+			});
 
 			n.addAttributeCollector( new AttributeCollector("direction_attribute", 
 					new Template( new ActualTemplateField("DIRECTION") , new FormalTemplateField(Double.class) )
@@ -218,15 +239,15 @@ public class Main extends JFrame {
 				}
 			});
 
-			//			n.addObserver(new Observer() {
-//				
-//				@Override
-//				public void update(Observable o, Object arg) {
-//					System.out.println(n.getName() + "> Interface updated: " +
-//							n.getInterface()
-//					);
-//				}
-//			});
+						n.addObserver(new Observer() {
+				
+				@Override
+				public void update(Observable o, Object arg) {
+					System.out.println(n.getName() + "> Interface updated: " +
+							n.getInterface()
+					);
+				}
+			});
 
 			Agent a = new GoToVictim(i,scenario);
 			n.addAgent(a);			

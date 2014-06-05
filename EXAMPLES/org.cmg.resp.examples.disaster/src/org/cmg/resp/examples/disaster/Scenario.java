@@ -256,6 +256,10 @@ public class Scenario extends Observable {
 	public AbstractSensor getDirectionSensor(final int i) {
 		return robots[i].getDirectionSensor();
 	}
+	
+	public AbstractSensor getPositionSensor(int i) {
+		return robots[i].getPositionSensor();
+	}
 
 	public AbstractSensor getWalkingSensor(int i) {
 		return robots[i].getWalkingSensor();
@@ -283,8 +287,11 @@ public class Scenario extends Observable {
 
 		private AbstractSensor walkingSensor;
 		
+		private AbstractSensor positionSensor;
+		
 		public Robot( int i , double speed ) {
 			this.i = i;
+			this.position = new Point2D.Double(0,0);
 			this.walking = false;
 			this.speed = speed;
 			this.victimSensor = new AbstractSensor("VictimSensor-"+i ,
@@ -299,18 +306,30 @@ public class Scenario extends Observable {
 			this.walkingSensor = new AbstractSensor("WalkingSensor-"+i,
 					new Template( new ActualTemplateField("WALKING") , new FormalTemplateField(Boolean.class) )) {
 			}; 
+			this.positionSensor =  new AbstractSensor("PositionSensor-"+i,
+					new Template( new ActualTemplateField("POSITION") , new FormalTemplateField(Point2D.Double.class) )) {
+			}; 
 			updateCollisionSensor();
 			updateVictimSensor();
 			updateWalkingSensor();
 			updateDirectionSensor();
+			updatePositionSensor();
 		}
 		
+		public AbstractSensor getPositionSensor() {
+			return positionSensor;
+		}
+
 		private void updateWalkingSensor() {
 			walkingSensor.setValue(new Tuple( "WALKING" , walking ));
 		}
 
 		private void updateDirectionSensor() {
 			directionSensor.setValue(new Tuple( "DIRECTION" , direction ));
+		}
+
+		private void updatePositionSensor() {
+			positionSensor.setValue(new Tuple( "POSITION" , position ));
 		}
 
 
@@ -362,6 +381,7 @@ public class Scenario extends Observable {
 		
 		public void setPosition( Point2D.Double point ) {
 			position = point;
+			updatePositionSensor();
 			updateCollisionSensor();
 			updateVictimSensor();
 		}
