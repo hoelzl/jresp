@@ -34,6 +34,7 @@ public class Explorer extends Agent {
 				put(new Tuple("stop"), Self.SELF);
 				//Pass to RESCUER state
 				put(new Tuple("role",Scenario.RESCUER),Self.SELF);
+				
 				System.out.print("Robot "+robotId+" has become RESCUER\n");
 				
 				// put( new Tuple( "stop" , Scenario.VICTIM_FOUND ) , Self.SELF );

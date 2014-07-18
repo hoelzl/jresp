@@ -13,6 +13,7 @@
 package org.cmg.resp.examples.disaster.rescuer;
 
 import java.awt.BorderLayout;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
@@ -30,6 +31,7 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 
 
@@ -48,8 +50,8 @@ public class Main extends JFrame {
 	private JPanel internal;
 	//private JTable table;
 	
-	private static final double HEIGHT= 700;
-	private static final double WIDTH= 550;
+	private static final double HEIGHT= 500;
+	private static final double WIDTH= 250;
 	
 
 	public Main( int robots , int numSwarmRescuer , double height , double width  ) {
@@ -66,7 +68,7 @@ public class Main extends JFrame {
 				while( true ) {
 					try {
 						Thread.sleep(10);
-						scenario.step(0.1);
+						scenario.step(4);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -88,27 +90,46 @@ public class Main extends JFrame {
 			final Node n = new Node(""+i, new TupleSpace());
 			n.addPort(vp);
 			n.setGroupActionWaitingTime(250);
+			/**
+			 * Actuators
+			 */
+			n.addActuator(scenario.getChangeRoleActuator(i));
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addActuator(scenario.getPointDirectionActuator(i));
-			n.addSensor(scenario.getCollisionSensor(i));
 			n.addActuator(scenario.getStopActuator(i));
+			/**
+			 * Sensors
+			 */
+			n.addSensor(scenario.getCollisionSensor(i));
 			n.addSensor(scenario.getVictimSensor(i));			
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
 			
-			n.put(new Tuple( "role" , Scenario.EXPLORER) );
+			//starting robot role
+			//n.put(new Tuple( "role" , Scenario.EXPLORER));
 			
+			try {
+				
+				n.put(new Tuple( "role" , Scenario.EXPLORER),Self.SELF);
+				
+			} catch (InterruptedException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			/**
+			 * AttributeCollector = exposing the attribute of component in the interface
+			 */
 			n.addAttributeCollector( new AttributeCollector("role", 
 					new Template( new ActualTemplateField( "role"),
-								new FormalTemplateField(String.class)
-							)
-			) {
-				
+								new FormalTemplateField(String.class))) 
+				{
 				@Override
 				protected Object doEval(Tuple ... t) {
+					
 					return t[0].getElementAt(String.class, 1);
 				}
 			});
+			
 			n.addAttributeCollector( new AttributeCollector("victim_perceived", 
 					new Template( new ActualTemplateField("VICTIM_PERCEIVED") , new FormalTemplateField(Boolean.class) )
 			) {
