@@ -318,7 +318,7 @@ public class Scenario extends Observable {
 	 * @return
 	 */
 	public AbstractActuator getChangeRoleActuator(final int i) {
-		return new AbstractActuator("role") {
+		return new AbstractActuator("roleChange") {
 
 			@Override
 			public void send(Tuple t) {

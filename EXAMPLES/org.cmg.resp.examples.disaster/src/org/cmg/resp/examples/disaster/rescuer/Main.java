@@ -93,7 +93,9 @@ public class Main extends JFrame {
 			/**
 			 * Actuators
 			 */
-			n.addActuator(scenario.getChangeRoleActuator(i));
+			
+			//n.addActuator(scenario.getChangeRoleActuator(i));
+			
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addActuator(scenario.getPointDirectionActuator(i));
 			n.addActuator(scenario.getStopActuator(i));
@@ -106,16 +108,8 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getDirectionSensor(i));
 			
 			//starting robot role
-			//n.put(new Tuple( "role" , Scenario.EXPLORER));
-			
-			try {
-				
-				n.put(new Tuple( "role" , Scenario.EXPLORER),Self.SELF);
-				
-			} catch (InterruptedException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			n.put(new Tuple("role" , Scenario.EXPLORER));
+						
 			/**
 			 * AttributeCollector = exposing the attribute of component in the interface
 			 */
@@ -125,11 +119,10 @@ public class Main extends JFrame {
 				{
 				@Override
 				protected Object doEval(Tuple ... t) {
-					
 					return t[0].getElementAt(String.class, 1);
 				}
 			});
-			
+					
 			n.addAttributeCollector( new AttributeCollector("victim_perceived", 
 					new Template( new ActualTemplateField("VICTIM_PERCEIVED") , new FormalTemplateField(Boolean.class) )
 			) {
