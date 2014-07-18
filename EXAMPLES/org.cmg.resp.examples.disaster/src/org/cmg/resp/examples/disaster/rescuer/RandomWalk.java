@@ -17,13 +17,12 @@ import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 /**
- * @author loreti
+ * @author Michele Loreti
  *
  */
 public class RandomWalk extends Agent {

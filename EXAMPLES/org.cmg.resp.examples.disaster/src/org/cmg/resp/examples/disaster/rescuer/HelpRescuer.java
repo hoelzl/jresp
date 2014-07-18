@@ -23,23 +23,32 @@ public class HelpRescuer extends Agent {
 	@Override
 	protected void doRun() throws IOException, InterruptedException {
 		Tuple t = query(new Template(new ActualTemplateField("victim"),
-						new FormalTemplateField(Double.class), 
-						new FormalTemplateField(Double.class)), 
+							new FormalTemplateField(Double.class), 
+							new FormalTemplateField(Double.class),
+							new FormalTemplateField(Integer.class)),
 						new Group(new HasValue("role",Scenario.RESCUER)));
 		double x = t.getElementAt(Double.class, 2);
 		double y = t.getElementAt(Double.class, 3);
+		int dimRescuerSwarm = t.getElementAt(Integer.class,4);
 
-		put(new Tuple("stop"), Self.SELF);
-		// put( new Tuple( "stop" , Scenario.BECOME_LANDMARK ) , Self.SELF );
 		
-		forward(1);
+		put(new Tuple("stop"), Self.SELF);
+		
+		//change to HELP_RESCUER node
+		put(new Tuple("role",Scenario.HELP_RES),Self.SELF);
+		System.out.print("Robot "+robotId+" has become HELP_RESCUER\n");
+		
+		//update the info according to the dimRescuerSwarm
+		if (dimRescuerSwarm >1){
+			put(new Tuple("victim", x,y,dimRescuerSwarm-1),Self.SELF);
+		}
+		
+		//moving to the victim
+		gotoVictim(x,y);
 	}
 
-	private void forward(int distance) throws InterruptedException, IOException {
-		int d = distance + 1;
-
-		put(new Tuple("victim", robotId, d), Self.SELF);
-		// System.out.print("Robot "+robotId+" becomes a landmark with distance: "+d+"\n");
+	private void gotoVictim(double x, double y) throws InterruptedException, IOException {
+		put( new Tuple( "direction" ,  x, y) , Self.SELF );
 	}
 
 	/*

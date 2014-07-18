@@ -11,7 +11,6 @@ import org.cmg.resp.topology.Self;
 
 public class Explorer extends Agent {
 
-	// robot identifier
 	private int robotId;
 	private Scenario scenario;
 
@@ -36,8 +35,10 @@ public class Explorer extends Agent {
 				//Pass to RESCUER state
 				put(new Tuple("role",Scenario.RESCUER),Self.SELF);
 				System.out.print("Robot "+robotId+" has become RESCUER\n");
+				
 				// put( new Tuple( "stop" , Scenario.VICTIM_FOUND ) , Self.SELF );
 				// System.out.print("Robot "+robotId+" has found the victim\n");
+				
 				found();
 				put(new Tuple("rescue"), Self.SELF);
 			}
@@ -45,7 +46,11 @@ public class Explorer extends Agent {
 	}
 
 	private void found() throws InterruptedException, IOException {
-		put(new Tuple("victim", scenario.getPosition(robotId).getX(), scenario.getPosition(robotId).getY()), Self.SELF);
+		put(new Tuple("victim", 
+				scenario.getPosition(robotId).getX(), 
+				scenario.getPosition(robotId).getY(),
+				scenario.getRescuersSwarmSize()),
+			Self.SELF);
 		// put( new Tuple( "victim" , robotId , 0 ) , Self.SELF );
 	}
 

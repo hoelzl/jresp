@@ -9,6 +9,7 @@
  * 
  * Contributors:
  *      Michele Loreti
+ *      Andrea Margheri
  */
 package org.cmg.resp.examples.disaster.rescuer;
 
@@ -25,7 +26,8 @@ import java.util.Observer;
 import javax.swing.JPanel;
 
 /**
- * @author loreti
+ * @author Michele Loreti
+ * @author Andrea Margheri
  *
  */
 public class SpatialPanel extends JPanel implements Observer {
@@ -51,20 +53,18 @@ public class SpatialPanel extends JPanel implements Observer {
 	public void paint(Graphics arg0) {
 		super.paint(arg0);
 		Graphics2D g2 = (Graphics2D) arg0;
+		//VICTIMs
 		g2.setColor(Color.RED);
 		for(  int i=0 ; i<scenario.getVictims() ; i++ ) {
 			Point2D.Double target = scenario.getVictimPosition(i);
 			g2.fill(new Ellipse2D.Double(target.x-20, target.y-20, 40, 40));
 		}
+		//ROBOTs
 //		g2.setColor(Color.BLUE);
 //		g2.fill(new Ellipse2D.Double(target[1].x-20, target[1].y-20, 40, 40));
 		for (int i=0 ; i<scenario.getSize() ; i++ ) {
+			//get the robot color according to the role (see Robot method)
 			g2.setColor(scenario.getColor(i));
-//			if (i<scenario.getRobots()) {
-				g2.setColor(Color.BLUE);
-//			} else {
-//				g2.setColor(Color.GREEN);
-//			}
 			Point2D.Double p = scenario.getPosition(i);
 			g2.fill(new Rectangle2D.Double(p.x-5, p.y-5, 10, 10));
 		}

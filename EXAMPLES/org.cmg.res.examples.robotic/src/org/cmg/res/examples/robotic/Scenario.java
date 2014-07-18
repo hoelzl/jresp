@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -122,6 +122,11 @@ public class Scenario extends Observable {
 		robots[i].setDirection(d);
 	}
 
+	public void setDirection(int i , double x , double y ) {
+		Point2D.Double position = getPosition(i);
+		
+	}
+	
 	/**
 	 * Returns the level of battery of robot with index i
 	 * 
