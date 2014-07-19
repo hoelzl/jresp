@@ -13,7 +13,6 @@
 package org.cmg.resp.examples.disaster.rescuer;
 
 import java.awt.BorderLayout;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
@@ -31,7 +30,6 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
-import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 
 
@@ -50,8 +48,8 @@ public class Main extends JFrame {
 	private JPanel internal;
 	//private JTable table;
 	
-	private static final double HEIGHT= 500;
-	private static final double WIDTH= 250;
+	private static final double HEIGHT = 300;
+	private static final double WIDTH = 250;
 	
 
 	public Main( int robots , int numSwarmRescuer , double height , double width  ) {
@@ -68,7 +66,7 @@ public class Main extends JFrame {
 				while( true ) {
 					try {
 						Thread.sleep(10);
-						scenario.step(4);
+						scenario.step(3);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -93,8 +91,8 @@ public class Main extends JFrame {
 			/**
 			 * Actuators
 			 */
-			
-			//n.addActuator(scenario.getChangeRoleActuator(i));
+			//GESTIRE MEGLIO
+			n.addActuator(scenario.getChangeRoleActuator(i));
 			
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addActuator(scenario.getPointDirectionActuator(i));
@@ -108,13 +106,16 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getDirectionSensor(i));
 			
 			//starting robot role
+			//1 - for ChangeRoleActuator
 			n.put(new Tuple("role" , Scenario.EXPLORER));
-						
+			//2 - for RoleAttributeCollector			
+			n.put(new Tuple("roleAttr" , Scenario.EXPLORER));
+			
 			/**
 			 * AttributeCollector = exposing the attribute of component in the interface
 			 */
-			n.addAttributeCollector( new AttributeCollector("role", 
-					new Template( new ActualTemplateField( "role"),
+			n.addAttributeCollector( new AttributeCollector("roleAttr", 
+					new Template( new ActualTemplateField("roleAttr"),
 								new FormalTemplateField(String.class))) 
 				{
 				@Override
@@ -179,13 +180,17 @@ public class Main extends JFrame {
 				}
 			});			
 						
-			Agent a = new RandomWalk();
+			Agent a = new RandomWalk(i,scenario);
 			n.addAgent(a);
 			//Explorer needs the scenario class in order to get the victim position when found 
 			a = new Explorer(i,scenario);
 			n.addAgent(a);
-			a = new HelpRescuer(i);
+			a = new HelpRescuer(i,scenario);
 			n.addAgent(a);
+			
+			//TODO AGGIUNGERE LOWBATTERY
+			//a = new LowBattery(i);
+			
 			nodes.put(n.getName(), n);
 		}
 	

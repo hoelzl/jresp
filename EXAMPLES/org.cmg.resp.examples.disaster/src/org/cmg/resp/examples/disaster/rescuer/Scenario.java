@@ -163,6 +163,15 @@ public class Scenario extends Observable {
 		robots[i].setRole(s);
 	}
 	
+	
+	/**
+	 * Return the role of robot i
+	 * @param i robot index
+	 */
+	public String getRole(int i){
+		return robots[i].getRole();
+	}
+	
 	/**
 	 * Returns the position of robot with index i
 	 * 
@@ -278,7 +287,7 @@ public class Scenario extends Observable {
 
 			@Override
 			public Template getTemplate() {
-				return new Template(new ActualTemplateField("direction"),
+				return new Template(new ActualTemplateField("pointDirection"),
 						new FormalTemplateField(Double.class),
 						new FormalTemplateField(Double.class));
 			}
@@ -306,10 +315,6 @@ public class Scenario extends Observable {
 		};
 	}
 
-	// !!!!!!!!!!!!!!!!!!!!!!
-	//TODO Decidere se deve essere fatto qui o se si puo' fare con l'automa 
-	// !!!!!!!!!!!!!!!!!!!!!!
-	
 	/**
 	 * Change role of robot. Triggered by <"role", s>
 	 * s role name
@@ -502,12 +507,20 @@ public class Scenario extends Observable {
 			updateVictimSensor();
 		}
 
+		/**
+		 * Found Victim
+		 * @return
+		 */
 		public boolean detectVictim() {
 			if (position != null) {
+				int i = 0;
 				for (Point2D.Double p : victims) {
-					if (p.distance(this.position) <= VICTIM_SENSOR_RANGE) {
+					if (p.distance(this.position) <= VICTIM_SENSOR_RANGE && !rescued[i]) {
+						//change the state of the victim 
+						rescued[i] = true;
 						return true;
 					}
+					i = i + 1;
 				}
 			}
 			return false;

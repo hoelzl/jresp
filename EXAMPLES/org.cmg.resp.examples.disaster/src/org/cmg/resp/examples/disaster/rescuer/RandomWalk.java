@@ -23,32 +23,38 @@ import org.cmg.resp.topology.Self;
 
 /**
  * @author Michele Loreti
- *
+ * @author Andrea Margheri
  */
 public class RandomWalk extends Agent {
 
 	Random r = new Random();
+
+	private Scenario scenario;
+	private int robotId;
 	
-	public RandomWalk() {
+	public RandomWalk(int robotId, Scenario scenario) {
 		super("RandomWalk");
+		this.scenario = scenario;
+		this.robotId =robotId;
 	}
 
 	@Override
-	protected void doRun() throws IOException, InterruptedException{
-//		boolean flag = true;
+	protected void doRun() throws IOException, InterruptedException {
+		// boolean flag = true;
 		while (true) {
-			double dir = r.nextDouble()*2*Math.PI;
-			put( new Tuple( "direction" ,  dir) , Self.SELF );			
-//			do {
-//				if (!flag) {
-//					System.out.println("NO COLLISION!");
-//				}
-//				Thread.sleep(1000);
-				query( new Template( new ActualTemplateField( "COLLISION" ) , new ActualTemplateField( true ) ) , Self.SELF );			
-//				flag = t.getElementAt(Boolean.class, 1);
-//			} while (!flag);
-//			System.out.println("COLLISION");
-		}	
+			//TODO DA FARE CON LE POLICY
+			if (scenario.getRole(robotId).equals(Scenario.HELP_RES)){
+				break;
+			}
+			
+			double dir = r.nextDouble() * 2 * Math.PI;
+			put(new Tuple("direction", dir), Self.SELF);
+
+			
+			query(new Template(new ActualTemplateField("COLLISION"),
+					new ActualTemplateField(true)), Self.SELF);
+		}
+		System.out.println("Fine RandomWalk");
 	}
 
 }
