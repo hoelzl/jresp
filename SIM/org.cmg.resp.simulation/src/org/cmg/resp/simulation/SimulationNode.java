@@ -165,14 +165,20 @@ public class SimulationNode extends Observable implements INode {
 
 	@Override
 	public void put(Tuple tuple) {
+		if (!putToActuators( tuple )) {
+			knowledgeManager.put(tuple);
+		}
+		recomputeInterface();
+	}
+
+	private boolean putToActuators(Tuple tuple) {
 		for (AbstractActuator actuator : actuators) {
 			if (actuator.getTemplate().match(tuple)) {
 				actuator.send(tuple);
-				return ;
+				return true;
 			}
 		}
-		knowledgeManager.put(tuple);
-		recomputeInterface();
+		return false;
 	}
 
 	@Override

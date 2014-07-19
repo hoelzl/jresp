@@ -64,15 +64,16 @@ public class Knowledge extends Observable {
 	
 	public boolean put( Tuple t ) {
 		boolean result;
-		if (putToActuator(t)) {
-			return true;
-		}
-		KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
-		if (knowledgeAdapter != null) {
-			result = knowledgeAdapter.put(t);
+		if (!putToActuator(t)) {
+			KnowledgeAdapter knowledgeAdapter = getAdapterFor( t );
+			if (knowledgeAdapter != null) {
+				result = knowledgeAdapter.put(t);
+			} else {
+				result = this.knowledgeManager.put(t);
+			}		
 		} else {
-			result = this.knowledgeManager.put(t);
-		}		
+			result = true;
+		}
 		setChanged();
 		notifyObservers( t );
 		return result;

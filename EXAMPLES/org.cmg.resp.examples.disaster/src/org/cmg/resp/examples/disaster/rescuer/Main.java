@@ -86,6 +86,7 @@ public class Main extends JFrame {
 		
 	for (int i=0 ;i<scenario.getRobots();i++) {
 			final Node n = new Node(""+i, new TupleSpace());
+			final int robotIndex = i;
 			n.addPort(vp);
 			n.setGroupActionWaitingTime(250);
 			/**
@@ -114,13 +115,15 @@ public class Main extends JFrame {
 			/**
 			 * AttributeCollector = exposing the attribute of component in the interface
 			 */
-			n.addAttributeCollector( new AttributeCollector("roleAttr", 
-					new Template( new ActualTemplateField("roleAttr"),
-								new FormalTemplateField(String.class))) 
+			n.addAttributeCollector( new AttributeCollector("roleAttr"
+//					, 
+//					new Template( new ActualTemplateField("roleAttr"),
+//								new FormalTemplateField(String.class))
+			) 
 				{
 				@Override
 				protected Object doEval(Tuple ... t) {
-					return t[0].getElementAt(String.class, 1);
+					return scenario.getRole(robotIndex);
 				}
 			});
 					
