@@ -25,31 +25,33 @@ public class Explorer extends Agent {
 	protected void doRun() throws IOException, InterruptedException {
 		boolean found = false;
 		while (!found) {
-			// Thread.sleep(2000);
 			Tuple t = query(new Template(
 					new ActualTemplateField("VICTIM_PERCEIVED"), 
 					new ActualTemplateField(true)), 
 				Self.SELF);
-			found = t.getElementAt(Boolean.class, 1);
-			if (found) {
-				// TODO robot must stop by using POLICY !!!
-				put(new Tuple("stop"), Self.SELF);
-				//Pass to RESCUER state
-				put(new Tuple("role",Scenario.RESCUER),Self.SELF);
+			
+			// TODO DA FARE CON POLICY (bloccare Rescuer quando si passa a helpRescuer)
+			if (!scenario.getRole(robotId).equals(Scenario.HELP_RES)) {
 				
-//				get(new Template(new ActualTemplateField("roleAttr"),
-//							new ActualTemplateField(Scenario.EXPLORER)),
-//							Self.SELF);
-//				put(new Tuple("roleAttr",Scenario.RESCUER),Self.SELF);
-							
-				System.out.print("Robot "+robotId+" has become RESCUER\n");
-					
-				found();
-				put(new Tuple("rescue",
-						scenario.getPosition(robotId).getX(),
-						scenario.getPosition(robotId).getY()), 
-						Self.SELF);
+				found = t.getElementAt(Boolean.class, 1);
+				if (found) {
+					// TODO robot must stop by using POLICY !!!
+					put(new Tuple("stop"), Self.SELF);
+					//Pass to RESCUER state
+					put(new Tuple("role",Scenario.RESCUER),Self.SELF);
+
+					System.out.print("Robot "+robotId+" has become RESCUER\n");
+						
+					found();
+					put(new Tuple("rescue",
+							scenario.getPosition(robotId).getX(),
+							scenario.getPosition(robotId).getY()), 
+							Self.SELF);
+				}
+			}else{
+				break;
 			}
+				
 		}
 		System.out.println("Fine Explorer");	
 	}
@@ -58,7 +60,7 @@ public class Explorer extends Agent {
 		put(new Tuple("victim", 
 				scenario.getPosition(robotId).getX(), 
 				scenario.getPosition(robotId).getY(),
-				scenario.getRescuersSwarmSize()),
+				scenario.getRescuersSwarmSize()-1),
 			Self.SELF);
 		
 		// put( new Tuple( "victim" , robotId , 0 ) , Self.SELF );

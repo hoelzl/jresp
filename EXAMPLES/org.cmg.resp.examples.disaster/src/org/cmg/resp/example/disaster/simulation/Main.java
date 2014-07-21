@@ -89,7 +89,7 @@ public class Main extends JFrame {
 			
 			@Override
 			public void doAction(double time) {
-				scenario.step(0.1);
+				scenario.step(1);
 			}
 			
 		}, 0.1, 0.1);
@@ -243,15 +243,15 @@ public class Main extends JFrame {
 				
 				@Override
 				public void update(Observable o, Object arg) {
-					System.out.println(n.getName() + "> Interface updated: " +
-							n.getInterface()
-					);
+//					System.out.println(n.getName() + "> Interface updated: " +
+//							n.getInterface()
+//					);
 				}
 			});
 
 			Agent a = new GoToVictim(i,scenario);
 			n.addAgent(a);	
-			System.out.println(n.getName() + "> Interface updated: " +n.getInterface());
+//			System.out.println(n.getName() + "> Interface updated: " +n.getInterface());
 			nodes.put(n.getName(), n);
 //			a = new VictimSeeker(i);
 //			n.addAgent(a);

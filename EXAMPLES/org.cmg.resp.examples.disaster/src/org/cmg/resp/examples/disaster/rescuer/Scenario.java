@@ -69,6 +69,8 @@ public class Scenario extends Observable {
 	
 	private Point2D.Double[] victims;
 	
+	//notify to the scenario that a rescuer has arrived to a victim 
+	private boolean[] victim_anyrescuer;
 	/*
 	 * Rescuers: 
 	 * -> 0 not discovered
@@ -91,7 +93,7 @@ public class Scenario extends Observable {
 	public void init() {
 		//nestLocation = new Point2D.Double(width / 2, height - 50);
 		this.rescuers = new int[numberOfVictims];
-		
+		this.victim_anyrescuer = new boolean[numberOfVictims];
 		this.victims = new Point2D.Double[numberOfVictims];
 		for (int i = 0; i < numberOfVictims; i++) {
 			double x = 0.0;
@@ -103,6 +105,8 @@ public class Scenario extends Observable {
 			this.victims[i] = new Point2D.Double(x,y);
 			//starting with all victims to be rescued (i.e. 0 rescuers)
 			this.rescuers[i] = 0;
+			//all victims not reached by any rescuer
+			this.victim_anyrescuer[i] = false;
 		}
 		robots = new Robot[numberOfRobots];
 		for (int i = 0; i < numberOfRobots; i++) {
@@ -115,7 +119,7 @@ public class Scenario extends Observable {
 
 	private boolean isAValidVictimPosition( int i , double x , double y ) {
 		for( int j=0 ; j<i ; j++ ) {
-			if (this.victims[j].distance(x, y)<2*Robot.VICTIM_SENSOR_RANGE) {
+			if (this.victims[j].distance(x, y)<3*Robot.VICTIM_SENSOR_RANGE) {
 				return false;
 			}
 		}
@@ -215,6 +219,9 @@ public class Scenario extends Observable {
 		return robots[i].getPosition();
 	}
 
+	private void setVictimPerceived(int i){
+		victim_anyrescuer[i] = true;
+	}
 	/**
 	 * Performs a simulation step.
 	 * 
@@ -312,7 +319,6 @@ public class Scenario extends Observable {
 
 			@Override
 			public void send(Tuple t) {
-				//System.out.println("New direction received!");
 				double x = t.getElementAt(Double.class, 1);
 				double y = t.getElementAt(Double.class, 2);
 				setDirection(i, x, y);
@@ -320,7 +326,6 @@ public class Scenario extends Observable {
 
 			@Override
 			public Template getTemplate() {
-				System.out.println("PointDirectionTemplate");
 				return new Template(new ActualTemplateField("pointDirection"),
 						new FormalTemplateField(Double.class),
 						new FormalTemplateField(Double.class));
@@ -455,13 +460,14 @@ public class Scenario extends Observable {
 
 		private boolean walking;
 		
-		private boolean awareOfVictimPosition;
-
-
+		private boolean awareOfVictimPosition; 
+		
 		/**
 		 * RESCUER, HELP_RESCUER, LOW_BATT, EXPLORER (use the constants in the Scenario class)
 		 */
 		private String role;
+		
+		private boolean victimFound;
 		
 		private AbstractSensor victimSensor;
 		
@@ -479,6 +485,7 @@ public class Scenario extends Observable {
 			this.walking = false;
 			this.speed = speed;
 			this.role = EXPLORER;
+			this.victimFound = false;
 			this.victimSensor = new AbstractSensor("VictimSensor-"+i ,
 					new Template( new ActualTemplateField("VICTIM_PERCEIVED") , new FormalTemplateField(Boolean.class) )) {
 			};
@@ -584,35 +591,43 @@ public class Scenario extends Observable {
 		 */
 		public boolean detectVictim() {
 			if (position != null) {
-				int i = 0;
 				//when the robot is a Rescuer or is going to the charging station the sensor is deactivated
 				if (!this.role.equals(Scenario.RESCUER) && !this.role.equals(Scenario.LOW_BATT) ){
-					for (Point2D.Double p : victims) {
+					for (int i=0; i < victims.length; i ++) {
 						/*
 						 * Rescuers: 
 						 * -> 0 not discovered
 						 * -> 1 discovered by rescuer(s) - waiting for other rescuers (i.e. helpRescuer can perceive the victim)
 						 * -> till #numberOfRescuersSwarm (when equal the victim is rescued
 						 */
-						if (p.distance(this.position) <= VICTIM_SENSOR_RANGE && rescuers[i] < numberOfRescuersSwarm) {
-							if (rescuers[i] > 0 && this.role.equals(Scenario.EXPLORER)){
-								//an other rescuer has detected the victim, he is waiting for an HelpRescuer 
+						if (victims[i].distance(this.position) <= VICTIM_SENSOR_RANGE && rescuers[i] < numberOfRescuersSwarm) {
+							if (this.role.equals(Scenario.EXPLORER) && victim_anyrescuer[i]){ //rescuers[i] > 0){
+								//an other rescuer has detected the victim, he is waiting for an HelpRescuer
 								//no other Explorer must become Rescuer
 								return false;
 							}	
-							//except the previous one, in all the other case the sensor perceives the victim  
-							return true;
-							//the victim state (hence the rescuers number) is updated by the actuator triggered by the tuple <"rescue">
+							if (this.role.equals(Scenario.HELP_RES)){
+								//the help_rescuer is going to the victim
+								return true;
 							}
-						i = i + 1;
+							//set a variable to render the victim not visible to other explorer 
+							//(the update or rescuers is done later)
+							setVictimPerceived(i);
+							//disable the victim sensor
+							this.victimFound = true;
+							return true;
+							//except the previous one, in all the other case the sensor perceives the victim
+							//the victim state (hence the rescuers number) is updated by the actuator triggered by the tuple <"rescue">
+						}
 					}
 				}
 			}
-			return false;
+		 	return false;
 		}
 
 		private void updateVictimSensor() {
-			victimSensor.setValue(new Tuple("VICTIM_PERCEIVED", detectVictim()));
+			if (!victimFound)
+				victimSensor.setValue(new Tuple("VICTIM_PERCEIVED", detectVictim()));
 		}
 
 		private void updateCollisionSensor() {
@@ -621,9 +636,23 @@ public class Scenario extends Observable {
 							|| (position.y <= 0) || (position.y >= height))) {
 				collisionSensor.setValue(new Tuple("COLLISION", true));
 				walking = false;
-			} else {
+			} else if (collisionWithVictim()){
+				collisionSensor.setValue(new Tuple("COLLISION", true));
+				walking = false;
+			}else {
 				collisionSensor.setValue(new Tuple("COLLISION", false));
 			}
+		}
+
+		private boolean collisionWithVictim() {
+			if (this.role.equals(Scenario.EXPLORER) && !victimFound){
+				for (int i = 0; i< victims.length; i++){
+					if (victims[i].distance(this.position) <= VICTIM_SENSOR_RANGE && victim_anyrescuer[i]){
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		public Point2D.Double getPosition() {
@@ -718,5 +747,4 @@ public class Scenario extends Observable {
 		// }
 		return true;
 	}
-
 }

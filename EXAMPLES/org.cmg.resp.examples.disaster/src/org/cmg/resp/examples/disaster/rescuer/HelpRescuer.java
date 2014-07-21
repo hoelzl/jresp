@@ -33,7 +33,6 @@ public class HelpRescuer extends Agent {
 		if (scenario.getRole(robotId).equals(Scenario.RESCUER)) {
 			//sono io RESCUER non dovevo prendere la tupla
 			//la riaggiungo su di me
-
 			double x = t.getElementAt(Double.class, 1);
 			double y = t.getElementAt(Double.class, 2);
 			int dimRescuerSwarm = t.getElementAt(Integer.class, 3);
@@ -57,6 +56,7 @@ public class HelpRescuer extends Agent {
 			// update the info according to the dimRescuerSwarm
 			if (dimRescuerSwarm > 1) {
 				int f = dimRescuerSwarm - 1;
+				System.out.println("Rescuers rimanenti "+ f);
 				put(new Tuple("victim", x, y, f), Self.SELF);
 			}
 			//go to victim positions received
