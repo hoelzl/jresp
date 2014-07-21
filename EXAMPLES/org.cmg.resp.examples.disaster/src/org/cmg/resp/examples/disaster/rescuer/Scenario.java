@@ -90,12 +90,17 @@ public class Scenario extends Observable {
 
 	public void init() {
 		//nestLocation = new Point2D.Double(width / 2, height - 50);
-		this.victims = new Point2D.Double[numberOfVictims];
 		this.rescuers = new int[numberOfVictims];
 		
+		this.victims = new Point2D.Double[numberOfVictims];
 		for (int i = 0; i < numberOfVictims; i++) {
-			this.victims[i] = new Point2D.Double(this.r.nextDouble() * width,
-					r.nextDouble() * (height / 4));
+			double x = 0.0;
+			double y = 0.0;
+			do {
+				x = this.r.nextDouble() * width;
+				y = r.nextDouble() * (height / 4);
+			} while (!isAValidVictimPosition(i, x, y));
+			this.victims[i] = new Point2D.Double(x,y);
 			//starting with all victims to be rescued (i.e. 0 rescuers)
 			this.rescuers[i] = 0;
 		}
@@ -106,6 +111,15 @@ public class Scenario extends Observable {
 					width / 4 + (this.r.nextDouble() * width / 4), height
 							- (this.r.nextDouble() * 100));
 		}
+	}
+
+	private boolean isAValidVictimPosition( int i , double x , double y ) {
+		for( int j=0 ; j<i ; j++ ) {
+			if (this.victims[j].distance(x, y)<2*Robot.VICTIM_SENSOR_RANGE) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -145,9 +159,21 @@ public class Scenario extends Observable {
 	 * @param d robot direction
 	 */
 	public void setDirection(int i, double d) {
-		robots[i].setDirection(d);
+		setDirection( i , false , d );
 	}
 
+	/**
+	 * Set direction of robot with index i
+	 * 
+	 * @param i robot index
+	 * @param d robot direction
+	 */
+	public void setDirection(int i, boolean fixed , double d) {
+		robots[i].setDirection(d);
+		robots[i].awareOfVictimPosition = fixed;
+	}
+
+	
 	/**
 	 * Set direction to a (x,y) point of robot i
 	 * @param i robot index
@@ -156,9 +182,9 @@ public class Scenario extends Observable {
 	 */
 	public void setDirection(int i, double x, double y) {
 		Point2D.Double position = getPosition(i);
-		double dx = position.x - x;
-		double dy = position.y - y;
-		setDirection(i, Math.atan2(dy, dx));
+		double dx = x-position.x;
+		double dy = y-position.y;
+		setDirection(i, true , Math.atan2(dy, dx));
 	}
 
 	/**
@@ -290,7 +316,6 @@ public class Scenario extends Observable {
 				double x = t.getElementAt(Double.class, 1);
 				double y = t.getElementAt(Double.class, 2);
 				setDirection(i, x, y);
-				System.out.println("PointDirectionSend");
 			}
 
 			@Override
@@ -429,6 +454,9 @@ public class Scenario extends Observable {
 		private double speed;
 
 		private boolean walking;
+		
+		private boolean awareOfVictimPosition;
+
 
 		/**
 		 * RESCUER, HELP_RESCUER, LOW_BATT, EXPLORER (use the constants in the Scenario class)
