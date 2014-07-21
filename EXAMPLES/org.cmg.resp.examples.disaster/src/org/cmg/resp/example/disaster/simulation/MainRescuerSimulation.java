@@ -52,14 +52,14 @@ public class MainRescuerSimulation extends JFrame {
 	private JPanel internal;
 	private JTable table;
 
-	private static final double HEIGHT = 700;
-	private static final double WIDTH = 550;
+	private static final double HEIGHT = 400;
+	private static final double WIDTH = 250;
 
 	public MainRescuerSimulation(int robots, int numSwarmRescuer,
 			double height, double width) {
 		super("Disaster scenario in jRESP");
 		// 1 = number of victim
-		scenario = new Scenario(robots, numSwarmRescuer, 1, height, width);
+		scenario = new Scenario(robots, numSwarmRescuer, 2, height, width);
 		scenario.init();
 		init();
 		setLocation(550, 100);
@@ -93,9 +93,8 @@ public class MainRescuerSimulation extends JFrame {
 			/**
 			 * Actuators
 			 */
-			// GESTIRE MEGLIO
 			n.addActuator(scenario.getChangeRoleActuator(i));
-
+			n.addActuator(scenario.getUpdateVictimStateActuator(i));
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addActuator(scenario.getPointDirectionActuator(i));
 			n.addActuator(scenario.getStopActuator(i));
@@ -108,16 +107,14 @@ public class MainRescuerSimulation extends JFrame {
 			n.addSensor(scenario.getDirectionSensor(i));
 
 			// starting robot role
-			// 1 - for ChangeRoleActuator
+			// ChangeRoleActuator
 			n.put(new Tuple("role", Scenario.EXPLORER));
-			// 2 - for RoleAttributeCollector
-			n.put(new Tuple("roleAttr", Scenario.EXPLORER));
-
+		
 			/**
 			 * AttributeCollector = exposing the attribute of component in the
 			 * interface
 			 */
-			n.addAttributeCollector(new AttributeCollector("roleAttr"
+			n.addAttributeCollector(new AttributeCollector("role"
 			// ,
 			// new Template( new ActualTemplateField("roleAttr"),
 			// new FormalTemplateField(String.class))
@@ -137,6 +134,7 @@ public class MainRescuerSimulation extends JFrame {
 					return t[0].getElementAt(Boolean.class, 1);
 				}
 			});
+			
 			n.addAttributeCollector(new AttributeCollector("walking_attribute",
 					new Template(new ActualTemplateField("WALKING"),
 							new FormalTemplateField(Boolean.class))) {
@@ -216,7 +214,7 @@ public class MainRescuerSimulation extends JFrame {
 		int numRescuerSwarmSize = inputRobots("Size of RESCUER swarm", 4);
 		// double width = inputHeightWidth("Arena width", 500);
 		// double height = inputHeightWidth("Arena height", 500);
-		new Main(numRobots, numRescuerSwarmSize, HEIGHT, WIDTH);
+		new MainRescuerSimulation(numRobots, numRescuerSwarmSize, HEIGHT, WIDTH);
 	}
 
 	public static int inputRobots(String message, int value) {

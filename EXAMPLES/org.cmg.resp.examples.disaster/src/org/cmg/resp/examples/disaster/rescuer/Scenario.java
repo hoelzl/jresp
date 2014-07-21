@@ -68,8 +68,14 @@ public class Scenario extends Observable {
 	private int numberOfVictims;
 	
 	private Point2D.Double[] victims;
-	//false= to be rescued
-	private boolean[] rescued;
+	
+	/*
+	 * Rescuers: 
+	 * -> 0 not discovered
+	 * -> 1 discovered by rescuer(s) - waiting for other rescuers (i.e. helpRescuer can perceive the victim)
+	 * -> till #numberOfRescuersSwarm (when equal the victim is rescued
+	 */
+	private int[] rescuers;
 	
 	// private Point2D.Double nestLocation;
 
@@ -85,12 +91,13 @@ public class Scenario extends Observable {
 	public void init() {
 		//nestLocation = new Point2D.Double(width / 2, height - 50);
 		this.victims = new Point2D.Double[numberOfVictims];
-		this.rescued = new boolean[numberOfVictims];
+		this.rescuers = new int[numberOfVictims];
+		
 		for (int i = 0; i < numberOfVictims; i++) {
 			this.victims[i] = new Point2D.Double(this.r.nextDouble() * width,
 					r.nextDouble() * (height / 4));
-			//starting with all victims to be rescued
-			this.rescued[i] = false;
+			//starting with all victims to be rescued (i.e. 0 rescuers)
+			this.rescuers[i] = 0;
 		}
 		robots = new Robot[numberOfRobots];
 		for (int i = 0; i < numberOfRobots; i++) {
@@ -267,7 +274,7 @@ public class Scenario extends Observable {
 
 
 	/**
-	 * Set robot direction to a (x,y) point. Triggered by the tuple <"direction", x , y>
+	 * Set robot direction to a (x,y) point. Triggered by the tuple <"pointDirection", x , y>
 	 * x position.x of the final point
 	 * y position.y of the arrival point
 	 * 
@@ -283,10 +290,12 @@ public class Scenario extends Observable {
 				double x = t.getElementAt(Double.class, 1);
 				double y = t.getElementAt(Double.class, 2);
 				setDirection(i, x, y);
+				System.out.println("PointDirectionSend");
 			}
 
 			@Override
 			public Template getTemplate() {
+				System.out.println("PointDirectionTemplate");
 				return new Template(new ActualTemplateField("pointDirection"),
 						new FormalTemplateField(Double.class),
 						new FormalTemplateField(Double.class));
@@ -348,6 +357,40 @@ public class Scenario extends Observable {
 		};
 	}
 
+	/**
+	 * Update the victim status when a robot starts the rescuing process
+	 * @param i the robot number
+	 * @return
+	 */
+	public AbstractActuator getUpdateVictimStateActuator(final int i) {
+		return new AbstractActuator("victimUpdate") {
+
+			@Override
+			public void send(Tuple t) {
+				Double x = t.getElementAt(Double.class, 1);
+				Double y = t.getElementAt(Double.class, 2);
+				
+				for (int i=0; i< victims.length; i++){
+					if (Math.abs(x - victims[i].x) <= 40						
+						&&  Math.abs(y - victims[i].y) <= 40){
+						//update the rescuer number
+						rescuers[i]++;
+						break;
+					}				
+				}
+				
+			}
+
+			@Override
+			public Template getTemplate() {
+				return new Template(new ActualTemplateField("rescue"),
+						new FormalTemplateField(Double.class),
+						new FormalTemplateField(Double.class));
+			}
+		};
+	}
+	
+	
 	protected void stop(int i) {
 		robots[i].stop();
 	}
@@ -514,13 +557,27 @@ public class Scenario extends Observable {
 		public boolean detectVictim() {
 			if (position != null) {
 				int i = 0;
-				for (Point2D.Double p : victims) {
-					if (p.distance(this.position) <= VICTIM_SENSOR_RANGE && !rescued[i]) {
-						//change the state of the victim 
-						rescued[i] = true;
-						return true;
+				//when the robot is a Rescuer or is going to the charging station the sensor is deactivated
+				if (!this.role.equals(Scenario.RESCUER) && !this.role.equals(Scenario.LOW_BATT) ){
+					for (Point2D.Double p : victims) {
+						/*
+						 * Rescuers: 
+						 * -> 0 not discovered
+						 * -> 1 discovered by rescuer(s) - waiting for other rescuers (i.e. helpRescuer can perceive the victim)
+						 * -> till #numberOfRescuersSwarm (when equal the victim is rescued
+						 */
+						if (p.distance(this.position) <= VICTIM_SENSOR_RANGE && rescuers[i] < numberOfRescuersSwarm) {
+							if (rescuers[i] > 0 && this.role.equals(Scenario.EXPLORER)){
+								//an other rescuer has detected the victim, he is waiting for an HelpRescuer 
+								//no other Explorer must become Rescuer
+								return false;
+							}	
+							//except the previous one, in all the other case the sensor perceives the victim  
+							return true;
+							//the victim state (hence the rescuers number) is updated by the actuator triggered by the tuple <"rescue">
+							}
+						i = i + 1;
 					}
-					i = i + 1;
 				}
 			}
 			return false;
@@ -569,6 +626,15 @@ public class Scenario extends Observable {
 		return Color.BLACK;
 	}
 
+	
+	public Color getColorVictim(int i) {
+		if (rescuers[i] < numberOfRescuersSwarm)
+			return Color.RED;
+		else 
+			return Color.MAGENTA;
+	}
+
+	
 	public int getRobots() {
 		return numberOfRobots;
 	}

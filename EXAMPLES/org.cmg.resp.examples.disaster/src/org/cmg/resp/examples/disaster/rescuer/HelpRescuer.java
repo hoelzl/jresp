@@ -27,7 +27,7 @@ public class HelpRescuer extends Agent {
 		Tuple t = get(new Template(new ActualTemplateField("victim"),
 				new FormalTemplateField(Double.class), new FormalTemplateField(
 						Double.class), new FormalTemplateField(Integer.class)),
-				new Group(new HasValue("roleAttr", Scenario.RESCUER)));
+				new Group(new HasValue("role", Scenario.RESCUER)));
 		
 		// TODO DA FARE CON POLICY (bloccare helpRescuer quando si passa a Rescuer)
 		if (scenario.getRole(robotId).equals(Scenario.RESCUER)) {
@@ -43,8 +43,6 @@ public class HelpRescuer extends Agent {
 			System.out.println("Rescuer - fatta query del HelpRescuer - Riaggiunta");
 		}else{
 		
-			System.out.println("HelpRescuer - fatta query");
-		
 			double x = t.getElementAt(Double.class, 1);
 			double y = t.getElementAt(Double.class, 2);
 			int dimRescuerSwarm = t.getElementAt(Integer.class, 3);
@@ -55,19 +53,15 @@ public class HelpRescuer extends Agent {
 			// change to HELP_RESCUER node
 			put(new Tuple("role", Scenario.HELP_RES), Self.SELF);
 
-			// TODO CAMBIARE
-			get(new Template(new ActualTemplateField("roleAttr"),
-					new FormalTemplateField(String.class)), Self.SELF);
-			put(new Tuple("roleAttr", Scenario.HELP_RES), Self.SELF);
-
 			System.out.print("Robot " + robotId + " has become HELP_RESCUER\n");
 			// update the info according to the dimRescuerSwarm
 			if (dimRescuerSwarm > 1) {
 				int f = dimRescuerSwarm - 1;
 				put(new Tuple("victim", x, y, f), Self.SELF);
 			}
-
+			//go to victim positions received
 			gotoVictim(x, y);
+			
 			boolean found = false;
 			while (!found) {
 				// reaching the victim and halts for helping the other rescuers
@@ -83,15 +77,11 @@ public class HelpRescuer extends Agent {
 					// Pass to RESCUER state
 					put(new Tuple("role", Scenario.RESCUER), Self.SELF);
 
-					// TODO CAMBIARE
-					get(new Template(new ActualTemplateField("roleAttr"),
-							new ActualTemplateField(Scenario.EXPLORER)),
+					System.out.print("Robot " + robotId		+ " has become RESCUER\n");
+					put(new Tuple("rescue",
+							scenario.getPosition(robotId).getX(),
+							scenario.getPosition(robotId).getY()),
 							Self.SELF);
-					put(new Tuple("roleAttr", Scenario.RESCUER), Self.SELF);
-
-					System.out.print("Robot " + robotId
-							+ " has become RESCUER\n");
-					put(new Tuple("rescue"), Self.SELF);
 				}
 			}
 		}

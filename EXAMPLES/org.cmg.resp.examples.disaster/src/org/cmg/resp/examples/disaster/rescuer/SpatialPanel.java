@@ -54,8 +54,8 @@ public class SpatialPanel extends JPanel implements Observer {
 		super.paint(arg0);
 		Graphics2D g2 = (Graphics2D) arg0;
 		//VICTIMs
-		g2.setColor(Color.RED);
 		for(  int i=0 ; i<scenario.getVictims() ; i++ ) {
+			g2.setColor(scenario.getColorVictim(i));
 			Point2D.Double target = scenario.getVictimPosition(i);
 			g2.fill(new Ellipse2D.Double(target.x-20, target.y-20, 40, 40));
 		}

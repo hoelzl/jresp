@@ -49,8 +49,8 @@ public class Main extends JFrame {
 	private JPanel internal;
 	private JTable table;
 	
-	private static final double HEIGHT= 700;
-	private static final double WIDTH= 550;
+	private static final double HEIGHT= 500;
+	private static final double WIDTH= 350;
 	
 	private static final int LANDMARK= 0;
 	private static final int WORKER= 1;
@@ -69,7 +69,7 @@ public class Main extends JFrame {
 				while( true ) {
 					try {
 						Thread.sleep(10);
-						scenario.step(0.1);
+						scenario.step(2);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -156,12 +156,12 @@ public class Main extends JFrame {
 				
 				@Override
 				public void update(Observable o, Object arg) {
-					System.out.println(n.getName() + "->" + 
-							n.getAttribute("victim_perceived") +
-							n.getAttribute("waling_attribute") +
-							n.getAttribute("collision_attribute") +
-							n.getAttribute("direction_attribute")
-					);
+//					System.out.println(n.getName() + "->" + 
+//							n.getAttribute("victim_perceived") +
+//							n.getAttribute("waling_attribute") +
+//							n.getAttribute("collision_attribute") +
+//							n.getAttribute("direction_attribute")
+//					);
 				}
 			});			
 						
