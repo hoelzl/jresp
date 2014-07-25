@@ -156,6 +156,10 @@ public class Main extends JFrame {
 				
 				@Override
 				public void update(Observable o, Object arg) {
+					
+//					if (!(boolean) n.getAttribute("walking_attribute").getValue()) {
+//						System.out.println(n.getName()+" -> "+n.getAttribute("walking_attribute"));
+//					}
 //					System.out.println(n.getName() + "->" + 
 //							n.getAttribute("victim_perceived") +
 //							n.getAttribute("waling_attribute") +

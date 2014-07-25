@@ -167,15 +167,19 @@ public class Main extends JFrame {
 			});
 
 
-//			n.addObserver(new Observer() {
-//				
-//				@Override
-//				public void update(Observable o, Object arg) {
-//					System.out.println(n.getName() + "> Interface updated: " +
-//							n.getInterface()
-//					);
+			n.addObserver(new Observer() {
+				
+				@Override
+				public void update(Observable o, Object arg) {
+//					if (!(boolean) n.getAttribute("walking_attribute").getValue()) {
+//					System.out.println(n.getName()+" -> "+n.getAttribute("walking_attribute"));
 //				}
-//			});
+//					if (! (boolean) n.getInterface().get("walking_attribute").getValue()) {
+//						System.out.println(n.getName()+"-> WALKING="+n.getInterface().get("walking_attribute"));
+//					}
+//					System.out.println(n.getName()+"-> WALKING="+n.getInterface().get("walking_attribute"));
+				}
+			});
 			
 						
 			Agent a = new RandomWalk();
@@ -243,9 +247,10 @@ public class Main extends JFrame {
 				
 				@Override
 				public void update(Observable o, Object arg) {
-//					System.out.println(n.getName() + "> Interface updated: " +
-//							n.getInterface()
-//					);
+//					if (!(boolean) n.getAttribute("walking_attribute").getValue()) {
+//						System.out.println(n.getName()+" -> "+n.getAttribute("walking_attribute"));
+//					}
+					System.out.println(n.getName()+"-> WALKING="+n.getInterface().get("walking_attribute"));
 				}
 			});
 

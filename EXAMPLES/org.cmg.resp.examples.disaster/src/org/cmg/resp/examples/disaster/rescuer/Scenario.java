@@ -534,6 +534,7 @@ public class Scenario extends Observable {
 
 		public void stop() {
 			this.walking = false;
+			updateWalkingSensor();
 		}
 
 		public AbstractSensor getVictimSensor() {
