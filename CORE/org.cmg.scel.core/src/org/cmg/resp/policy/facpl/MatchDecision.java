@@ -10,15 +10,15 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.resp.policy;
+package org.cmg.resp.policy.facpl;
 
 /**
- * @author Michele Loreti
+ * @author Andrea Margheri
  *
  */
-public enum Decision {
+public enum MatchDecision {
 
-	PERMIT,
-	DENY;
-	
+	MATCH,
+	NO_MATCH, 
+	INDETERMINATE;
 }

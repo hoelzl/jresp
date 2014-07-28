@@ -10,14 +10,15 @@
  * Contributors:
  *      Michele Loreti
  */
-package org.cmg.resp.comp;
+package org.cmg.resp.policy;
 
 import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.comp.INode;
+import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.policy.IPolicy;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Target;
@@ -26,11 +27,11 @@ import org.cmg.resp.topology.Target;
  * @author Michele Loreti
  *
  */
-public class NodePolicy implements IPolicy {
+public class DefaultPermitPolicy implements IPolicy {
 
 	private INode node;
 
-	public NodePolicy(INode node) {
+	public DefaultPermitPolicy(INode node) {
 		this.node = node;
 	}
 

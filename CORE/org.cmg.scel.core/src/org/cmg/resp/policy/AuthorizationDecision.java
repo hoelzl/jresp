@@ -12,31 +12,15 @@
  */
 package org.cmg.resp.policy;
 
-import java.util.LinkedList;
-
-import org.cmg.resp.behaviour.Agent;
-
 /**
  * @author Michele Loreti
  *
  */
-public class AutorizationResponce {
-	
-	private Decision decision;
-	
-	private Agent obligations;
-	
-	public AutorizationResponce( Decision decision , Agent agent ) {
-		this.decision = decision;
-		this.obligations = agent;
-	}
-	
-	public Decision getDecision() {
-		return decision;
-	}
-	
-	public Agent getObligations() {
-		return obligations;
-	}
+public enum AuthorizationDecision {
 
+	PERMIT,
+	DENY,
+	NOT_APPLICABLE,
+	INDETERMINATE;
+	
 }

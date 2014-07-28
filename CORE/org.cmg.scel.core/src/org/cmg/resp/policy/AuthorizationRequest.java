@@ -21,7 +21,7 @@ import org.cmg.resp.topology.Target;
  * @author Michele Loreti
  *
  */
-public class AutorizationRequest {
+public class AuthorizationRequest {
 
 	protected ActionID action;
 	
@@ -32,7 +32,7 @@ public class AutorizationRequest {
 	protected Map<String,Attribute> interfaze;
 	
 	
-	public AutorizationRequest( ActionID action , Object argument , Target subject , Map<String,Attribute> interfaze ) {
+	public AuthorizationRequest( ActionID action , Object argument , Target subject , Map<String,Attribute> interfaze ) {
 		this.action = action;
 		this.argument = argument;
 		this.subject = subject;

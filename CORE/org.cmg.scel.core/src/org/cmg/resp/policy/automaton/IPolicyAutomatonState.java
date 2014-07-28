@@ -9,15 +9,19 @@
  * 
  * Contributors:
  *      Michele Loreti
+ *      Andrea Margheri
  */
-package org.cmg.resp.policy;
+package org.cmg.resp.policy.automaton;
+
+import org.cmg.resp.policy.AuthorizationRequest;
+import org.cmg.resp.policy.AuthorizationResponse;
 
 /**
- * @author Michele Loreti
+ * @author Andrea Margheri
  *
  */
-public interface PolicyState {
+public interface IPolicyAutomatonState {
 	
-	AutorizationResponce evaluate( AutorizationRequest r );
+	AuthorizationResponse evaluate( AuthorizationRequest r );
 
 }
