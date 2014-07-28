@@ -30,7 +30,7 @@ public class HelpRescuer extends Agent {
 				new Group(new HasValue("role", Scenario.RESCUER)));
 		
 		// TODO DA FARE CON POLICY (bloccare helpRescuer quando si passa a Rescuer)
-		if (scenario.getRole(robotId).equals(Scenario.RESCUER)) {
+		if (scenario.getRole(robotId).equals(Scenario.RESCUER) || scenario.getRole(robotId).equals(Scenario.LOW_BATT) ) {
 			//sono io RESCUER non dovevo prendere la tupla
 			//la riaggiungo su di me
 			double x = t.getElementAt(Double.class, 1);

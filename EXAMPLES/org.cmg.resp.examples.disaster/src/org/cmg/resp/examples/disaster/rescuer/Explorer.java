@@ -31,7 +31,7 @@ public class Explorer extends Agent {
 				Self.SELF);
 			
 			// TODO DA FARE CON POLICY (bloccare Rescuer quando si passa a helpRescuer)
-			if (!scenario.getRole(robotId).equals(Scenario.HELP_RES)) {
+			if (!scenario.getRole(robotId).equals(Scenario.HELP_RES) && !scenario.getRole(robotId).equals(Scenario.LOW_BATT)) {
 				
 				found = t.getElementAt(Boolean.class, 1);
 				if (found) {

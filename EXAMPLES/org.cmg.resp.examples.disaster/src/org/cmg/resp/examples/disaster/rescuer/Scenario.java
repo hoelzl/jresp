@@ -32,10 +32,15 @@ public class Scenario extends Observable {
 	public static final String RESCUER = "rescuer";
 	public static final String HELP_RES = "help_rescuer";
 	public static final String LOW_BATT = "low_battery";
-
-	// public static final int WORKER = 1;
 	
-	protected static final double COMMUNICATION_RANGE = 100.0;
+	/*
+	 * Decrement of battery level for each simulation step. 
+	 * The increment is times 2 for each simulation step
+	 */
+	private static final double batteryDeltaDim = 6.0;
+	private static final double chargedBattery = 800;
+	
+	protected static final double COMMUNICATION_RANGE = 100.0;  //pixels
 
 	private Random r = new Random();
 
@@ -110,7 +115,19 @@ public class Scenario extends Observable {
 		}
 		robots = new Robot[numberOfRobots];
 		for (int i = 0; i < numberOfRobots; i++) {
-			robots[i] = new Robot(i, 0.5);
+			/**
+			 * ROBOTs that their battery going to low level (i.e.under 30)
+			 */
+			double batteryLevel = 0.0;
+			/**
+			 * % of robot with low_battery level
+			 */
+			if (Math.random() < 0.4){
+				batteryLevel = 60;
+			}else{
+				batteryLevel = Double.MAX_VALUE;
+			}
+			robots[i] = new Robot(i, 0.5, batteryLevel);
 			robots[i].setPosition(
 					width / 4 + (this.r.nextDouble() * width / 4), height
 							- (this.r.nextDouble() * 100));
@@ -210,6 +227,18 @@ public class Scenario extends Observable {
 	}
 	
 	/**
+	 * Return the battery level of robot i
+	 * @return
+	 */
+	public double getBatteryLevel(int i) {
+		return robots[i].getBatteryLevel();
+	}
+	
+	public void setUnderRecharging(int i){
+		robots[i].setUnderRecharging(true);
+	}
+	
+	/**
 	 * Returns the position of robot with index i
 	 * 
 	 * @param i robot index
@@ -241,7 +270,7 @@ public class Scenario extends Observable {
 	private void _updatePosition(double dt) {
 		// System.out.println("Update positions...");
 		for (int i = 0; i < numberOfRobots; i++) {
-			if (robots[i].walking) {
+			if (robots[i].walking && !robots[i].getRole().equals(LOW_BATT)) {
 				Point2D.Double position = robots[i].getPosition();
 				double x = position.getX()
 						+ ((robots[i].getSpeed() * dt) * Math.cos(robots[i]
@@ -263,6 +292,10 @@ public class Scenario extends Observable {
 				}
 				robots[i].setPosition(x, y);
 			} else {
+				if (robots[i].getRole().equals(LOW_BATT) && robots[i].getBatteryLevel() < chargedBattery){
+					//System.out.println("Robot "+ i +"under recharging - batteryLevel: "+ robots[i].getBatteryLevel());
+					robots[i].increaseBatteryLevel(batteryDeltaDim * 2);
+				}
 				// System.out.println("Robot "+i+" is stopped!");
 			}
 		}
@@ -446,6 +479,10 @@ public class Scenario extends Observable {
 	}
 
 
+	public AbstractSensor getBatteryChargedSensor(int i){
+		return robots[i].getBatteryChargedSensor();
+	}
+	
 	public class Robot {
 
 		private static final double VICTIM_SENSOR_RANGE = 15;
@@ -479,12 +516,20 @@ public class Scenario extends Observable {
 		
 		private AbstractSensor positionSensor;
 		
-		public Robot( int i , double speed ) {
+		private AbstractSensor batteryChargedSensor;
+		
+		private double batteryLevel;
+		
+		private boolean underRecharging;
+		
+		public Robot( int i , double speed , double batteryLevel) {
 			this.i = i;
 			this.position = new Point2D.Double(0,0);
 			this.walking = false;
 			this.speed = speed;
+			this.batteryLevel = batteryLevel;
 			this.role = EXPLORER;
+			this.underRecharging = false;
 			this.victimFound = false;
 			this.victimSensor = new AbstractSensor("VictimSensor-"+i ,
 					new Template( new ActualTemplateField("VICTIM_PERCEIVED") , new FormalTemplateField(Boolean.class) )) {
@@ -501,6 +546,9 @@ public class Scenario extends Observable {
 			this.positionSensor =  new AbstractSensor("PositionSensor-"+i,
 					new Template( new ActualTemplateField("POSITION") , new FormalTemplateField(Point2D.Double.class) )) {
 			}; 
+			this.batteryChargedSensor =  new AbstractSensor("BatteryChargedSensor-"+i,
+					new Template( new ActualTemplateField("CHARGED") , new FormalTemplateField(Boolean.class) )) {
+			};
 			updateCollisionSensor();
 			updateVictimSensor();
 			updateWalkingSensor();
@@ -513,6 +561,11 @@ public class Scenario extends Observable {
 		}
 
 		private void updateWalkingSensor() {
+			if (walking){
+				//System.out.println(walking);
+				//decrease the batteryLevel 
+				this.decreseBatteryLevel(batteryDeltaDim);
+			}
 			walkingSensor.setValue(new Tuple( "WALKING" , walking ));
 		}
 
@@ -534,6 +587,7 @@ public class Scenario extends Observable {
 
 		public void stop() {
 			this.walking = false;
+			updateWalkingSensor();
 		}
 
 		public AbstractSensor getVictimSensor() {
@@ -544,11 +598,31 @@ public class Scenario extends Observable {
 			return collisionSensor;
 		}
 
+		public AbstractSensor getBatteryChargedSensor() {
+			return batteryChargedSensor;
+		}
+		
+		private void updateBatteryChargedSensor(){
+			boolean flag = false;
+			if (this.batteryLevel > chargedBattery){
+				System.out.println(this.batteryLevel);
+				flag = true;
+				walking = true;
+				//this.role = Scenario.EXPLORER;
+				this.underRecharging = false;
+			}
+			batteryChargedSensor.setValue(new Tuple("CHARGED", flag));
+			
+		}
+		
 		public synchronized void setDirection(double d) {
-			this.direction = d;
-			// detectCollisions();
-			// detectVictims();
-			this.walking = true;
+			if (!underRecharging){
+				// detectCollisions();
+				// detectVictims();
+				this.direction = d;
+				this.walking = true;
+				updateWalkingSensor();
+			}
 		}
 
 		public int getIndex(){
@@ -659,6 +733,25 @@ public class Scenario extends Observable {
 			return position;
 		}
 
+		public double getBatteryLevel() {
+			return batteryLevel;
+		}
+		
+		public void decreseBatteryLevel(double dim){
+			this.batteryLevel = this.batteryLevel - dim;
+		}
+
+		public void increaseBatteryLevel(double dim){
+			underRecharging = true;
+			this.batteryLevel = this.batteryLevel + dim;
+			updateBatteryChargedSensor();
+		}
+		
+		public void setUnderRecharging(boolean flag){
+			this.underRecharging = flag;
+		}
+
+		
 	} //End Robot Inner-Class
 	
 

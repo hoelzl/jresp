@@ -92,9 +92,7 @@ public class Main extends JFrame {
 			/**
 			 * Actuators
 			 */
-			//GESTIRE MEGLIO
-			n.addActuator(scenario.getChangeRoleActuator(i));
-			
+			n.addActuator(scenario.getChangeRoleActuator(i));	
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addActuator(scenario.getPointDirectionActuator(i));
 			n.addActuator(scenario.getStopActuator(i));
@@ -105,13 +103,13 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getVictimSensor(i));			
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
+			n.addSensor(scenario.getBatteryChargedSensor(i));
 			
 			//starting robot role
 			//1 - for ChangeRoleActuator
 			n.put(new Tuple("role" , Scenario.EXPLORER));
-			//2 - for RoleAttributeCollector			
-			n.put(new Tuple("roleAttr" , Scenario.EXPLORER));
-			
+//			//2 - for RoleAttributeCollector			
+//			n.put(new Tuple("roleAttr" , Scenario.EXPLORER));
 			/**
 			 * AttributeCollector = exposing the attribute of component in the interface
 			 */
@@ -190,9 +188,8 @@ public class Main extends JFrame {
 			n.addAgent(a);
 			a = new HelpRescuer(i,scenario);
 			n.addAgent(a);
-			
-			//TODO AGGIUNGERE LOWBATTERY
-			//a = new LowBattery(i);
+			a = new LowBattery(i, scenario);
+			n.addAgent(a);
 			
 			nodes.put(n.getName(), n);
 		}

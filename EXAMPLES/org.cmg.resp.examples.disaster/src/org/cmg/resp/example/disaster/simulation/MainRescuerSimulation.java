@@ -20,6 +20,7 @@ import org.cmg.resp.comp.AttributeCollector;
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.examples.disaster.rescuer.Explorer;
 import org.cmg.resp.examples.disaster.rescuer.HelpRescuer;
+import org.cmg.resp.examples.disaster.rescuer.LowBattery;
 import org.cmg.resp.examples.disaster.rescuer.Main;
 import org.cmg.resp.examples.disaster.rescuer.RandomWalk;
 import org.cmg.resp.examples.disaster.rescuer.Scenario;
@@ -50,10 +51,10 @@ public class MainRescuerSimulation extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Scenario scenario;
 	private JPanel internal;
-	private JTable table;
+//	private JTable table;
 
-	private static final double HEIGHT = 400;
-	private static final double WIDTH = 250;
+	private static final double HEIGHT = 600;
+	private static final double WIDTH = 450;
 
 	public MainRescuerSimulation(int robots, int numSwarmRescuer,
 			double height, double width) {
@@ -80,7 +81,7 @@ public class MainRescuerSimulation extends JFrame {
 
 			@Override
 			public void doAction(double time) {
-				scenario.step(0.1);
+				scenario.step(0.2);
 			}
 
 		}, 0.1, 0.1);
@@ -105,6 +106,7 @@ public class MainRescuerSimulation extends JFrame {
 			n.addSensor(scenario.getVictimSensor(i));
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
+			n.addSensor(scenario.getBatteryChargedSensor(i));
 
 			// starting robot role
 			// ChangeRoleActuator
@@ -190,9 +192,8 @@ public class MainRescuerSimulation extends JFrame {
 			n.addAgent(a);
 			a = new HelpRescuer(i, scenario);
 			n.addAgent(a);
-
-			// TODO AGGIUNGERE LOWBATTERY
-			// a = new LowBattery(i);
+			a = new LowBattery(i, scenario);
+			n.addAgent(a);
 
 			nodes.put(n.getName(), n);
 		}
