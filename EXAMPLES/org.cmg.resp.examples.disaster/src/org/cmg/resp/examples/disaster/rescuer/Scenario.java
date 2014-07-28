@@ -84,6 +84,11 @@ public class Scenario extends Observable {
 	 */
 	private int[] rescuers;
 	
+	/**
+	 * Position of charging station
+	 */
+	private Point2D.Double chargingStationPosition;
+	
 	// private Point2D.Double nestLocation;
 
 	public Scenario(int numberOfRobots, int numberOfRescuersSwarm,
@@ -125,13 +130,15 @@ public class Scenario extends Observable {
 			if (Math.random() < 0.4){
 				batteryLevel = 60;
 			}else{
-				batteryLevel = Double.MAX_VALUE;
+				batteryLevel = Long.MAX_VALUE;
 			}
 			robots[i] = new Robot(i, 0.5, batteryLevel);
 			robots[i].setPosition(
 					width / 4 + (this.r.nextDouble() * width / 4), height
 							- (this.r.nextDouble() * 100));
 		}
+		//position of charging station 
+		chargingStationPosition = new Point2D.Double(width / 3, height - 50);
 	}
 
 	private boolean isAValidVictimPosition( int i , double x , double y ) {
@@ -785,6 +792,10 @@ public class Scenario extends Observable {
 	}
 
 	
+	public Color getColorChargingStation() {
+		return Color.ORANGE;
+	}
+	
 	public int getRobots() {
 		return numberOfRobots;
 	}
@@ -799,6 +810,11 @@ public class Scenario extends Observable {
 
 	public Point2D.Double getVictimPosition(int i) {
 		return victims[i];
+	}
+	
+
+	public Point2D.Double getChargingStationPosition() {
+		return chargingStationPosition;
 	}
 
 	public NodeConnection getNodeConnection() {
