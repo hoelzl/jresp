@@ -53,7 +53,6 @@ public class PolicyAutomaton implements IPolicy {
 	
 	private Lock lock;
 	
-	
 	public PolicyAutomaton( IPolicyAutomatonState ... states ) {
 		this.policyStates = states;
 		this.rules = new ArrayList<LinkedList<PATransition>>(states.length);
@@ -74,9 +73,9 @@ public class PolicyAutomaton implements IPolicy {
 	
 	/**
 	 * Add a transition in the automaton transition function
-	 * @param src
-	 * @param filter
-	 * @param trg
+	 * @param source state
+	 * @param TransitionCondition 
+	 * @param target state
 	 */
 	public void addTransitionRule( int src , TransitionCondition condition , int trg ) {
 		_addTransitionRule( src , new PATransition( condition , trg ));
@@ -97,7 +96,7 @@ public class PolicyAutomaton implements IPolicy {
 	}
 
 	/**
-	 * 
+	 * Authorize the AuthorizationRequest created by the methods implementing the authorization predicates
 	 * @param req AuthorizationRequest
 	 * @return AuthorizationDecion and possibly a sequence of actions
 	 */
@@ -120,9 +119,15 @@ public class PolicyAutomaton implements IPolicy {
 	}
 	
 	/*
-	 * #############################################
+	 * #####################################################
 	 * -> Implementation of AUTHORIZATION PREDICATEs
-	 * #############################################
+	 * ->-> These are the entry points invoked by Node in order to authorize the action 
+	 * ->-> (and for local action then execute it) 
+	 * #####################################################
+	 */
+
+	/*
+	 * ---> Point-To-Point remote authorization predicate  
 	 */
 	
 	@Override
@@ -183,6 +188,10 @@ public class PolicyAutomaton implements IPolicy {
 		}
 	}
 
+	/*
+	 * ---> local authorization predicate  
+	 */
+	
 	@Override
 	public boolean put(Agent a, Tuple t, Target l) throws InterruptedException,
 			IOException {
@@ -190,6 +199,7 @@ public class PolicyAutomaton implements IPolicy {
 		AuthorizationRequest req = new AuthorizationRequest(ActionID.PUT, t, l, node.getInterface());
 		AuthorizationResponse res = evaluateRequestOnState( req );
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
+			//execution of action put
 			node.put(t, l);
 		}
 		updatePolicState(req);
@@ -251,6 +261,12 @@ public class PolicyAutomaton implements IPolicy {
 		}
 	}
 
+	/* ################################################################# */
+	
+	/*
+	 * ---> Group-oriented remote authorization predicate  
+	 */
+
 	@Override
 	public void acceptGroupPut(PointToPoint from, int session,
 			GroupPredicate groupPredicate, Tuple tuple) throws IOException,
@@ -280,7 +296,7 @@ public class PolicyAutomaton implements IPolicy {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
-
+	
 	@Override
 	public void acceptGroupQuery(PointToPoint from, int session,
 			GroupPredicate groupPredicate, Template template)
@@ -296,6 +312,8 @@ public class PolicyAutomaton implements IPolicy {
 		}
 	}
 
+	/* ################################################################# */
+	
 	@Override
 	public String fresh(Agent a) throws InterruptedException {
 		this.lock.lock();
@@ -310,10 +328,16 @@ public class PolicyAutomaton implements IPolicy {
 		return result;
 	}
 
+	/* ################################################################# */
+	
 	@Override
 	public void setNode(Node node) {
 		this.node = node;
 	}
+	
+	/*
+	 * 
+	 */
 	
 	private Agent getAgentFromObligations(List<FulfilledObligation> obls){
 		

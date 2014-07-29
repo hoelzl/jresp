@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.cmg.resp.policy.StructName;
 import org.cmg.resp.policy.facpl.IComparisonFunction;
 import org.cmg.resp.policy.facpl.MatchDecision;
-import org.cmg.resp.policy.facpl.StructName;
 
 /**
  * Target expression representation 

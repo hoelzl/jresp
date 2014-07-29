@@ -12,8 +12,8 @@
  */
 package org.cmg.resp.policy.automaton;
 
+import org.cmg.resp.policy.StructName;
 import org.cmg.resp.policy.facpl.IComparisonFunction;
-import org.cmg.resp.policy.facpl.StructName;
 
 /**
  * @author Andrea Margheri

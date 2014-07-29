@@ -5,9 +5,9 @@ import java.util.LinkedList;
 
 import org.cmg.resp.policy.ActionID;
 import org.cmg.resp.policy.AuthorizationRequest;
+import org.cmg.resp.policy.StructName;
 import org.cmg.resp.policy.facpl.FulfilledObligation;
 import org.cmg.resp.policy.facpl.RuleEffect;
-import org.cmg.resp.policy.facpl.StructName;
 
 
 /**

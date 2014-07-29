@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.cmg.resp.policy.AuthorizationRequest;
+import org.cmg.resp.policy.StructName;
 import org.cmg.resp.policy.facpl.Bag;
 import org.cmg.resp.policy.facpl.ConditionDecision;
 import org.cmg.resp.policy.facpl.IComparisonFunction;
-import org.cmg.resp.policy.facpl.StructName;
 
 
 /**
