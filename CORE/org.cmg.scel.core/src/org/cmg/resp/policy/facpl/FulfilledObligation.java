@@ -11,10 +11,12 @@ import org.cmg.resp.policy.ActionID;
  */
 public class FulfilledObligation {
 
+	private RuleEffect effect;
 	private ActionID action;
 	private LinkedList<Object> arguments;
 	
-	public FulfilledObligation(ActionID action, Object...arguments) {
+	public FulfilledObligation(RuleEffect evaluatedOn, ActionID action, Object...arguments) {
+		this.effect = effect;
 		this.action = action;
 		this.arguments = new LinkedList<Object>();
 	}
@@ -40,6 +42,14 @@ public class FulfilledObligation {
 		}
 		str.append(")");
 		return str.toString();
+	}
+
+	public RuleEffect getEvaluatedOn() {
+		return effect;
+	}
+
+	public void setEvaluatedOn(RuleEffect evaluatedOn) {
+		this.effect = evaluatedOn;
 	}
 	
 	

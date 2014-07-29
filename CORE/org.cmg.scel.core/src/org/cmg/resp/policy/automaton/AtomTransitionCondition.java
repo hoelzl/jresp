@@ -12,7 +12,7 @@
  */
 package org.cmg.resp.policy.automaton;
 
-import org.cmg.resp.policy.facpl.IExpressionFunction;
+import org.cmg.resp.policy.facpl.IComparisonFunction;
 import org.cmg.resp.policy.facpl.StructName;
 
 /**
@@ -21,11 +21,35 @@ import org.cmg.resp.policy.facpl.StructName;
  */
 public class AtomTransitionCondition {
 
-	Class<? extends IExpressionFunction> evaluationFunction;
+	private Class<? extends IComparisonFunction> evaluationFunction;
 	
-	Object literal; 
+	private Object literal; 
 	
-	StructName attribute_name;
+	private StructName attribute_name;
+	
+	
+	public AtomTransitionCondition(Class<? extends IComparisonFunction> function,
+			Object literal, StructName attribute_name){
+		this.evaluationFunction = function;
+		this.literal = literal;
+		this.attribute_name = attribute_name;
+	}
+	
+	public StructName getAttribute_name() {
+		return attribute_name;
+	}
+	
+	public Object getLiteral() {
+		return literal;
+	}
+	
+	public Class<? extends IComparisonFunction> getEvaluationFunction() {
+		return evaluationFunction;
+	}
+	
+	public void setAttribute_name(StructName attribute_name) {
+		this.attribute_name = attribute_name;
+	}
 	
 	
 	

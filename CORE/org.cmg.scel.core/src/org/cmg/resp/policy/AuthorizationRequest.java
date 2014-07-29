@@ -15,10 +15,12 @@ package org.cmg.resp.policy;
 import java.util.Map;
 
 import org.cmg.resp.knowledge.Attribute;
+import org.cmg.resp.policy.facpl.StructName;
 import org.cmg.resp.topology.Target;
 
 /**
  * @author Michele Loreti
+ * @author Andrea Margheri
  *
  */
 public class AuthorizationRequest {
@@ -65,10 +67,15 @@ public class AuthorizationRequest {
 
 
 	/**
-	 * @return the interfaze
+	 * @return the interface
 	 */
 	public Map<String, Attribute> getInterface() {
 		return interfaze;
+	}
+	
+	public Object getAttributeValue(StructName name){
+		
+		return null;
 	}
 	
 }
