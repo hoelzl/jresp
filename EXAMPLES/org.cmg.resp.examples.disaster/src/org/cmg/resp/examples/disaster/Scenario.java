@@ -95,11 +95,11 @@ public class Scenario extends Observable {
 		}
 		robots = new Robot[numberOfLandmarks+numberOfWorkers];
 		for( int i=0 ; i<numberOfLandmarks ; i++ ) {
-			robots[i] = new Robot(i, 0.5);
+			robots[i] = new Robot(i, 0.1);
 			robots[i].setPosition( width/4+(this.r.nextDouble()*width/2)  , height-(this.r.nextDouble()*100)  );
 		}
 		for( int i=+numberOfLandmarks  ; i<numberOfLandmarks+numberOfWorkers ; i++ ) {
-			robots[i] = new Robot(i, 0.5);
+			robots[i] = new Robot(i, 0.1);
 			robots[i].setPosition( width/4+(this.r.nextDouble()*width/2)  , height-(this.r.nextDouble()*100)  );
 		}
 		
@@ -344,6 +344,7 @@ public class Scenario extends Observable {
 
 		public void stop() {
 			this.walking = false;
+			updateWalkingSensor();
 		}
 
 		public AbstractSensor getVictimSensor() {
