@@ -37,6 +37,11 @@ public class AuthorizationResponse {
 		this.obligations = agent;
 	}
 	
+	public AuthorizationResponse(AuthorizationDecision decision){
+		this.decision = decision;
+		this.obligations = new LinkedList<FulfilledObligation>();
+	}
+	
 	public AuthorizationResponse(){
 		this.obligations = new LinkedList<FulfilledObligation>();
 	}

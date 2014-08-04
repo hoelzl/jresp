@@ -40,21 +40,18 @@ public class RandomWalk extends Agent {
 
 	@Override
 	protected void doRun() throws IOException, InterruptedException {
-		// boolean flag = true;
 		while (true) {
-			//TODO DA FARE CON LE POLICY
-			if (scenario.getRole(robotId).equals(Scenario.HELP_RES)){
-				break;
-			}
-			
+
 			double dir = r.nextDouble() * 2 * Math.PI;
 			put(new Tuple("direction", dir), Self.SELF);
-
+	
+			System.out.println("fatta la put della direzione");
 			
 			query(new Template(new ActualTemplateField("COLLISION"),
 					new ActualTemplateField(true)), Self.SELF);
+			
+			System.out.println("Get di una collisione");
 		}
-		System.out.println("Fine RandomWalk");
 	}
 
 }

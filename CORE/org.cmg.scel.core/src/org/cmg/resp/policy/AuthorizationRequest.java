@@ -52,6 +52,7 @@ public class AuthorizationRequest {
 		/*
 		 * Generate the correct representation for attributes by using the structured-names
 		 */
+		this.attributes = new HashMap<StructName, Object>();
 		this.attributes.put(new StructName("action","action-id"), action);
 		this.attributes.put(new StructName("action","action-target"), destinationSubject);
 		this.attributes.put(new StructName("atcion","item"), actionArgument);

@@ -21,6 +21,8 @@ import java.util.concurrent.locks.Lock;
 
 
 
+import java.util.concurrent.locks.ReentrantLock;
+
 //import org.cmg.resp.behaviour.Action;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
@@ -51,11 +53,15 @@ public class PolicyAutomaton implements IPolicy {
 
 	private Node node;
 	
-	private Lock lock;
+	private Lock lock = new ReentrantLock();
 	
 	public PolicyAutomaton( IPolicyAutomatonState ... states ) {
 		this.policyStates = states;
 		this.rules = new ArrayList<LinkedList<PATransition>>(states.length);
+		//initialize list of transition for each state
+		for (int i = 0; i < states.length; i ++){
+			this.rules.add(i, new LinkedList<PATransition>());
+		}
 		this.currentState = 0;
 	}
 	
@@ -231,11 +237,15 @@ public class PolicyAutomaton implements IPolicy {
 	@Override
 	public Tuple query(Agent a, Template t, Target l)
 			throws InterruptedException, IOException {
+		System.out.println("Posso Prendere il lock per query? -  Agent: "+ a.getName());
 		this.lock.lock();
+		System.out.println("Preso il lock Automa per query -  Agent: "+ a.getName());
+		
 		AuthorizationRequest req = new AuthorizationRequest(ActionID.QRY, t, l, node.getInterface());
 		AuthorizationResponse res = evaluateRequestOnState( req );
 		updatePolicState(req);
 		this.lock.unlock();
+		System.out.println("Rilascio il lock Automa per query - Agent: "+ a.getName());
 		Tuple result = null;
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
 			result = node.get(t, l);

@@ -415,8 +415,9 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	}
 
 	/**
-	 * Add different kind of policy w.r.t. the default-permit one. This method can be used e.g. 
-	 * for adding the PolicyAutomaton
+	 * Add policy manager. As default it is added a permit-all policy. 
+	 * This method can be used e.g. for adding the PolicyAutomaton. 
+	 * All other classes implementing IPolicy are allowed.  
 	 * @param policy
 	 */
 	public void setPolicy( IPolicy policy ) {

@@ -30,6 +30,10 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
+import org.cmg.resp.policy.automaton.PolicyAutomaton;
+import org.cmg.resp.policy.facpl.FacplPolicyState;
+import org.cmg.resp.policy.facpl.algorithm.DenyUnlessPermit;
+import org.cmg.resp.policy.facpl.algorithm.PermitUnlessDeny;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.examples.disaster.rescuer.policy.Explorer;
 
@@ -66,7 +70,7 @@ public class MainRescuer_Policy extends JFrame {
 				while( true ) {
 					try {
 						Thread.sleep(10);
-						scenario.step(0.1);
+						scenario.step(2);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -180,17 +184,26 @@ public class MainRescuer_Policy extends JFrame {
 			Agent a = new RandomWalk(i,scenario);
 			n.addAgent(a);
 			//Explorer needs the scenario class in order to get the victim position when found 
-			a = new Explorer(i,scenario);
+			Explorer e = new Explorer(i,scenario);
+			//add Explorer process
+			n.addAgent(e);
 			
-			//Definire automaton. Automa definito in base alle policy che corrispondono ai vari stati
+			//add the PolicyAutomaton with two states
+			n.setPolicy(new PolicyAutomaton(
+					new FacplPolicyState(n,PermitUnlessDeny.class, e.getPolicyExplorer()),
+					new FacplPolicyState(n,PermitUnlessDeny.class, e.getPolicyRescuer()))
+			);
+			//add Automaton Transitions
 			
-			n.addAgent(a);
 			
+			//########
+			
+			//TODO per adesso non considerate
+			 
+			//########
 			
 			//a = new HelpRescuer(i,scenario);
 			//n.addAgent(a);
-			
-			//TODO AGGIUNGERE LOWBATTERY
 			//a = new LowBattery(i);
 			
 			nodes.put(n.getName(), n);

@@ -38,10 +38,9 @@ public abstract class PolicySet extends PAFElement{
 				return dr;
 
 			case MATCH:
-				Class<?> params[] = new Class[3];
+				Class<?> params[] = new Class[2];
 				params[0] = List.class;
 				params[1] = AuthorizationRequest.class;
-				params[2] = Boolean.class;
 				
 				Method eval = algCombining.getDeclaredMethod("evaluate",params);
 				Object alg = algCombining.newInstance();
