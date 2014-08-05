@@ -64,5 +64,14 @@ public class AuthorizationResponse {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		StringBuffer str = new StringBuffer();
+		str.append(this.decision.toString() + " \n ");
+		for (FulfilledObligation o: this.obligations){
+			str.append(o.toString()+ "\n");
+		}
+		return str.toString();
+	}
 
 }

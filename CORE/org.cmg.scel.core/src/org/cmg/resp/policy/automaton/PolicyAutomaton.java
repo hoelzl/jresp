@@ -18,10 +18,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
-
-
-
 import java.util.concurrent.locks.ReentrantLock;
+
+
 
 //import org.cmg.resp.behaviour.Action;
 import org.cmg.resp.behaviour.Agent;
@@ -41,54 +40,60 @@ import org.cmg.resp.topology.Target;
 /**
  * @author Michele Loreti
  * @author Andrea Margheri
- *
+ * 
  */
 public class PolicyAutomaton implements IPolicy {
 
 	private IPolicyAutomatonState[] policyStates;
-	
+
 	private ArrayList<LinkedList<PATransition>> rules;
 
 	private int currentState;
 
 	private Node node;
-	
+
 	private Lock lock = new ReentrantLock();
-	
-	public PolicyAutomaton( IPolicyAutomatonState ... states ) {
+
+	public PolicyAutomaton(IPolicyAutomatonState... states) {
 		this.policyStates = states;
 		this.rules = new ArrayList<LinkedList<PATransition>>(states.length);
-		//initialize list of transition for each state
-		for (int i = 0; i < states.length; i ++){
+		// initialize list of transition for each state
+		for (int i = 0; i < states.length; i++) {
 			this.rules.add(i, new LinkedList<PATransition>());
 		}
 		this.currentState = 0;
 	}
-	
-	public void setCurrentState( int idx ) {
+
+	public void setCurrentState(int idx) {
 		this.currentState = idx;
 	}
-	
+
 	/**
 	 * Return the number of automaton's state
+	 * 
 	 * @return
-	 */	
+	 */
 	public int size() {
 		return policyStates.length;
 	}
-	
+
 	/**
 	 * Add a transition in the automaton transition function
-	 * @param source state
-	 * @param TransitionCondition 
-	 * @param target state
+	 * 
+	 * @param source
+	 *            state
+	 * @param TransitionCondition
+	 * @param target
+	 *            state
 	 */
-	public void addTransitionRule( int src , TransitionCondition condition , int trg ) {
-		_addTransitionRule( src , new PATransition( condition , trg ));
+	public void addTransitionRule(int src, TransitionCondition condition,
+			int trg) {
+		_addTransitionRule(src, new PATransition(condition, trg));
 	}
-	
+
 	/**
 	 * Add Transition to the Automaton
+	 * 
 	 * @param src
 	 * @param paTransition
 	 */
@@ -102,16 +107,22 @@ public class PolicyAutomaton implements IPolicy {
 	}
 
 	/**
-	 * Authorize the AuthorizationRequest created by the methods implementing the authorization predicates
-	 * @param req AuthorizationRequest
+	 * Authorize the AuthorizationRequest created by the methods implementing
+	 * the authorization predicates
+	 * 
+	 * @param req
+	 *            AuthorizationRequest
 	 * @return AuthorizationDecion and possibly a sequence of actions
 	 */
-	private AuthorizationResponse evaluateRequestOnState( AuthorizationRequest req ) {
-		return policyStates[currentState].evaluate(req);		
+	private AuthorizationResponse evaluateRequestOnState(
+			AuthorizationRequest req) {
+		return policyStates[currentState].evaluate(req);
 	}
-	
+
 	/**
-	 * Evaluate the transition function in order to calculate the new automaton's state 
+	 * Evaluate the transition function in order to calculate the new
+	 * automaton's state
+	 * 
 	 * @param req
 	 */
 	private void updatePolicState(AuthorizationRequest req) {
@@ -119,35 +130,35 @@ public class PolicyAutomaton implements IPolicy {
 		for (PATransition paTransition : stateTransitions) {
 			if (paTransition.isEnabled(req)) {
 				currentState = paTransition.nextState;
-				return ;
+				return;
 			}
 		}
 	}
-	
+
 	/*
-	 * #####################################################
-	 * -> Implementation of AUTHORIZATION PREDICATEs
-	 * ->-> These are the entry points invoked by Node in order to authorize the action 
-	 * ->-> (and for local action then execute it) 
+	 * ##################################################### -> Implementation
+	 * of AUTHORIZATION PREDICATEs ->-> These are the entry points invoked by
+	 * Node in order to authorize the action ->-> (and then execute it)
 	 * #####################################################
 	 */
 
 	/*
-	 * ---> Point-To-Point remote authorization predicate  
+	 * ---> Point-To-Point remote authorization predicate
 	 */
-	
+
 	@Override
 	public void acceptPut(PointToPoint from, int session, Tuple tuple)
 			throws InterruptedException, IOException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.ACCEPT_PUT, tuple, from, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(
+				ActionID.ACCEPT_PUT, tuple, from, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
 			node.put(from, session, tuple);
 		}
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
@@ -156,19 +167,20 @@ public class PolicyAutomaton implements IPolicy {
 	public void acceptGet(PointToPoint source, int session, Template template)
 			throws InterruptedException, IOException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.ACCEPT_GET, template, source, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(
+				ActionID.ACCEPT_GET, template, source, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
 			Tuple t = node.get(template);
 			if (t != null) {
-				node.sendTuple( source , session , t );
+				node.sendTuple(source, session, t);
 			} else {
-				node.sendFail( source , session , "Tuple not found!");				
+				node.sendFail(source, session, "Tuple not found!");
 			}
 		}
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
@@ -177,40 +189,42 @@ public class PolicyAutomaton implements IPolicy {
 	public void acceptQuery(PointToPoint source, int session, Template template)
 			throws InterruptedException, IOException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.ACCEPT_QRY, template, source, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(
+				ActionID.ACCEPT_QRY, template, source, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
 			Tuple t = node.query(template);
 			if (t != null) {
-				node.sendTuple( source , session , t );
+				node.sendTuple(source, session, t);
 			} else {
-				node.sendFail( source , session , "Tuple not found!");				
+				node.sendFail(source, session, "Tuple not found!");
 			}
 		}
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
 
 	/*
-	 * ---> local authorization predicate  
+	 * ---> local authorization predicate
 	 */
-	
+
 	@Override
 	public boolean put(Agent a, Tuple t, Target l) throws InterruptedException,
 			IOException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.PUT, t, l, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(ActionID.PUT, t, l,
+				node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
-			//execution of action put
+			// execution of action put
 			node.put(t, l);
 		}
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			a.exec(getAgentFromObligations(res.getObligations()));
 		}
 		return true;
@@ -220,15 +234,16 @@ public class PolicyAutomaton implements IPolicy {
 	public Tuple get(Agent a, Template t, Target l)
 			throws InterruptedException, IOException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.GET, t, l, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(ActionID.GET, t, l,
+				node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		updatePolicState(req);
 		this.lock.unlock();
 		Tuple result = null;
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
 			result = node.get(t, l);
 		}
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			a.exec(getAgentFromObligations(res.getObligations()));
 		}
 		return result;
@@ -237,44 +252,42 @@ public class PolicyAutomaton implements IPolicy {
 	@Override
 	public Tuple query(Agent a, Template t, Target l)
 			throws InterruptedException, IOException {
-		System.out.println("Posso Prendere il lock per query? -  Agent: "+ a.getName());
-		this.lock.lock();
-		System.out.println("Preso il lock Automa per query -  Agent: "+ a.getName());
-		
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.QRY, t, l, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
-		updatePolicState(req);
-		this.lock.unlock();
-		System.out.println("Rilascio il lock Automa per query - Agent: "+ a.getName());
-		Tuple result = null;
-		if (res.getDecision() == AuthorizationDecision.PERMIT) {
-			result = node.get(t, l);
-		}
-		if (res.getObligations().size()> 0){
-			a.exec(getAgentFromObligations(res.getObligations()));
-		}
-		return result;
+			this.lock.lock();
+			AuthorizationRequest req = new AuthorizationRequest(ActionID.QRY, t, l, node.getInterface());
+			AuthorizationResponse res = evaluateRequestOnState( req );
+			updatePolicState(req);
+			this.lock.unlock();
+			Tuple result = null;
+			if (res.getDecision() == AuthorizationDecision.PERMIT) {
+				result = node.query(t, l);
+			}
+			if (res.getObligations().size()> 0){
+				System.out.println("Eseguo Obligation" + res.getObligations().toString());
+//				a.exec(getAgentFromObligations(res.getObligations()));
+			}
+			return result;
 	}
 
 	@Override
 	public void exec(Agent a, Agent b) throws InterruptedException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.EXEC, b , null , node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(ActionID.EXEC, b,
+				null, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		updatePolicState(req);
 		this.lock.unlock();
 		if (res.getDecision() == AuthorizationDecision.PERMIT) {
 			a.exec(b);
 		}
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			a.exec(getAgentFromObligations(res.getObligations()));
 		}
 	}
 
 	/* ################################################################# */
-	
+
 	/*
-	 * ---> Group-oriented remote authorization predicate  
+	 * ---> Group-oriented remote authorization predicate
 	 */
 
 	@Override
@@ -282,12 +295,13 @@ public class PolicyAutomaton implements IPolicy {
 			GroupPredicate groupPredicate, Tuple tuple) throws IOException,
 			InterruptedException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.ACCEPT_PUT, tuple, from, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
-		node.gPut( from , session , groupPredicate , tuple );
+		AuthorizationRequest req = new AuthorizationRequest(
+				ActionID.ACCEPT_PUT, tuple, from, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
+		node.gPut(from, session, groupPredicate, tuple);
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
@@ -297,63 +311,65 @@ public class PolicyAutomaton implements IPolicy {
 			GroupPredicate groupPredicate, Template template)
 			throws IOException, InterruptedException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.ACCEPT_GET, template, from, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
-		node.gGet( from , session , groupPredicate , template );
+		AuthorizationRequest req = new AuthorizationRequest(
+				ActionID.ACCEPT_GET, template, from, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
+		node.gGet(from, session, groupPredicate, template);
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
-	
+
 	@Override
 	public void acceptGroupQuery(PointToPoint from, int session,
 			GroupPredicate groupPredicate, Template template)
 			throws IOException, InterruptedException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.ACCEPT_QRY, template, from, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
-		node.gQuery(from , session , groupPredicate , template );
+		AuthorizationRequest req = new AuthorizationRequest(
+				ActionID.ACCEPT_QRY, template, from, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
+		node.gQuery(from, session, groupPredicate, template);
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
+		if (res.getObligations().size() > 0) {
 			node.addAgent(getAgentFromObligations(res.getObligations()));
 		}
 	}
 
 	/* ################################################################# */
-	
+
 	@Override
 	public String fresh(Agent a) throws InterruptedException {
 		this.lock.lock();
-		AuthorizationRequest req = new AuthorizationRequest(ActionID.FRESH, null, null, node.getInterface());
-		AuthorizationResponse res = evaluateRequestOnState( req );
+		AuthorizationRequest req = new AuthorizationRequest(ActionID.FRESH,
+				null, null, node.getInterface());
+		AuthorizationResponse res = evaluateRequestOnState(req);
 		String result = node.fresh();
 		updatePolicState(req);
 		this.lock.unlock();
-		if (res.getObligations().size()> 0){
-			a.exec( getAgentFromObligations(res.getObligations()));
+		if (res.getObligations().size() > 0) {
+			a.exec(getAgentFromObligations(res.getObligations()));
 		}
 		return result;
 	}
 
 	/* ################################################################# */
-	
+
 	@Override
 	public void setNode(Node node) {
 		this.node = node;
 	}
-	
+
 	/*
 	 * 
 	 */
-	
-	private Agent getAgentFromObligations(List<FulfilledObligation> obls){
-		
-		//TODO
+
+	private Agent getAgentFromObligations(List<FulfilledObligation> obls) {
+
 		
 		return null;
 	}
-	
+
 }
