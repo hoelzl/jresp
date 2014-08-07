@@ -13,7 +13,6 @@
  */
 package org.cmg.resp.examples.disaster.rescuer;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

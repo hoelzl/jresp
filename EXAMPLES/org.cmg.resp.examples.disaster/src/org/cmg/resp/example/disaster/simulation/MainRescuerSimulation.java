@@ -13,14 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.AttributeCollector;
-import org.cmg.resp.comp.Node;
 import org.cmg.resp.examples.disaster.rescuer.Explorer;
 import org.cmg.resp.examples.disaster.rescuer.HelpRescuer;
-import org.cmg.resp.examples.disaster.rescuer.Main;
 import org.cmg.resp.examples.disaster.rescuer.RandomWalk;
 import org.cmg.resp.examples.disaster.rescuer.Scenario;
 import org.cmg.resp.examples.disaster.rescuer.SpatialPanel;
@@ -28,14 +25,12 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.simulation.DeterministicDelayFactory;
 import org.cmg.resp.simulation.RandomSelector;
 import org.cmg.resp.simulation.SimulationAction;
 import org.cmg.resp.simulation.SimulationEnvironment;
 import org.cmg.resp.simulation.SimulationNode;
 import org.cmg.resp.simulation.SimulationScheduler;
-import org.cmg.resp.topology.VirtualPort;
 
 /**
  * @author Andrea Margheri
@@ -50,7 +45,7 @@ public class MainRescuerSimulation extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private Scenario scenario;
 	private JPanel internal;
-	private JTable table;
+	// private JTable table;
 
 	private static final double HEIGHT = 400;
 	private static final double WIDTH = 250;
@@ -80,16 +75,16 @@ public class MainRescuerSimulation extends JFrame {
 
 			@Override
 			public void doAction(double time) {
-				scenario.step(0.1);
+				scenario.step(0.4);
 			}
 
 		}, 0.1, 0.1);
 
 		for (int i = 0; i < scenario.getRobots(); i++) {
-			final SimulationNode n = new SimulationNode(""+i, env);
-			
+			final SimulationNode n = new SimulationNode("" + i, env);
+
 			final int robotIndex = i;
-			
+
 			/**
 			 * Actuators
 			 */
@@ -109,7 +104,7 @@ public class MainRescuerSimulation extends JFrame {
 			// starting robot role
 			// ChangeRoleActuator
 			n.put(new Tuple("role", Scenario.EXPLORER));
-		
+
 			/**
 			 * AttributeCollector = exposing the attribute of component in the
 			 * interface
@@ -134,7 +129,7 @@ public class MainRescuerSimulation extends JFrame {
 					return t[0].getElementAt(Boolean.class, 1);
 				}
 			});
-			
+
 			n.addAttributeCollector(new AttributeCollector("walking_attribute",
 					new Template(new ActualTemplateField("WALKING"),
 							new FormalTemplateField(Boolean.class))) {
@@ -191,7 +186,7 @@ public class MainRescuerSimulation extends JFrame {
 			a = new HelpRescuer(i, scenario);
 			n.addAgent(a);
 
-			// TODO AGGIUNGERE LOWBATTERY
+			// TODO LowBattery behavior will be added when policy is finished
 			// a = new LowBattery(i);
 
 			nodes.put(n.getName(), n);
