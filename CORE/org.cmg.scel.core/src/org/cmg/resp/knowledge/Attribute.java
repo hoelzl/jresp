@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -75,6 +75,9 @@ public class Attribute implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
 		if (obj instanceof Attribute) {
 			Attribute a = (Attribute) obj;
 			return name.equals(a.name)&&((value==a.value)||((value != null)&&(value.equals(a.value))));

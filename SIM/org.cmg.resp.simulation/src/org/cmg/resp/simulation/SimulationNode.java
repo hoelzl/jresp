@@ -213,10 +213,16 @@ public class SimulationNode extends Observable implements INode {
 
 	@Override
 	public HashMap<String, Attribute> getInterface() {
+		if (interfaze == null) {
+			recomputeInterface();
+		}
 		return interfaze;
 	}
 
 	protected synchronized void recomputeInterface() {
+		if (interfaze == null) {
+			interfaze = new HashMap<String, Attribute>();
+		}
 		boolean changed = false;
 		HashMap<String,Attribute> values = new HashMap<String, Attribute>();
 		values.put("ID", new Attribute("ID", getName()));
@@ -313,6 +319,10 @@ public class SimulationNode extends Observable implements INode {
 
 	public void refreshInterface() {
 		recomputeInterface();
+	}
+
+	public int getNumberOfTuplesMatching(Template template) {
+		return knowledgeManager.queryAll(template).size();
 	}
 	
 	
