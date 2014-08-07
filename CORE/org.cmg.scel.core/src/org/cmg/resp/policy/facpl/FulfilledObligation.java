@@ -16,7 +16,7 @@ public class FulfilledObligation {
 	private LinkedList<Object> arguments;
 	
 	public FulfilledObligation(RuleEffect evaluatedOn, ActionID action, Object...arguments) {
-		this.effect = effect;
+		this.effect = evaluatedOn;
 		this.action = action;
 		this.arguments = new LinkedList<Object>();
 	}

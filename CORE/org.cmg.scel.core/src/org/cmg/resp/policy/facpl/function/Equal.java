@@ -5,6 +5,7 @@ package org.cmg.resp.policy.facpl.function;
 import java.util.Date;
 import java.util.List;
 
+import org.cmg.resp.policy.ActionID;
 import org.cmg.resp.policy.facpl.IComparisonFunction;
 
 public class Equal implements IComparisonFunction {
@@ -65,6 +66,8 @@ public class Equal implements IComparisonFunction {
 				} else {
 					return false;
 				}
+			} else if(args.get(0) instanceof ActionID && args.get(1) instanceof ActionID){
+				return ((ActionID)args.get(0)).equals((ActionID)args.get(1));
 			} else {
 				throw new Exception("Illegal Type of arguments");
 			}
