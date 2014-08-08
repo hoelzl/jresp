@@ -1,4 +1,4 @@
-package org.cmg.resp.policy.facpl.function;
+package org.cmg.resp.policy.facpl.function.comparison;
 
 
 import java.util.List;

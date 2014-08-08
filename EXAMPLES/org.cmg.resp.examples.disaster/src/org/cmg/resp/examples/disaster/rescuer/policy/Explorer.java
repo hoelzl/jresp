@@ -10,7 +10,6 @@ import org.cmg.resp.policy.ActionID;
 import org.cmg.resp.policy.StructName;
 import org.cmg.resp.policy.facpl.IFacplElement;
 import org.cmg.resp.policy.facpl.RuleEffect;
-import org.cmg.resp.policy.facpl.algorithm.DenyUnlessPermit;
 import org.cmg.resp.policy.facpl.algorithm.PermitOverrides;
 import org.cmg.resp.policy.facpl.elements.Policy;
 import org.cmg.resp.policy.facpl.elements.Rule;
@@ -18,8 +17,8 @@ import org.cmg.resp.policy.facpl.elements.ScelObligationExpression;
 import org.cmg.resp.policy.facpl.elements.TargetConnector;
 import org.cmg.resp.policy.facpl.elements.TargetExpression;
 import org.cmg.resp.policy.facpl.elements.util.TargetTreeRepresentation;
-import org.cmg.resp.policy.facpl.function.Equal;
-import org.cmg.resp.policy.facpl.function.PatternMatch;
+import org.cmg.resp.policy.facpl.function.comparison.Equal;
+import org.cmg.resp.policy.facpl.function.comparison.PatternMatch;
 import org.cmg.resp.topology.Self;
 
 public class Explorer extends Agent {
@@ -40,12 +39,10 @@ public class Explorer extends Agent {
 			Tuple t = query(new Template(new ActualTemplateField(
 					"VICTIM_PERCEIVED"), new ActualTemplateField(true)),
 					Self.SELF);
+			
 			found = t.getElementAt(Boolean.class, 1);
 			if (found) {
 			
-//				// TODO robot must stop by using POLICY !!!
-//				put(new Tuple("stop"), Self.SELF);
-//				
 				// Pass to RESCUER state
 				put(new Tuple("role", Scenario.RESCUER), Self.SELF);
 
@@ -104,19 +101,21 @@ public class Explorer extends Agent {
 
 				addTarget(new TargetTreeRepresentation(TargetConnector.AND,
 						new TargetTreeRepresentation(new TargetExpression(
-								Equal.class, ActionID.QRY, new StructName(
-										"action", "action-id"))),
+								Equal.class, ActionID.QRY, 
+								new StructName("action", "action-id"))),
 						new TargetTreeRepresentation(new TargetExpression(
 								PatternMatch.class, new Template(
-										new ActualTemplateField(
-												"VICTIM_PERCEIVED"),
+										new ActualTemplateField("VICTIM_PERCEIVED"),
 										new ActualTemplateField(true)),
-								new StructName("action", "item")))));
+								new StructName("action", "item")))
+				));
 
 				addConditionExpression(null);
 
 				addObligation(new ScelObligationExpression(RuleEffect.PERMIT,
-						ActionID.PUT, new Tuple("stop")));
+						ActionID.PUT, new Tuple("stop"), 
+						
+						Self.SELF));
 			}
 		}
 

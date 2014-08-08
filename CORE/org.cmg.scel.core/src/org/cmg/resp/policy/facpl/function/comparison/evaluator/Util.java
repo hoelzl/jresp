@@ -1,4 +1,4 @@
-package org.cmg.resp.policy.facpl.function;
+package org.cmg.resp.policy.facpl.function.comparison.evaluator;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

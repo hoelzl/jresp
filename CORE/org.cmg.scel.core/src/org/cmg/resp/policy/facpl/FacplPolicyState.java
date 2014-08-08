@@ -22,7 +22,6 @@ import org.cmg.resp.policy.AuthorizationDecision;
 import org.cmg.resp.policy.AuthorizationRequest;
 import org.cmg.resp.policy.AuthorizationResponse;
 import org.cmg.resp.policy.automaton.IPolicyAutomatonState;
-import org.cmg.resp.policy.automaton.PolicyAutomaton;
 
 /**
  * @author Andrea Margheri

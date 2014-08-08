@@ -32,10 +32,8 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.policy.automaton.PolicyAutomaton;
 import org.cmg.resp.policy.facpl.FacplPolicyState;
-import org.cmg.resp.policy.facpl.algorithm.DenyUnlessPermit;
 import org.cmg.resp.policy.facpl.algorithm.PermitUnlessDeny;
 import org.cmg.resp.topology.VirtualPort;
-import org.cmg.resp.examples.disaster.rescuer.policy.Explorer;
 
 /**
  * 

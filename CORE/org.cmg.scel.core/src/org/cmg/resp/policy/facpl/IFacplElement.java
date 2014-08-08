@@ -3,9 +3,8 @@
  */
 package org.cmg.resp.policy.facpl;
 
-import org.cmg.resp.policy.AuthorizationResponse;
 import org.cmg.resp.policy.AuthorizationRequest;
-import org.cmg.resp.policy.facpl.MatchDecision;
+import org.cmg.resp.policy.AuthorizationResponse;
 
 
 /**

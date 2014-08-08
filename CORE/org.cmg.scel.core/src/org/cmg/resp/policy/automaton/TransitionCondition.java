@@ -13,7 +13,7 @@
  */
 package org.cmg.resp.policy.automaton;
 
-import java.util.List;
+import java.util.LinkedList;
 
 import org.cmg.resp.policy.AuthorizationRequest;
 
@@ -24,22 +24,45 @@ import org.cmg.resp.policy.AuthorizationRequest;
  */
 public class TransitionCondition {
 	
-	private List<AtomTransitionCondition> condition_items;
+	private LinkedList<AtomTransitionCondition> condition_items;
 	
 	/*
-	 * the connector 1 is the connector between the item 1 and 2
+	 * the connector 1 is the connector between the item 1 and 2 
 	 */
-	private ConditionConnector[] connector;
+	private LinkedList<ConditionConnector> connector;
 
 	
+	public TransitionCondition(){
+		this.condition_items = new LinkedList<AtomTransitionCondition>();
+		this.connector = new LinkedList<ConditionConnector>();
+	}
 	
-	public boolean checkCondition(AuthorizationRequest req) {
-		// TODO Auto-generated method stub
-		return false;
+	
+	public void addCondition(AtomTransitionCondition condition, ConditionConnector conn){
+		this.condition_items.add(condition);
+		this.connector.add(conn);
+	}
+	
+	public void addCondition(AtomTransitionCondition condition){
+		this.condition_items.add(condition);
+	}
+	
+	public boolean checkTransitionCondition(AuthorizationRequest req) {
+		if (!condition_items.isEmpty()){
+			Boolean res = condition_items.get(0).evaluate(req); 
+			for (int i = 1; i < condition_items.size(); i ++){
+				Boolean f = condition_items.get(i).evaluate(req);
+				if (connector.get(i).equals(ConditionConnector.AND))
+					res &= f;
+				else
+					res |= f;
+			}
+			return res;
+		}else {
+			return false;
+		}
 	}
 
-	
-	
 }
 
 

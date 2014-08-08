@@ -51,6 +51,10 @@ public class FulfilledObligation {
 	public void setEvaluatedOn(RuleEffect evaluatedOn) {
 		this.effect = evaluatedOn;
 	}
+
+	public ActionID getActionId() {
+		return action;
+	}
 	
 	
 }

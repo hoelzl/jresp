@@ -97,16 +97,6 @@ public class AuthorizationRequest {
 	 * @return Object attribute value
 	 */
 	public Object getAttributeValue(StructName name) throws MissingAttributeException{
-		/*
-		 * ########################
-		 * PER PROVARE!!!!!!
-		 */
-		if (name.getCategory().equals("system") && name.getIDAttribute().equals("id")){
-			return "VALUE";
-		}
-		/*
-		 * ########################
-		 */
 		for(Entry<StructName, Object> i : this.attributes.entrySet()){
 			if (i.getKey().equals(name) ){
 				return i.getValue();

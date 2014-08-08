@@ -36,7 +36,7 @@ public class PATransition {
 	 * @return
 	 */
 	public boolean isEnabled( AuthorizationRequest req ) {
-		return condition.checkCondition(req);
+		return condition.checkTransitionCondition(req);
 	}
 
 

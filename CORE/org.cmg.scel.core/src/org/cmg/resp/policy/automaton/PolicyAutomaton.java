@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
-
 //import org.cmg.resp.behaviour.Action;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
@@ -32,6 +30,7 @@ import org.cmg.resp.policy.AuthorizationDecision;
 import org.cmg.resp.policy.AuthorizationRequest;
 import org.cmg.resp.policy.AuthorizationResponse;
 import org.cmg.resp.policy.IPolicy;
+import org.cmg.resp.policy.ObligationExecutor;
 import org.cmg.resp.policy.facpl.FulfilledObligation;
 import org.cmg.resp.topology.GroupPredicate;
 import org.cmg.resp.topology.PointToPoint;
@@ -225,7 +224,7 @@ public class PolicyAutomaton implements IPolicy {
 		updatePolicState(req);
 		this.lock.unlock();
 		if (res.getObligations().size() > 0) {
-			a.exec(getAgentFromObligations(res.getObligations()));
+			a.call(getAgentFromObligations(res.getObligations()));
 		}
 		return true;
 	}
@@ -244,7 +243,7 @@ public class PolicyAutomaton implements IPolicy {
 			result = node.get(t, l);
 		}
 		if (res.getObligations().size() > 0) {
-			a.exec(getAgentFromObligations(res.getObligations()));
+			a.call(getAgentFromObligations(res.getObligations()));
 		}
 		return result;
 	}
@@ -262,8 +261,7 @@ public class PolicyAutomaton implements IPolicy {
 				result = node.query(t, l);
 			}
 			if (res.getObligations().size()> 0){
-				System.out.println("Eseguo Obligation" + res.getObligations().toString());
-//				a.exec(getAgentFromObligations(res.getObligations()));
+				a.call(getAgentFromObligations(res.getObligations()));
 			}
 			return result;
 	}
@@ -280,7 +278,7 @@ public class PolicyAutomaton implements IPolicy {
 			a.exec(b);
 		}
 		if (res.getObligations().size() > 0) {
-			a.exec(getAgentFromObligations(res.getObligations()));
+			a.call(getAgentFromObligations(res.getObligations()));
 		}
 	}
 
@@ -350,7 +348,7 @@ public class PolicyAutomaton implements IPolicy {
 		updatePolicState(req);
 		this.lock.unlock();
 		if (res.getObligations().size() > 0) {
-			a.exec(getAgentFromObligations(res.getObligations()));
+			a.call(getAgentFromObligations(res.getObligations()));
 		}
 		return result;
 	}
@@ -366,10 +364,8 @@ public class PolicyAutomaton implements IPolicy {
 	 * 
 	 */
 
-	private Agent getAgentFromObligations(List<FulfilledObligation> obls) {
-
-		
-		return null;
+	private Agent getAgentFromObligations(List<FulfilledObligation> obls) {		
+		return new ObligationExecutor( obls );
 	}
 
 }
