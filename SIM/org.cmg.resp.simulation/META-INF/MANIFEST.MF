@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Simulation
+Bundle-SymbolicName: org.cmg.resp.simulation
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.cmg.resp.core.simulation.test,
+ org.cmg.resp.examples.group,
+ org.cmg.resp.examples.pingpong,
+ org.cmg.resp.simulation
