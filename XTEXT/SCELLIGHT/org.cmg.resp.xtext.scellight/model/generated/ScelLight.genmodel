@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.cmg.resp.xtext.scellight/src-gen" editDirectory="/org.cmg.resp.xtext.scellight.edit/src"
+    editorDirectory="/org.cmg.resp.xtext.scellight.editor/src" modelPluginID="org.cmg.resp.xtext.scellight"
+    forceOverwrite="true" modelName="ScelLight" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="5.0" copyrightFields="false" editPluginID="org.cmg.resp.xtext.scellight.edit"
+    editorPluginID="org.cmg.resp.xtext.scellight.editor" runtimeVersion="2.10">
+  <genPackages prefix="ScelLight" basePackage="org.cmg.resp.xtext.scellight" disposableProviderFactory="true"
+      fileExtensions="sl" ecorePackage="ScelLight.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="ScelLight.ecore#//Type">
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//Type/SBOOL"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//Type/SINT"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//Type/SDOUBLE"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//Type/SSTRING"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="ScelLight.ecore#//RelationSymbol">
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//RelationSymbol/EQ"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//RelationSymbol/NEQ"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//RelationSymbol/LES"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//RelationSymbol/LEQ"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//RelationSymbol/GEQ"/>
+      <genEnumLiterals ecoreEnumLiteral="ScelLight.ecore#//RelationSymbol/GTR"/>
+    </genEnums>
+    <genClasses ecoreClass="ScelLight.ecore#//Model">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/constants"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/projections"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/functions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/attributes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/processes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/components"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Model/systems"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//AttributeDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//AttributeDeclaration/type"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ProjectionDeclaration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProjectionDeclaration/projection"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ProjectionExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProjectionExpression/template"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProjectionExpression/value"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProjectionExpression/default"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ConstantDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//ConstantDeclaration/type"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ConstantDeclaration/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ComponentDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//ComponentDeclaration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentDeclaration/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentDeclaration/component"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ComponentExpression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//ComponentReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentReference/reference"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentReference/arguments"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ComponentConstant">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentConstant/interface"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentConstant/knowledge"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ComponentConstant/processes"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ProcessExpression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//Knowledge">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Knowledge/tuples"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Interface">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Interface/attributes"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//IdAttributeDefinition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//IdAttributeDefinition/componentId"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//AttributeInstantiation">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference ScelLight.ecore#//AttributeInstantiation/attribute"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//AttributeInstantiation/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//FunctionDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//FunctionDeclaration/returnType"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//FunctionDeclaration/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//FunctionDeclaration/body"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ProcessDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//ProcessDeclaration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProcessDeclaration/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProcessDeclaration/body"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Variable">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//Variable/type"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ReferenceableElements">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//ReferenceableElements/name"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Command"/>
+    <genClasses ecoreClass="ScelLight.ecore#//VariableDeclaration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//VariableDeclaration/declaredVariable"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//VariableDeclaration/init"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Action"/>
+    <genClasses ecoreClass="ScelLight.ecore#//ReplaceAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ReplaceAction/template"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ReplaceAction/tuple"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//GetAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//GetAction/template"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//GetAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//QueryAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//QueryAction/template"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//QueryAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//PutAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//PutAction/tuple"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//PutAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ExecAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ExecAction/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Tuple">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Tuple/fields"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Template">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Template/fields"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//TemplateField"/>
+    <genClasses ecoreClass="ScelLight.ecore#//AnyFormalField"/>
+    <genClasses ecoreClass="ScelLight.ecore#//TypedFormalField">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//TypedFormalField/type"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//FormalField"/>
+    <genClasses ecoreClass="ScelLight.ecore#//ActualField">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ActualField/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//While">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//While/guard"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//While/body"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//IfThenElse">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//IfThenElse/guard"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//IfThenElse/thenBranch"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//IfThenElse/elseBranch"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Block">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Block/commands"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Expression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//SelfExpression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//IdAttribute"/>
+    <genClasses ecoreClass="ScelLight.ecore#//StringLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//StringLiteral/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Reference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Reference/ref"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//NumberLiteral">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//NumberLiteral/intpart"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//NumberLiteral/isDouble"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//NumberLiteral/decimal"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//FactorialExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//FactorialExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//LogExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//LogExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ModExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ModExpression/arg"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ModExpression/mod"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//PowExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//PowExpression/base"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//PowExpression/exp"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//FloorExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//FloorExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//CeilExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//CeilExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//MinExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//MinExpression/left"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//MinExpression/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//MaxExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//MaxExpression/left"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//MaxExpression/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//SinExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//SinExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//CosExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//CosExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//TanExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//TanExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ATanExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ATanExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ASinExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ASinExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ACosExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ACosExpression/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//SystemDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//SystemDeclaration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//SystemDeclaration/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//ProcessReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProcessReference/reference"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//ProcessReference/arguments"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//EmptyProcess"/>
+    <genClasses ecoreClass="ScelLight.ecore#//StandardFormalField">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference ScelLight.ecore#//StandardFormalField/reference"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//FormalFieldWithDeclaration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//FormalFieldWithDeclaration/variable"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Disjunction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Disjunction/left"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Disjunction/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Conjunction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Conjunction/left"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Conjunction/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Negation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Negation/arg"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//Relation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Relation/left"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//Relation/rel"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Relation/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//SummationSubtraction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//SummationSubtraction/left"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//SummationSubtraction/op"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//SummationSubtraction/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//MultiplicationDivision">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//MultiplicationDivision/left"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScelLight.ecore#//MultiplicationDivision/op"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//MultiplicationDivision/right"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//TrueExpression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//FalseExpression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//IfThenElseExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//IfThenElseExpression/guard"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//IfThenElseExpression/thenBranch"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//IfThenElseExpression/elseBranch"/>
+    </genClasses>
+    <genClasses ecoreClass="ScelLight.ecore#//IdExpression"/>
+    <genClasses ecoreClass="ScelLight.ecore#//Call">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Call/function"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScelLight.ecore#//Call/args"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
