@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.policy.ActionID;
 import org.cmg.resp.policy.StructName;
 import org.cmg.resp.policy.facpl.IFacplElement;
 import org.cmg.resp.policy.facpl.RuleEffect;
-import org.cmg.resp.policy.facpl.algorithm.PermitOverrides;
+import org.cmg.resp.policy.facpl.algorithm.PermitUnlessDeny;
 import org.cmg.resp.policy.facpl.elements.Policy;
 import org.cmg.resp.policy.facpl.elements.Rule;
 import org.cmg.resp.policy.facpl.elements.ScelObligationExpression;
@@ -18,6 +19,8 @@ import org.cmg.resp.policy.facpl.elements.TargetConnector;
 import org.cmg.resp.policy.facpl.elements.TargetExpression;
 import org.cmg.resp.policy.facpl.elements.util.TargetTreeRepresentation;
 import org.cmg.resp.policy.facpl.function.comparison.Equal;
+import org.cmg.resp.policy.facpl.function.comparison.GreaterThan;
+import org.cmg.resp.policy.facpl.function.comparison.LessThan;
 import org.cmg.resp.policy.facpl.function.comparison.PatternMatch;
 import org.cmg.resp.topology.Self;
 
@@ -49,16 +52,18 @@ public class Explorer extends Agent {
 				System.out.print("Robot " + robotId + " has become RESCUER\n");
 
 				found();
-				put(new Tuple("rescue", scenario.getPosition(robotId).getX(),
-						scenario.getPosition(robotId).getY()), Self.SELF);
+				put(new Tuple("rescue", 
+							scenario.getPosition(robotId).getX(),
+							scenario.getPosition(robotId).getY()), 
+						Self.SELF);
 			}
 		}
 		System.out.println("Fine Explorer");
 	}
 
 	private void found() throws InterruptedException, IOException {
-		put(new Tuple("victim", scenario.getPosition(robotId).getX(), scenario
-				.getPosition(robotId).getY(),
+		put(new Tuple("victim", scenario.getPosition(robotId).getX(), 
+				scenario.getPosition(robotId).getY(),
 				scenario.getRescuersSwarmSize() - 1), Self.SELF);
 	}
 
@@ -85,11 +90,13 @@ public class Explorer extends Agent {
 
 		public Policy_Explorer() {
 
-			addCombiningAlg(PermitOverrides.class);
+			addCombiningAlg(PermitUnlessDeny.class);
 
 			addTarget(null);
 
 			addRule(new Rule1());
+			
+			addRule(new Rule2());
 
 			addObligation(null);
 		}
@@ -119,28 +126,86 @@ public class Explorer extends Agent {
 			}
 		}
 
+		
+		class Rule2 extends Rule {
+
+			Rule2() {
+				addEffect(RuleEffect.DENY);
+
+				addTarget(new TargetTreeRepresentation(TargetConnector.AND,
+						new TargetTreeRepresentation(new TargetExpression(
+								Equal.class, ActionID.QRY, 
+								new StructName("action", "action-id"))),
+						new TargetTreeRepresentation(new TargetExpression(
+								PatternMatch.class, new Template(
+										new ActualTemplateField("isMoving"),
+										new FormalTemplateField(Boolean.class)),
+								new StructName("action", "item"))),
+						new TargetTreeRepresentation(new TargetExpression(
+								GreaterThan.class, 20, 
+										new StructName("subject", "batteryLevel")))		
+				));
+
+				addConditionExpression(null);
+
+	//TODO PUT DIREZIONE VERSO Re-charging Station 
+				
+				addObligation(new ScelObligationExpression(RuleEffect.PERMIT,
+						ActionID.PUT, new Tuple("stop-Battery"), 
+						
+						Self.SELF));
+				
+			}
+	
+		}
+		
 	}
 	
 	private class Policy_Rescuer extends Policy {
 
 		public Policy_Rescuer() {
 
-			addCombiningAlg(PermitOverrides.class);
+			addCombiningAlg(PermitUnlessDeny.class);
 
 			addTarget(null);
 
-			addRule(new RuleAllPermit());
+			addRule(new RuleCameraOn());
 
 			addObligation(null);
 
 		}
 
 		
-		class RuleAllPermit extends Rule{
+		class RuleCameraOn extends Rule{
 			
-			RuleAllPermit(){
+			RuleCameraOn(){
 			
 				addEffect(RuleEffect.PERMIT);
+				
+				addTarget(new TargetTreeRepresentation(TargetConnector.AND,
+						new TargetTreeRepresentation(new TargetExpression(
+								Equal.class, ActionID.PUT, 
+								new StructName("action", "action-id"))),
+						new TargetTreeRepresentation(new TargetExpression(
+								PatternMatch.class, new Template(
+										new ActualTemplateField("rescue"),
+										new FormalTemplateField(Double.class),
+										new FormalTemplateField(Double.class)),
+								new StructName("action", "item"))),
+						new TargetTreeRepresentation(new TargetExpression(
+								LessThan.class, 40, 
+										new StructName("subject", "batteryLevel")))		
+				));
+				
+				addConditionExpression(null);
+				
+		//TODO IMPLEMENTARE ATTUATORE		
+		
+				addObligation(new ScelObligationExpression(RuleEffect.PERMIT,
+						ActionID.PUT, new Tuple("cameraOn"), 
+						
+						Self.SELF));
+
 				
 			}
 		}

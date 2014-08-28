@@ -7,6 +7,19 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.policy.ActionID;
+import org.cmg.resp.policy.StructName;
+import org.cmg.resp.policy.facpl.IFacplElement;
+import org.cmg.resp.policy.facpl.RuleEffect;
+import org.cmg.resp.policy.facpl.algorithm.PermitUnlessDeny;
+import org.cmg.resp.policy.facpl.elements.Policy;
+import org.cmg.resp.policy.facpl.elements.Rule;
+import org.cmg.resp.policy.facpl.elements.ScelObligationExpression;
+import org.cmg.resp.policy.facpl.elements.TargetConnector;
+import org.cmg.resp.policy.facpl.elements.TargetExpression;
+import org.cmg.resp.policy.facpl.elements.util.TargetTreeRepresentation;
+import org.cmg.resp.policy.facpl.function.comparison.Equal;
+import org.cmg.resp.policy.facpl.function.comparison.PatternMatch;
 import org.cmg.resp.topology.Group;
 import org.cmg.resp.topology.HasValue;
 import org.cmg.resp.topology.Self;
@@ -24,12 +37,13 @@ public class HelpRescuer extends Agent {
 
 	@Override
 	protected void doRun() throws IOException, InterruptedException {
+		
 		Tuple t = get(new Template(new ActualTemplateField("victim"),
 				new FormalTemplateField(Double.class), new FormalTemplateField(
 						Double.class), new FormalTemplateField(Integer.class)),
 				new Group(new HasValue("role", Scenario.RESCUER)));
 		
-		// TODO DA FARE CON POLICY (bloccare helpRescuer quando si passa a Rescuer)
+//		// Bloccare helpRescuer quando si passa a Rescuer)
 		if (scenario.getRole(robotId).equals(Scenario.RESCUER)) {
 			//sono io RESCUER non dovevo prendere la tupla
 			//la riaggiungo su di me
@@ -56,7 +70,7 @@ public class HelpRescuer extends Agent {
 			// update the info according to the dimRescuerSwarm
 			if (dimRescuerSwarm > 1) {
 				int f = dimRescuerSwarm - 1;
-				System.out.println("Rescuers rimanenti "+ f);
+				System.out.println("Rescuers rimanenti "+ f+"\n");
 				put(new Tuple("victim", x, y, f), Self.SELF);
 			}
 			//go to victim positions received
@@ -68,19 +82,18 @@ public class HelpRescuer extends Agent {
 				t = query(new Template(new ActualTemplateField(
 						"VICTIM_PERCEIVED"), new ActualTemplateField(true)),
 						Self.SELF);
+				
 				found = t.getElementAt(Boolean.class, 1);
-
 				if (found) {
-					// TODO robot must stop by using POLICY !!!
-					put(new Tuple("stop"), Self.SELF);
-
+					
 					// Pass to RESCUER state
 					put(new Tuple("role", Scenario.RESCUER), Self.SELF);
 
 					System.out.print("Robot " + robotId		+ " has become RESCUER\n");
+					
 					put(new Tuple("rescue",
-							scenario.getPosition(robotId).getX(),
-							scenario.getPosition(robotId).getY()),
+								scenario.getPosition(robotId).getX(),
+								scenario.getPosition(robotId).getY()),
 							Self.SELF);
 				}
 			}
@@ -93,12 +106,83 @@ public class HelpRescuer extends Agent {
 		put(new Tuple("pointDirection", x, y), Self.SELF);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Return the policy in force in the Help_Rescuer state
 	 * 
-	 * @see org.cmg.resp.behaviour.Agent#doHandle(java.lang.Exception)
+	 * @return
 	 */
+	public IFacplElement getPolicyHelpRescuer() {
+		return new Policy_HelpRescuer();
+	}
+	
+	
+	private class Policy_HelpRescuer extends Policy {
+
+		public Policy_HelpRescuer() {
+
+			addCombiningAlg(PermitUnlessDeny.class);
+
+			addTarget(null);
+
+			addRule(new Rule_VictimPerceived());
+			
+			addRule(new Rule_DisableRandom());
+			
+			addObligation(null);
+		}
+
+		class Rule_VictimPerceived extends Rule {
+
+			Rule_VictimPerceived() {
+				addEffect(RuleEffect.PERMIT);
+
+				addTarget(new TargetTreeRepresentation(TargetConnector.AND,
+						new TargetTreeRepresentation(new TargetExpression(
+								Equal.class, ActionID.QRY, 
+								new StructName("action", "action-id"))),
+						new TargetTreeRepresentation(new TargetExpression(
+								PatternMatch.class, new Template(
+										new ActualTemplateField("VICTIM_PERCEIVED"),
+										new ActualTemplateField(true)),
+								new StructName("action", "item")))
+				));
+
+				addConditionExpression(null);
+
+				addObligation(new ScelObligationExpression(RuleEffect.PERMIT,
+						ActionID.PUT, new Tuple("stop"), 
+						
+						Self.SELF));
+			}
+		}
+	
+		
+		class Rule_DisableRandom extends Rule {
+
+			Rule_DisableRandom() {
+				addEffect(RuleEffect.DENY);
+
+				addTarget(new TargetTreeRepresentation(TargetConnector.AND,
+						new TargetTreeRepresentation(new TargetExpression(
+								Equal.class, ActionID.PUT, 
+								new StructName("action", "action-id"))),
+						new TargetTreeRepresentation(new TargetExpression(
+								PatternMatch.class, new Template(
+										new ActualTemplateField("direction"),
+										new FormalTemplateField(Double.class)),
+								new StructName("action", "item")))
+				));
+
+				addConditionExpression(null);
+
+				addObligation(null);
+			}
+		}
+		
+	}
+	
 	@Override
 	protected void doHandle(Exception e) {
 	}
+	
 }

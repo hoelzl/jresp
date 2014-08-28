@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2012 Concurrency and Mobility Group.
+ * Universit? di Firenze
+ *	
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
  */
 package org.cmg.resp.example.disaster.simulation;
@@ -106,8 +113,7 @@ public class MainRescuerSimulation extends JFrame {
 			n.put(new Tuple("role", Scenario.EXPLORER));
 
 			/**
-			 * AttributeCollector = exposing the attribute of component in the
-			 * interface
+			 * AttributeCollector = exposing the attribute of component in the interface
 			 */
 			n.addAttributeCollector(new AttributeCollector("role"
 			// ,
@@ -167,12 +173,12 @@ public class MainRescuerSimulation extends JFrame {
 				@Override
 				public void update(Observable o, Object arg) {
 
-					// System.out.println(n.getName() + "->" +
-					// n.getAttribute("victim_perceived") +
-					// n.getAttribute("walking_attribute") +
-					// n.getAttribute("collision_attribute") +
-					// n.getAttribute("direction_attribute")
-					// );
+					 System.out.println(n.getName() + "->" +
+					 //n.getAttribute("victim_perceived") +
+					 n.getAttribute("walking_attribute") + " "+
+					 //n.getAttribute("collision_attribute") +
+					 n.getAttribute("direction_attribute")
+					 );
 
 				}
 			});
@@ -185,10 +191,7 @@ public class MainRescuerSimulation extends JFrame {
 			n.addAgent(a);
 			a = new HelpRescuer(i, scenario);
 			n.addAgent(a);
-
-			// TODO LowBattery behavior will be added when policy is finished
-			// a = new LowBattery(i);
-
+			
 			nodes.put(n.getName(), n);
 		}
 

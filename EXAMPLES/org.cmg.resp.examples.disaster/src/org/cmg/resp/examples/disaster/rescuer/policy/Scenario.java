@@ -33,8 +33,6 @@ public class Scenario extends Observable {
 	public static final String HELP_RES = "help_rescuer";
 	public static final String LOW_BATT = "low_battery";
 
-	// public static final int WORKER = 1;
-	
 	protected static final double COMMUNICATION_RANGE = 100.0;
 
 	private Random r = new Random();
@@ -355,6 +353,28 @@ public class Scenario extends Observable {
 	}
 
 	/**
+	 * Halt robot moving when battery level is less. Triggered by the tuple <"stop-Battery">
+	 * @param i
+	 * @return
+	 */
+	public AbstractActuator getStopBatteryActuator(final int i) {
+		return new AbstractActuator("stop-Battery") {
+
+			@Override
+			public void send(Tuple t) {
+				stop(i);
+				setRole(i, Scenario.LOW_BATT);
+			}
+
+			@Override
+			public Template getTemplate() {
+				return new Template(new ActualTemplateField("stop-Battery"));
+			}
+		};
+	}
+	
+	
+	/**
 	 * Change role of robot. Triggered by <"role", s>
 	 * s role name
 	 * 
@@ -374,7 +394,6 @@ public class Scenario extends Observable {
 				} else if (s.equals(HELP_RES)){
 					setRole(i,HELP_RES);
 				} else {
-					//low battery mode
 					setRole(i,LOW_BATT);
 				}
 			}
@@ -534,6 +553,7 @@ public class Scenario extends Observable {
 
 		public void stop() {
 			this.walking = false;
+			updateWalkingSensor();
 		}
 
 		public AbstractSensor getVictimSensor() {
@@ -583,6 +603,8 @@ public class Scenario extends Observable {
 			position = point;
 			updateCollisionSensor();
 			updateVictimSensor();
+			updateWalkingSensor();
+			updateDirectionSensor();
 		}
 
 		/**
@@ -592,7 +614,7 @@ public class Scenario extends Observable {
 		public boolean detectVictim() {
 			if (position != null) {
 				//when the robot is a Rescuer or is going to the charging station the sensor is deactivated
-				if (!this.role.equals(Scenario.RESCUER) && !this.role.equals(Scenario.LOW_BATT) ){
+				if (!this.role.equals(Scenario.RESCUER) ){
 					for (int i=0; i < victims.length; i ++) {
 						/*
 						 * Rescuers: 

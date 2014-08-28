@@ -13,42 +13,63 @@
 package org.cmg.resp.examples.disaster.rescuer.policy;
 
 import java.io.IOException;
-import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
-import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.policy.facpl.IFacplElement;
+import org.cmg.resp.policy.facpl.algorithm.PermitUnlessDeny;
+import org.cmg.resp.policy.facpl.elements.Policy;
 import org.cmg.resp.topology.Self;
 
 /**
- * @author Michele Loreti
+ *
  * @author Andrea Margheri
  */
-public class RandomWalk extends Agent {
+public class IsMoving extends Agent {
 
-	Random r = new Random();
-
-//	private Scenario scenario;
 	private int robotId;
 	
-	public RandomWalk(int robotId) {
-		super("RandomWalk");
-//		this.scenario = scenario;
-		this.robotId =robotId;
+	public IsMoving(int robotId) {
+		super("isMoving");
+		this.robotId = robotId;
 	}
 
 	@Override
 	protected void doRun() throws IOException, InterruptedException {
 		while (true) {
 
-			double dir = r.nextDouble() * 2 * Math.PI;
-			put(new Tuple("direction", dir), Self.SELF);
-			
-			query(new Template(new ActualTemplateField("COLLISION"),
+			query(new Template(
+					new ActualTemplateField("WALKING"),
 					new ActualTemplateField(true)), Self.SELF);
 			
 		}
+	}
+
+	
+	/**
+	 * Return the policy in force in the Help_Rescuer state
+	 * 
+	 * @return
+	 */
+	public IFacplElement getPolicyLowBattery() {
+		return new Policy_LowBattery();
+	}
+	
+	private class Policy_LowBattery extends Policy {
+
+		public Policy_LowBattery() {
+
+			addCombiningAlg(PermitUnlessDeny.class);
+
+			addTarget(null);
+
+			addRule(null);
+			
+			
+			addObligation(null);
+		}
+		
 	}
 
 }

@@ -584,6 +584,8 @@ public class Scenario extends Observable {
 			position = point;
 			updateCollisionSensor();
 			updateVictimSensor();
+			updateWalkingSensor();
+			updateDirectionSensor();
 		}
 
 		/**
