@@ -15,6 +15,7 @@ import org.eclipse.xtext.xbase.XExpression;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction#getFeatureCallArguments <em>Feature Call Arguments</em>}</li>
+ *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction#getTarget <em>Target</em>}</li>
  * </ul>
  * </p>
  *
@@ -39,5 +40,31 @@ public interface HLScelPutAction extends XExpression
    * @generated
    */
   EList<XExpression> getFeatureCallArguments();
+
+  /**
+   * Returns the value of the '<em><b>Target</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Target</em>' containment reference isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Target</em>' containment reference.
+   * @see #setTarget(XExpression)
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHLScelPutAction_Target()
+   * @model containment="true"
+   * @generated
+   */
+  XExpression getTarget();
+
+  /**
+   * Sets the value of the '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction#getTarget <em>Target</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Target</em>' containment reference.
+   * @see #getTarget()
+   * @generated
+   */
+  void setTarget(XExpression value);
 
 } // HLScelPutAction

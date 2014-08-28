@@ -7,12 +7,15 @@ import java.util.Collection;
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage;
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
@@ -29,6 +32,7 @@ import org.eclipse.xtext.xbase.impl.XExpressionImpl;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.impl.HLScelPutActionImpl#getFeatureCallArguments <em>Feature Call Arguments</em>}</li>
+ *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.impl.HLScelPutActionImpl#getTarget <em>Target</em>}</li>
  * </ul>
  * </p>
  *
@@ -45,6 +49,16 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
    * @ordered
    */
   protected EList<XExpression> featureCallArguments;
+
+  /**
+   * The cached value of the '{@link #getTarget() <em>Target</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getTarget()
+   * @generated
+   * @ordered
+   */
+  protected XExpression target;
 
   /**
    * <!-- begin-user-doc -->
@@ -86,6 +100,54 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
    * <!-- end-user-doc -->
    * @generated
    */
+  public XExpression getTarget()
+  {
+    return target;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NotificationChain basicSetTarget(XExpression newTarget, NotificationChain msgs)
+  {
+    XExpression oldTarget = target;
+    target = newTarget;
+    if (eNotificationRequired())
+    {
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, HLScelPackage.HL_SCEL_PUT_ACTION__TARGET, oldTarget, newTarget);
+      if (msgs == null) msgs = notification; else msgs.add(notification);
+    }
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setTarget(XExpression newTarget)
+  {
+    if (newTarget != target)
+    {
+      NotificationChain msgs = null;
+      if (target != null)
+        msgs = ((InternalEObject)target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.HL_SCEL_PUT_ACTION__TARGET, null, msgs);
+      if (newTarget != null)
+        msgs = ((InternalEObject)newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.HL_SCEL_PUT_ACTION__TARGET, null, msgs);
+      msgs = basicSetTarget(newTarget, msgs);
+      if (msgs != null) msgs.dispatch();
+    }
+    else if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, HLScelPackage.HL_SCEL_PUT_ACTION__TARGET, newTarget, newTarget));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   @Override
   public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
   {
@@ -93,6 +155,8 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
     {
       case HLScelPackage.HL_SCEL_PUT_ACTION__FEATURE_CALL_ARGUMENTS:
         return ((InternalEList<?>)getFeatureCallArguments()).basicRemove(otherEnd, msgs);
+      case HLScelPackage.HL_SCEL_PUT_ACTION__TARGET:
+        return basicSetTarget(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -109,6 +173,8 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
     {
       case HLScelPackage.HL_SCEL_PUT_ACTION__FEATURE_CALL_ARGUMENTS:
         return getFeatureCallArguments();
+      case HLScelPackage.HL_SCEL_PUT_ACTION__TARGET:
+        return getTarget();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -128,6 +194,9 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
         getFeatureCallArguments().clear();
         getFeatureCallArguments().addAll((Collection<? extends XExpression>)newValue);
         return;
+      case HLScelPackage.HL_SCEL_PUT_ACTION__TARGET:
+        setTarget((XExpression)newValue);
+        return;
     }
     super.eSet(featureID, newValue);
   }
@@ -145,6 +214,9 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
       case HLScelPackage.HL_SCEL_PUT_ACTION__FEATURE_CALL_ARGUMENTS:
         getFeatureCallArguments().clear();
         return;
+      case HLScelPackage.HL_SCEL_PUT_ACTION__TARGET:
+        setTarget((XExpression)null);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -161,6 +233,8 @@ public class HLScelPutActionImpl extends XExpressionImpl implements HLScelPutAct
     {
       case HLScelPackage.HL_SCEL_PUT_ACTION__FEATURE_CALL_ARGUMENTS:
         return featureCallArguments != null && !featureCallArguments.isEmpty();
+      case HLScelPackage.HL_SCEL_PUT_ACTION__TARGET:
+        return target != null;
     }
     return super.eIsSet(featureID);
   }

@@ -84,9 +84,24 @@ public class HLScelAdapterFactory extends AdapterFactoryImpl
         return createModelAdapter();
       }
       @Override
+      public Adapter caseModelElement(ModelElement object)
+      {
+        return createModelElementAdapter();
+      }
+      @Override
+      public Adapter caseNodeDeclaration(NodeDeclaration object)
+      {
+        return createNodeDeclarationAdapter();
+      }
+      @Override
       public Adapter caseProcessDeclaration(ProcessDeclaration object)
       {
         return createProcessDeclarationAdapter();
+      }
+      @Override
+      public Adapter caseHLScelPredicate(HLScelPredicate object)
+      {
+        return createHLScelPredicateAdapter();
       }
       @Override
       public Adapter caseSelfLiteral(SelfLiteral object)
@@ -99,9 +114,34 @@ public class HLScelAdapterFactory extends AdapterFactoryImpl
         return createHLScelPutActionAdapter();
       }
       @Override
-      public Adapter caseHScelGetAction(HScelGetAction object)
+      public Adapter caseHLScelGetAction(HLScelGetAction object)
       {
-        return createHScelGetActionAdapter();
+        return createHLScelGetActionAdapter();
+      }
+      @Override
+      public Adapter caseHLScelQueryAction(HLScelQueryAction object)
+      {
+        return createHLScelQueryActionAdapter();
+      }
+      @Override
+      public Adapter caseHLScelGetPAction(HLScelGetPAction object)
+      {
+        return createHLScelGetPActionAdapter();
+      }
+      @Override
+      public Adapter caseHLScelQueryPAction(HLScelQueryPAction object)
+      {
+        return createHLScelQueryPActionAdapter();
+      }
+      @Override
+      public Adapter caseHLScelExecAction(HLScelExecAction object)
+      {
+        return createHLScelExecActionAdapter();
+      }
+      @Override
+      public Adapter caseHLScelCallAction(HLScelCallAction object)
+      {
+        return createHLScelCallActionAdapter();
       }
       @Override
       public Adapter caseFormalTemplateField(FormalTemplateField object)
@@ -161,6 +201,36 @@ public class HLScelAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.ModelElement <em>Model Element</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.ModelElement
+   * @generated
+   */
+  public Adapter createModelElementAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.NodeDeclaration <em>Node Declaration</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.NodeDeclaration
+   * @generated
+   */
+  public Adapter createNodeDeclarationAdapter()
+  {
+    return null;
+  }
+
+  /**
    * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.ProcessDeclaration <em>Process Declaration</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
@@ -171,6 +241,21 @@ public class HLScelAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createProcessDeclarationAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelPredicate <em>Predicate</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPredicate
+   * @generated
+   */
+  public Adapter createHLScelPredicateAdapter()
   {
     return null;
   }
@@ -206,16 +291,91 @@ public class HLScelAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction <em>HScel Get Action</em>}'.
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelGetAction <em>Get Action</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelGetAction
    * @generated
    */
-  public Adapter createHScelGetActionAdapter()
+  public Adapter createHLScelGetActionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryAction <em>Query Action</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryAction
+   * @generated
+   */
+  public Adapter createHLScelQueryActionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelGetPAction <em>Get PAction</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelGetPAction
+   * @generated
+   */
+  public Adapter createHLScelGetPActionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction <em>Query PAction</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction
+   * @generated
+   */
+  public Adapter createHLScelQueryPActionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelExecAction <em>Exec Action</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelExecAction
+   * @generated
+   */
+  public Adapter createHLScelExecActionAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelCallAction <em>Call Action</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelCallAction
+   * @generated
+   */
+  public Adapter createHLScelCallActionAdapter()
   {
     return null;
   }

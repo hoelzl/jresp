@@ -6,13 +6,14 @@ import org.cmg.resp.xtext.hlscel.hLScel.FormalTemplateField;
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.eclipse.xtext.common.types.JvmIdentifiableElement;
+import org.eclipse.xtext.xbase.XExpression;
 
 import org.eclipse.xtext.xbase.impl.XExpressionImpl;
 
@@ -32,14 +33,14 @@ import org.eclipse.xtext.xbase.impl.XExpressionImpl;
 public class FormalTemplateFieldImpl extends XExpressionImpl implements FormalTemplateField
 {
   /**
-   * The cached value of the '{@link #getReference() <em>Reference</em>}' reference.
+   * The cached value of the '{@link #getReference() <em>Reference</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @see #getReference()
    * @generated
    * @ordered
    */
-  protected JvmIdentifiableElement reference;
+  protected XExpression reference;
 
   /**
    * <!-- begin-user-doc -->
@@ -67,27 +68,7 @@ public class FormalTemplateFieldImpl extends XExpressionImpl implements FormalTe
    * <!-- end-user-doc -->
    * @generated
    */
-  public JvmIdentifiableElement getReference()
-  {
-    if (reference != null && reference.eIsProxy())
-    {
-      InternalEObject oldReference = (InternalEObject)reference;
-      reference = (JvmIdentifiableElement)eResolveProxy(oldReference);
-      if (reference != oldReference)
-      {
-        if (eNotificationRequired())
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE, oldReference, reference));
-      }
-    }
-    return reference;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public JvmIdentifiableElement basicGetReference()
+  public XExpression getReference()
   {
     return reference;
   }
@@ -97,12 +78,53 @@ public class FormalTemplateFieldImpl extends XExpressionImpl implements FormalTe
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setReference(JvmIdentifiableElement newReference)
+  public NotificationChain basicSetReference(XExpression newReference, NotificationChain msgs)
   {
-    JvmIdentifiableElement oldReference = reference;
+    XExpression oldReference = reference;
     reference = newReference;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE, oldReference, reference));
+    {
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE, oldReference, newReference);
+      if (msgs == null) msgs = notification; else msgs.add(notification);
+    }
+    return msgs;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setReference(XExpression newReference)
+  {
+    if (newReference != reference)
+    {
+      NotificationChain msgs = null;
+      if (reference != null)
+        msgs = ((InternalEObject)reference).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE, null, msgs);
+      if (newReference != null)
+        msgs = ((InternalEObject)newReference).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE, null, msgs);
+      msgs = basicSetReference(newReference, msgs);
+      if (msgs != null) msgs.dispatch();
+    }
+    else if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE, newReference, newReference));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+  {
+    switch (featureID)
+    {
+      case HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE:
+        return basicSetReference(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
   }
 
   /**
@@ -116,8 +138,7 @@ public class FormalTemplateFieldImpl extends XExpressionImpl implements FormalTe
     switch (featureID)
     {
       case HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE:
-        if (resolve) return getReference();
-        return basicGetReference();
+        return getReference();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -133,7 +154,7 @@ public class FormalTemplateFieldImpl extends XExpressionImpl implements FormalTe
     switch (featureID)
     {
       case HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE:
-        setReference((JvmIdentifiableElement)newValue);
+        setReference((XExpression)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -150,7 +171,7 @@ public class FormalTemplateFieldImpl extends XExpressionImpl implements FormalTe
     switch (featureID)
     {
       case HLScelPackage.FORMAL_TEMPLATE_FIELD__REFERENCE:
-        setReference((JvmIdentifiableElement)null);
+        setReference((XExpression)null);
         return;
     }
     super.eUnset(featureID);

@@ -7,7 +7,19 @@ import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
 
 
 Model:
-	(elements += ProcessDeclaration)*
+	(
+		elements += ModelElement
+	)*
+;
+
+ModelElement:
+	ProcessDeclaration | NodeDeclaration		
+;
+
+NodeDeclaration:
+	'node' name=ID '(' ( args += FullJvmFormalParameter ( ',' args += FullJvmFormalParameter )* )? ')' '{'
+
+	'}'
 ;
 	
 ProcessDeclaration:
@@ -29,7 +41,12 @@ XPrimaryExpression returns xbase::XExpression:
 	XReturnExpression |
 	XTryCatchFinallyExpression |
 	XParenthesizedExpression |
-	HLScelAction;
+	HLScelAction |
+	HLScelPredicate;
+
+HLScelPredicate:
+	'[|' exp = XExpression '|]'
+;
 	
 XLiteral returns xbase::XExpression:
 	XCollectionLiteral |
@@ -48,13 +65,23 @@ SelfLiteral returns xbase::XListLiteral:
 
 HLScelAction returns xbase::XExpression:
 	{HLScelPutAction}
-	'put' '(' featureCallArguments += XExpression (',' featureCallArguments+=XExpression)* ')' '@' featureCallArguments+=XExpression
-	| {HScelGetAction}
+	'put' '(' featureCallArguments += XExpression (',' featureCallArguments +=XExpression)* ')' '@' target = XExpression
+	| {HLScelGetAction}
 	'get' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelQueryAction}
+	'query' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelGetPAction}
+	'getp' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelQueryPAction}
+	'queryp' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelExecAction}
+	'exec' '(' arg = XExpression ')' '@' target=XExpression
+	| {HLScelCallAction}
+	'call' '(' arg = XExpression ')'
 ;
 
 TemplateField returns xbase::XExpression:
-	XExpression | {FormalTemplateField} '?' reference=[types::JvmIdentifiableElement|FeatureCallID]
+	XExpression | {FormalTemplateField} '?' reference=XFeatureCall
 ;
 
 
@@ -62,7 +89,6 @@ TemplateField returns xbase::XExpression:
 Variable:
 	type=JvmTypeReference name=ID	
 ;
-
 
 Statement:
 	IfThenElseStatement

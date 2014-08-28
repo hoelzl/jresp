@@ -6,6 +6,9 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
 import org.cmg.resp.xtext.hlscel.hLScel.Model
 import org.cmg.resp.xtext.hlscel.hLScel.ProcessDeclaration
+import org.cmg.resp.behaviour.Agent
+
+//import org.cmg.resp.behaviour.Agent
 
 /**
  * <p>Infers a JVM model from the source model.</p> 
@@ -51,7 +54,13 @@ class HLScelJvmModelInferrer extends AbstractModelInferrer {
    		// An implementation for the initial hello world example could look like this:
    		acceptor.accept( process.toClass("processes."+process.name) ).
    			initializeLater[ documentation = process.documentation 
-   				members += 	process.toMethod("execute",inferredType) [
+   				superTypes += newTypeRef(typeof(Agent))
+   				members +=  process.toConstructor[
+   					body = '''
+   						super("«process.name»");
+   					'''
+   				]
+   				members += 	process.toMethod("doRun",newTypeRef(Void::TYPE)) [
    					for ( p:process.args ) {
    						parameters += p.toParameter(p.name,p.parameterType)
    					}

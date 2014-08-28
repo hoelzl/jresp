@@ -1,8 +1,14 @@
 package org.cmg.resp.xtext.hlscel.compiler;
 
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelCallAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelExecAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetPAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelPredicate;
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction;
 import org.cmg.resp.xtext.hlscel.hLScel.SelfLiteral;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.XExpression;
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable;
@@ -18,11 +24,43 @@ public class HLScelCompiler extends XbaseCompiler {
       }
     }
     if (!_matched) {
+      if (expr instanceof HLScelPredicate) {
+        _matched=true;
+      }
+    }
+    if (!_matched) {
       if (expr instanceof HLScelPutAction) {
         _matched=true;
-        StringConcatenation _builder = new StringConcatenation();
-        _builder.append("true");
-        it.append(_builder);
+      }
+    }
+    if (!_matched) {
+      if (expr instanceof HLScelGetAction) {
+        _matched=true;
+      }
+    }
+    if (!_matched) {
+      if (expr instanceof HLScelQueryAction) {
+        _matched=true;
+      }
+    }
+    if (!_matched) {
+      if (expr instanceof HLScelGetPAction) {
+        _matched=true;
+      }
+    }
+    if (!_matched) {
+      if (expr instanceof HLScelQueryPAction) {
+        _matched=true;
+      }
+    }
+    if (!_matched) {
+      if (expr instanceof HLScelExecAction) {
+        _matched=true;
+      }
+    }
+    if (!_matched) {
+      if (expr instanceof HLScelCallAction) {
+        _matched=true;
       }
     }
     if (!_matched) {

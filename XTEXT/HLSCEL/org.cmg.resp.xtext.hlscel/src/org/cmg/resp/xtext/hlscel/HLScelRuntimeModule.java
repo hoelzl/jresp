@@ -5,8 +5,10 @@ package org.cmg.resp.xtext.hlscel;
 
 import org.cmg.resp.xtext.hlscel.compiler.HLScelCompiler;
 import org.cmg.resp.xtext.hlscel.types.HLScelTypeComputer;
+import org.cmg.resp.xtext.hlscel.util.HLScelXexpressionHelper;
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler;
 import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer;
+import org.eclipse.xtext.xbase.util.XExpressionHelper;
 
 
 /**
@@ -23,5 +25,9 @@ public class HLScelRuntimeModule extends org.cmg.resp.xtext.hlscel.AbstractHLSce
 		return HLScelCompiler.class;
 	}
 	
+	
+	public Class<? extends XExpressionHelper> bindXExpressionHelper() {
+		return HLScelXexpressionHelper.class;
+	}
 
 }

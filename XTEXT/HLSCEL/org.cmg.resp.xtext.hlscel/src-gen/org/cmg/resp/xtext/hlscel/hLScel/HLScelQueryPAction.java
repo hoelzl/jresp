@@ -8,22 +8,22 @@ import org.eclipse.xtext.xbase.XExpression;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>HScel Get Action</b></em>'.
+ * A representation of the model object '<em><b>Query PAction</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction#getFields <em>Fields</em>}</li>
- *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction#getTarget <em>Target</em>}</li>
+ *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction#getFields <em>Fields</em>}</li>
+ *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction#getTarget <em>Target</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHScelGetAction()
+ * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHLScelQueryPAction()
  * @model
  * @generated
  */
-public interface HScelGetAction extends XExpression
+public interface HLScelQueryPAction extends XExpression
 {
   /**
    * Returns the value of the '<em><b>Fields</b></em>' containment reference list.
@@ -35,7 +35,7 @@ public interface HScelGetAction extends XExpression
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Fields</em>' containment reference list.
-   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHScelGetAction_Fields()
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHLScelQueryPAction_Fields()
    * @model containment="true"
    * @generated
    */
@@ -51,14 +51,14 @@ public interface HScelGetAction extends XExpression
    * <!-- end-user-doc -->
    * @return the value of the '<em>Target</em>' containment reference.
    * @see #setTarget(XExpression)
-   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHScelGetAction_Target()
+   * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getHLScelQueryPAction_Target()
    * @model containment="true"
    * @generated
    */
   XExpression getTarget();
 
   /**
-   * Sets the value of the '{@link org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction#getTarget <em>Target</em>}' containment reference.
+   * Sets the value of the '{@link org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction#getTarget <em>Target</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @param value the new value of the '<em>Target</em>' containment reference.
@@ -67,4 +67,4 @@ public interface HScelGetAction extends XExpression
    */
   void setTarget(XExpression value);
 
-} // HScelGetAction
+} // HLScelQueryPAction

@@ -10,21 +10,47 @@
     <genClasses ecoreClass="HLScel.ecore#//Model">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//Model/elements"/>
     </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//ModelElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HLScel.ecore#//ModelElement/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//ModelElement/args"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//NodeDeclaration"/>
     <genClasses ecoreClass="HLScel.ecore#//ProcessDeclaration">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HLScel.ecore#//ProcessDeclaration/name"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//ProcessDeclaration/args"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//ProcessDeclaration/body"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelPredicate">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelPredicate/exp"/>
     </genClasses>
     <genClasses ecoreClass="HLScel.ecore#//SelfLiteral"/>
     <genClasses ecoreClass="HLScel.ecore#//HLScelPutAction">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelPutAction/featureCallArguments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelPutAction/target"/>
     </genClasses>
-    <genClasses ecoreClass="HLScel.ecore#//HScelGetAction">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HScelGetAction/fields"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HScelGetAction/target"/>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelGetAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelGetAction/fields"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelGetAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelQueryAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelQueryAction/fields"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelQueryAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelGetPAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelGetPAction/fields"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelGetPAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelQueryPAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelQueryPAction/fields"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelQueryPAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelExecAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelExecAction/arg"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelExecAction/target"/>
+    </genClasses>
+    <genClasses ecoreClass="HLScel.ecore#//HLScelCallAction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//HLScelCallAction/arg"/>
     </genClasses>
     <genClasses ecoreClass="HLScel.ecore#//FormalTemplateField">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HLScel.ecore#//FormalTemplateField/reference"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HLScel.ecore#//FormalTemplateField/reference"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

@@ -83,10 +83,34 @@ public class HLScelSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case HLScelPackage.MODEL_ELEMENT:
+      {
+        ModelElement modelElement = (ModelElement)theEObject;
+        T result = caseModelElement(modelElement);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.NODE_DECLARATION:
+      {
+        NodeDeclaration nodeDeclaration = (NodeDeclaration)theEObject;
+        T result = caseNodeDeclaration(nodeDeclaration);
+        if (result == null) result = caseModelElement(nodeDeclaration);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case HLScelPackage.PROCESS_DECLARATION:
       {
         ProcessDeclaration processDeclaration = (ProcessDeclaration)theEObject;
         T result = caseProcessDeclaration(processDeclaration);
+        if (result == null) result = caseModelElement(processDeclaration);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.HL_SCEL_PREDICATE:
+      {
+        HLScelPredicate hlScelPredicate = (HLScelPredicate)theEObject;
+        T result = caseHLScelPredicate(hlScelPredicate);
+        if (result == null) result = caseXExpression(hlScelPredicate);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -108,11 +132,51 @@ public class HLScelSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case HLScelPackage.HSCEL_GET_ACTION:
+      case HLScelPackage.HL_SCEL_GET_ACTION:
       {
-        HScelGetAction hScelGetAction = (HScelGetAction)theEObject;
-        T result = caseHScelGetAction(hScelGetAction);
-        if (result == null) result = caseXExpression(hScelGetAction);
+        HLScelGetAction hlScelGetAction = (HLScelGetAction)theEObject;
+        T result = caseHLScelGetAction(hlScelGetAction);
+        if (result == null) result = caseXExpression(hlScelGetAction);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.HL_SCEL_QUERY_ACTION:
+      {
+        HLScelQueryAction hlScelQueryAction = (HLScelQueryAction)theEObject;
+        T result = caseHLScelQueryAction(hlScelQueryAction);
+        if (result == null) result = caseXExpression(hlScelQueryAction);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.HL_SCEL_GET_PACTION:
+      {
+        HLScelGetPAction hlScelGetPAction = (HLScelGetPAction)theEObject;
+        T result = caseHLScelGetPAction(hlScelGetPAction);
+        if (result == null) result = caseXExpression(hlScelGetPAction);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.HL_SCEL_QUERY_PACTION:
+      {
+        HLScelQueryPAction hlScelQueryPAction = (HLScelQueryPAction)theEObject;
+        T result = caseHLScelQueryPAction(hlScelQueryPAction);
+        if (result == null) result = caseXExpression(hlScelQueryPAction);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.HL_SCEL_EXEC_ACTION:
+      {
+        HLScelExecAction hlScelExecAction = (HLScelExecAction)theEObject;
+        T result = caseHLScelExecAction(hlScelExecAction);
+        if (result == null) result = caseXExpression(hlScelExecAction);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case HLScelPackage.HL_SCEL_CALL_ACTION:
+      {
+        HLScelCallAction hlScelCallAction = (HLScelCallAction)theEObject;
+        T result = caseHLScelCallAction(hlScelCallAction);
+        if (result == null) result = caseXExpression(hlScelCallAction);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -145,6 +209,38 @@ public class HLScelSwitch<T> extends Switch<T>
   }
 
   /**
+   * Returns the result of interpreting the object as an instance of '<em>Model Element</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Model Element</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseModelElement(ModelElement object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Node Declaration</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Node Declaration</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseNodeDeclaration(NodeDeclaration object)
+  {
+    return null;
+  }
+
+  /**
    * Returns the result of interpreting the object as an instance of '<em>Process Declaration</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
@@ -156,6 +252,22 @@ public class HLScelSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseProcessDeclaration(ProcessDeclaration object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Predicate</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Predicate</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHLScelPredicate(HLScelPredicate object)
   {
     return null;
   }
@@ -193,17 +305,97 @@ public class HLScelSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>HScel Get Action</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Get Action</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>HScel Get Action</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Get Action</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseHScelGetAction(HScelGetAction object)
+  public T caseHLScelGetAction(HLScelGetAction object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Query Action</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Query Action</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHLScelQueryAction(HLScelQueryAction object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Get PAction</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Get PAction</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHLScelGetPAction(HLScelGetPAction object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Query PAction</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Query PAction</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHLScelQueryPAction(HLScelQueryPAction object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Exec Action</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Exec Action</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHLScelExecAction(HLScelExecAction object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Call Action</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Call Action</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseHLScelCallAction(HLScelCallAction object)
   {
     return null;
   }

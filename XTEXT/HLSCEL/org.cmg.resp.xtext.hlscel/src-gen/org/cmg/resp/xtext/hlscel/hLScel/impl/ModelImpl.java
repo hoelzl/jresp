@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage;
 import org.cmg.resp.xtext.hlscel.hLScel.Model;
-import org.cmg.resp.xtext.hlscel.hLScel.ProcessDeclaration;
+import org.cmg.resp.xtext.hlscel.hLScel.ModelElement;
 
 import org.eclipse.emf.common.notify.NotificationChain;
 
@@ -43,7 +43,7 @@ public class ModelImpl extends MinimalEObjectImpl.Container implements Model
    * @generated
    * @ordered
    */
-  protected EList<ProcessDeclaration> elements;
+  protected EList<ModelElement> elements;
 
   /**
    * <!-- begin-user-doc -->
@@ -71,11 +71,11 @@ public class ModelImpl extends MinimalEObjectImpl.Container implements Model
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<ProcessDeclaration> getElements()
+  public EList<ModelElement> getElements()
   {
     if (elements == null)
     {
-      elements = new EObjectContainmentEList<ProcessDeclaration>(ProcessDeclaration.class, this, HLScelPackage.MODEL__ELEMENTS);
+      elements = new EObjectContainmentEList<ModelElement>(ModelElement.class, this, HLScelPackage.MODEL__ELEMENTS);
     }
     return elements;
   }
@@ -125,7 +125,7 @@ public class ModelImpl extends MinimalEObjectImpl.Container implements Model
     {
       case HLScelPackage.MODEL__ELEMENTS:
         getElements().clear();
-        getElements().addAll((Collection<? extends ProcessDeclaration>)newValue);
+        getElements().addAll((Collection<? extends ModelElement>)newValue);
         return;
     }
     super.eSet(featureID, newValue);

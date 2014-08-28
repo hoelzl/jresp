@@ -32,6 +32,24 @@ public interface HLScelFactory extends EFactory
   Model createModel();
 
   /**
+   * Returns a new object of class '<em>Model Element</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Model Element</em>'.
+   * @generated
+   */
+  ModelElement createModelElement();
+
+  /**
+   * Returns a new object of class '<em>Node Declaration</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Node Declaration</em>'.
+   * @generated
+   */
+  NodeDeclaration createNodeDeclaration();
+
+  /**
    * Returns a new object of class '<em>Process Declaration</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -39,6 +57,15 @@ public interface HLScelFactory extends EFactory
    * @generated
    */
   ProcessDeclaration createProcessDeclaration();
+
+  /**
+   * Returns a new object of class '<em>Predicate</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Predicate</em>'.
+   * @generated
+   */
+  HLScelPredicate createHLScelPredicate();
 
   /**
    * Returns a new object of class '<em>Self Literal</em>'.
@@ -59,13 +86,58 @@ public interface HLScelFactory extends EFactory
   HLScelPutAction createHLScelPutAction();
 
   /**
-   * Returns a new object of class '<em>HScel Get Action</em>'.
+   * Returns a new object of class '<em>Get Action</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>HScel Get Action</em>'.
+   * @return a new object of class '<em>Get Action</em>'.
    * @generated
    */
-  HScelGetAction createHScelGetAction();
+  HLScelGetAction createHLScelGetAction();
+
+  /**
+   * Returns a new object of class '<em>Query Action</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Query Action</em>'.
+   * @generated
+   */
+  HLScelQueryAction createHLScelQueryAction();
+
+  /**
+   * Returns a new object of class '<em>Get PAction</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Get PAction</em>'.
+   * @generated
+   */
+  HLScelGetPAction createHLScelGetPAction();
+
+  /**
+   * Returns a new object of class '<em>Query PAction</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Query PAction</em>'.
+   * @generated
+   */
+  HLScelQueryPAction createHLScelQueryPAction();
+
+  /**
+   * Returns a new object of class '<em>Exec Action</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Exec Action</em>'.
+   * @generated
+   */
+  HLScelExecAction createHLScelExecAction();
+
+  /**
+   * Returns a new object of class '<em>Call Action</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Call Action</em>'.
+   * @generated
+   */
+  HLScelCallAction createHLScelCallAction();
 
   /**
    * Returns a new object of class '<em>Formal Template Field</em>'.
