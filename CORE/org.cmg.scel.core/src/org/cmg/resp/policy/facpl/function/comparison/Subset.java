@@ -8,10 +8,11 @@ import org.cmg.resp.policy.facpl.IComparisonFunction;
 import org.cmg.resp.policy.facpl.function.comparison.evaluator.ComparisonEvaluator;
 import org.cmg.resp.policy.facpl.function.comparison.evaluator.ComparisonEvaluatorFactory;
 
-public class AtLeastOneMemberOf implements IComparisonFunction {
+public class Subset implements IComparisonFunction{
 
 	@Override
 	public Boolean evaluateFunction(List<Object> args) throws Throwable {
+	
 		if (args.size() == 2) {
 
 			Object o1 = args.get(0);
@@ -19,10 +20,13 @@ public class AtLeastOneMemberOf implements IComparisonFunction {
 
 			ComparisonEvaluator evaluator = ComparisonEvaluatorFactory
 					.getInstance().getEvaluator(o1);
-			return evaluator.isAtLestOneMemberOf(o1, o2);
+			return evaluator.isSubsetOf(o1, o2);
 
 		} else {
 			throw new Exception("Illegal number of arguments");
 		}
+
 	}
+
+
 }

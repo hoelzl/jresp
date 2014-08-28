@@ -12,7 +12,9 @@
  */
 package org.cmg.resp.policy.facpl.function.comparison.evaluator;
 
+
 import org.cmg.resp.exceptions.UnsupportedTypeException;
+import org.cmg.resp.policy.facpl.Bag;
 
 /**
  * @author Andrea Margheri
@@ -103,14 +105,20 @@ public class BooleanComparisonEvaluator implements ComparisonEvaluator{
 
 	@Override
 	public boolean isSubsetOf(Object o1, Object o2) throws Throwable {
-		// TODO Auto-generated method stub
-		return false;
+		if (o2 instanceof Bag){
+			return ((Bag)o2).contains((Boolean)o1);
+		}else {
+			throw new UnsupportedTypeException("Boolean", "Subset");
+		}
 	}
 
 	@Override
 	public boolean isAtLestOneMemberOf(Object o1, Object o2) throws Throwable {
-		// TODO Auto-generated method stub
-		return false;
+		if (o2 instanceof Bag){
+			return ((Bag)o2).contains((Boolean)o1);
+		}else {
+			throw new UnsupportedTypeException("Boolean", "AtLeastOneMemberOf");
+		}
 	}
 
 }

@@ -19,6 +19,7 @@ import org.cmg.resp.exceptions.UnsupportedTypeException;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.policy.ActionID;
+import org.cmg.resp.policy.facpl.Bag;
 
 /**
  * @author Andrea Margheri
@@ -42,6 +43,7 @@ public class ComparisonEvaluatorFactory {
 		this.table.put(ActionID.class, ActionIDComparisonEvaluator.getInstance());
 		this.table.put(Template.class, TemplateComparisonEvaluator.getInstance());
 		this.table.put(Tuple.class, TupleComparisonEvaluator.getInstance());
+		this.table.put(Bag.class, BagComparisonEvaluator.getInstance());
 	}
 
 	public static synchronized ComparisonEvaluatorFactory getInstance() {
