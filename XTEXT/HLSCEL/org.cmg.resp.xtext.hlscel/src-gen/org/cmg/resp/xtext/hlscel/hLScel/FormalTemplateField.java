@@ -2,8 +2,6 @@
  */
 package org.cmg.resp.xtext.hlscel.hLScel;
 
-import org.eclipse.xtext.common.types.JvmIdentifiableElement;
-
 import org.eclipse.xtext.xbase.XExpression;
 
 /**
@@ -25,29 +23,29 @@ import org.eclipse.xtext.xbase.XExpression;
 public interface FormalTemplateField extends XExpression
 {
   /**
-   * Returns the value of the '<em><b>Reference</b></em>' reference.
+   * Returns the value of the '<em><b>Reference</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Reference</em>' reference isn't clear,
+   * If the meaning of the '<em>Reference</em>' containment reference isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Reference</em>' reference.
-   * @see #setReference(JvmIdentifiableElement)
+   * @return the value of the '<em>Reference</em>' containment reference.
+   * @see #setReference(XExpression)
    * @see org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage#getFormalTemplateField_Reference()
-   * @model
+   * @model containment="true"
    * @generated
    */
-  JvmIdentifiableElement getReference();
+  XExpression getReference();
 
   /**
-   * Sets the value of the '{@link org.cmg.resp.xtext.hlscel.hLScel.FormalTemplateField#getReference <em>Reference</em>}' reference.
+   * Sets the value of the '{@link org.cmg.resp.xtext.hlscel.hLScel.FormalTemplateField#getReference <em>Reference</em>}' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Reference</em>' reference.
+   * @param value the new value of the '<em>Reference</em>' containment reference.
    * @see #getReference()
    * @generated
    */
-  void setReference(JvmIdentifiableElement value);
+  void setReference(XExpression value);
 
 } // FormalTemplateField

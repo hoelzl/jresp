@@ -41,5 +41,4 @@ Export-Package: org.cmg.resp,
  org.cmg.resp.test.predicates,
  org.cmg.resp.test.topology,
  org.cmg.resp.topology
-Require-Bundle: com.google.gson;bundle-version="2.2.4",
- com.google.gson.source;bundle-version="2.2.4"
+Require-Bundle: com.google.gson;bundle-version="2.2.4"

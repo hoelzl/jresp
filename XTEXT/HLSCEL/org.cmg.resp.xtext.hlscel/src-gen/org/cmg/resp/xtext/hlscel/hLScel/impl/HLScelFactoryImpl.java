@@ -65,10 +65,18 @@ public class HLScelFactoryImpl extends EFactoryImpl implements HLScelFactory
     switch (eClass.getClassifierID())
     {
       case HLScelPackage.MODEL: return createModel();
+      case HLScelPackage.MODEL_ELEMENT: return createModelElement();
+      case HLScelPackage.NODE_DECLARATION: return createNodeDeclaration();
       case HLScelPackage.PROCESS_DECLARATION: return createProcessDeclaration();
+      case HLScelPackage.HL_SCEL_PREDICATE: return createHLScelPredicate();
       case HLScelPackage.SELF_LITERAL: return createSelfLiteral();
       case HLScelPackage.HL_SCEL_PUT_ACTION: return createHLScelPutAction();
-      case HLScelPackage.HSCEL_GET_ACTION: return createHScelGetAction();
+      case HLScelPackage.HL_SCEL_GET_ACTION: return createHLScelGetAction();
+      case HLScelPackage.HL_SCEL_QUERY_ACTION: return createHLScelQueryAction();
+      case HLScelPackage.HL_SCEL_GET_PACTION: return createHLScelGetPAction();
+      case HLScelPackage.HL_SCEL_QUERY_PACTION: return createHLScelQueryPAction();
+      case HLScelPackage.HL_SCEL_EXEC_ACTION: return createHLScelExecAction();
+      case HLScelPackage.HL_SCEL_CALL_ACTION: return createHLScelCallAction();
       case HLScelPackage.FORMAL_TEMPLATE_FIELD: return createFormalTemplateField();
       default:
         throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
@@ -91,10 +99,43 @@ public class HLScelFactoryImpl extends EFactoryImpl implements HLScelFactory
    * <!-- end-user-doc -->
    * @generated
    */
+  public ModelElement createModelElement()
+  {
+    ModelElementImpl modelElement = new ModelElementImpl();
+    return modelElement;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public NodeDeclaration createNodeDeclaration()
+  {
+    NodeDeclarationImpl nodeDeclaration = new NodeDeclarationImpl();
+    return nodeDeclaration;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public ProcessDeclaration createProcessDeclaration()
   {
     ProcessDeclarationImpl processDeclaration = new ProcessDeclarationImpl();
     return processDeclaration;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HLScelPredicate createHLScelPredicate()
+  {
+    HLScelPredicateImpl hlScelPredicate = new HLScelPredicateImpl();
+    return hlScelPredicate;
   }
 
   /**
@@ -124,10 +165,65 @@ public class HLScelFactoryImpl extends EFactoryImpl implements HLScelFactory
    * <!-- end-user-doc -->
    * @generated
    */
-  public HScelGetAction createHScelGetAction()
+  public HLScelGetAction createHLScelGetAction()
   {
-    HScelGetActionImpl hScelGetAction = new HScelGetActionImpl();
-    return hScelGetAction;
+    HLScelGetActionImpl hlScelGetAction = new HLScelGetActionImpl();
+    return hlScelGetAction;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HLScelQueryAction createHLScelQueryAction()
+  {
+    HLScelQueryActionImpl hlScelQueryAction = new HLScelQueryActionImpl();
+    return hlScelQueryAction;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HLScelGetPAction createHLScelGetPAction()
+  {
+    HLScelGetPActionImpl hlScelGetPAction = new HLScelGetPActionImpl();
+    return hlScelGetPAction;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HLScelQueryPAction createHLScelQueryPAction()
+  {
+    HLScelQueryPActionImpl hlScelQueryPAction = new HLScelQueryPActionImpl();
+    return hlScelQueryPAction;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HLScelExecAction createHLScelExecAction()
+  {
+    HLScelExecActionImpl hlScelExecAction = new HLScelExecActionImpl();
+    return hlScelExecAction;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public HLScelCallAction createHLScelCallAction()
+  {
+    HLScelCallActionImpl hlScelCallAction = new HLScelCallActionImpl();
+    return hlScelCallAction;
   }
 
   /**

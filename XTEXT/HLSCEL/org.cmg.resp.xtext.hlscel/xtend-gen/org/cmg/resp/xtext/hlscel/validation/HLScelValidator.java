@@ -3,7 +3,16 @@
  */
 package org.cmg.resp.xtext.hlscel.validation;
 
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelCallAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelExecAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetPAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction;
 import org.cmg.resp.xtext.hlscel.validation.AbstractHLScelValidator;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.xbase.XExpression;
 
 /**
  * Custom validation rules.
@@ -12,4 +21,25 @@ import org.cmg.resp.xtext.hlscel.validation.AbstractHLScelValidator;
  */
 @SuppressWarnings("all")
 public class HLScelValidator extends AbstractHLScelValidator {
+  protected boolean isValueExpectedRecursive(final XExpression expr) {
+    boolean _xifexpression = false;
+    boolean _isValueExpectedRecursive = super.isValueExpectedRecursive(expr);
+    if (_isValueExpectedRecursive) {
+      _xifexpression = true;
+    } else {
+      EObject _eContainer = expr.eContainer();
+      _xifexpression = this.isAnAction(_eContainer);
+    }
+    return _xifexpression;
+  }
+  
+  protected boolean isAnAction(final EObject expr) {
+    boolean _or = false;
+    if (((((((expr instanceof HLScelPutAction) || (expr instanceof HLScelGetAction)) || (expr instanceof HLScelGetPAction)) || (expr instanceof HLScelQueryAction)) || (expr instanceof HLScelQueryPAction)) || (expr instanceof HLScelExecAction))) {
+      _or = true;
+    } else {
+      _or = (expr instanceof HLScelCallAction);
+    }
+    return _or;
+  }
 }

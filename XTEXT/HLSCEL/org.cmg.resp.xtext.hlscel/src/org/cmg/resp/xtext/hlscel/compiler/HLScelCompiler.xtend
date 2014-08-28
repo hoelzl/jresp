@@ -5,6 +5,13 @@ import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 import org.cmg.resp.xtext.hlscel.hLScel.SelfLiteral
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetPAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelExecAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelCallAction
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelPredicate
 
 class HLScelCompiler extends XbaseCompiler {
 	
@@ -19,8 +26,29 @@ class HLScelCompiler extends XbaseCompiler {
 				_toJavaStatement(expr,it,isReferenced)
 			
 			}
+			HLScelPredicate: {
+				
+			}
 			HLScelPutAction: {
-				append('''true''')
+
+			}
+			HLScelGetAction: {
+				
+			}
+			HLScelQueryAction: {
+				
+			}
+			HLScelGetPAction: {
+				
+			}
+			HLScelQueryPAction: {
+				
+			}
+			HLScelExecAction: {
+				
+			}
+			HLScelCallAction: {
+				
 			}
 			default:
 				super.doInternalToJavaStatement(expr,it,isReferenced)
@@ -29,7 +57,7 @@ class HLScelCompiler extends XbaseCompiler {
     
     override protected internalToConvertedExpression(XExpression obj, 
                                                  ITreeAppendable b) {
-      switch obj {
+      switch obj { 
       	SelfLiteral: {
       		_toJavaExpression(obj,b)
       	}

@@ -3,10 +3,17 @@ package org.cmg.resp.xtext.hlscel.serializer;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.cmg.resp.xtext.hlscel.hLScel.FormalTemplateField;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelCallAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelExecAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelGetPAction;
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelPredicate;
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPutAction;
-import org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction;
 import org.cmg.resp.xtext.hlscel.hLScel.Model;
+import org.cmg.resp.xtext.hlscel.hLScel.NodeDeclaration;
 import org.cmg.resp.xtext.hlscel.hLScel.ProcessDeclaration;
 import org.cmg.resp.xtext.hlscel.hLScel.SelfLiteral;
 import org.cmg.resp.xtext.hlscel.services.HLScelGrammarAccess;
@@ -80,6 +87,186 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 					return; 
 				}
 				else break;
+			case HLScelPackage.HL_SCEL_CALL_ACTION:
+				if(context == grammarAccess.getHLScelActionRule() ||
+				   context == grammarAccess.getTemplateFieldRule() ||
+				   context == grammarAccess.getXAdditiveExpressionRule() ||
+				   context == grammarAccess.getXAdditiveExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAndExpressionRule() ||
+				   context == grammarAccess.getXAndExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAssignmentRule() ||
+				   context == grammarAccess.getXAssignmentAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXCastedExpressionRule() ||
+				   context == grammarAccess.getXCastedExpressionAccess().getXCastedExpressionTargetAction_1_0_0_0() ||
+				   context == grammarAccess.getXEqualityExpressionRule() ||
+				   context == grammarAccess.getXEqualityExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXExpressionRule() ||
+				   context == grammarAccess.getXExpressionOrVarDeclarationRule() ||
+				   context == grammarAccess.getXMemberFeatureCallRule() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXAssignmentAssignableAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXMultiplicativeExpressionRule() ||
+				   context == grammarAccess.getXMultiplicativeExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOrExpressionRule() ||
+				   context == grammarAccess.getXOrExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOtherOperatorExpressionRule() ||
+				   context == grammarAccess.getXOtherOperatorExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXParenthesizedExpressionRule() ||
+				   context == grammarAccess.getXPostfixOperationRule() ||
+				   context == grammarAccess.getXPostfixOperationAccess().getXPostfixOperationOperandAction_1_0_0() ||
+				   context == grammarAccess.getXPrimaryExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXUnaryOperationRule()) {
+					sequence_HLScelAction(context, (HLScelCallAction) semanticObject); 
+					return; 
+				}
+				else break;
+			case HLScelPackage.HL_SCEL_EXEC_ACTION:
+				if(context == grammarAccess.getHLScelActionRule() ||
+				   context == grammarAccess.getTemplateFieldRule() ||
+				   context == grammarAccess.getXAdditiveExpressionRule() ||
+				   context == grammarAccess.getXAdditiveExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAndExpressionRule() ||
+				   context == grammarAccess.getXAndExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAssignmentRule() ||
+				   context == grammarAccess.getXAssignmentAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXCastedExpressionRule() ||
+				   context == grammarAccess.getXCastedExpressionAccess().getXCastedExpressionTargetAction_1_0_0_0() ||
+				   context == grammarAccess.getXEqualityExpressionRule() ||
+				   context == grammarAccess.getXEqualityExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXExpressionRule() ||
+				   context == grammarAccess.getXExpressionOrVarDeclarationRule() ||
+				   context == grammarAccess.getXMemberFeatureCallRule() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXAssignmentAssignableAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXMultiplicativeExpressionRule() ||
+				   context == grammarAccess.getXMultiplicativeExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOrExpressionRule() ||
+				   context == grammarAccess.getXOrExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOtherOperatorExpressionRule() ||
+				   context == grammarAccess.getXOtherOperatorExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXParenthesizedExpressionRule() ||
+				   context == grammarAccess.getXPostfixOperationRule() ||
+				   context == grammarAccess.getXPostfixOperationAccess().getXPostfixOperationOperandAction_1_0_0() ||
+				   context == grammarAccess.getXPrimaryExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXUnaryOperationRule()) {
+					sequence_HLScelAction(context, (HLScelExecAction) semanticObject); 
+					return; 
+				}
+				else break;
+			case HLScelPackage.HL_SCEL_GET_ACTION:
+				if(context == grammarAccess.getHLScelActionRule() ||
+				   context == grammarAccess.getTemplateFieldRule() ||
+				   context == grammarAccess.getXAdditiveExpressionRule() ||
+				   context == grammarAccess.getXAdditiveExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAndExpressionRule() ||
+				   context == grammarAccess.getXAndExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAssignmentRule() ||
+				   context == grammarAccess.getXAssignmentAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXCastedExpressionRule() ||
+				   context == grammarAccess.getXCastedExpressionAccess().getXCastedExpressionTargetAction_1_0_0_0() ||
+				   context == grammarAccess.getXEqualityExpressionRule() ||
+				   context == grammarAccess.getXEqualityExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXExpressionRule() ||
+				   context == grammarAccess.getXExpressionOrVarDeclarationRule() ||
+				   context == grammarAccess.getXMemberFeatureCallRule() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXAssignmentAssignableAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXMultiplicativeExpressionRule() ||
+				   context == grammarAccess.getXMultiplicativeExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOrExpressionRule() ||
+				   context == grammarAccess.getXOrExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOtherOperatorExpressionRule() ||
+				   context == grammarAccess.getXOtherOperatorExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXParenthesizedExpressionRule() ||
+				   context == grammarAccess.getXPostfixOperationRule() ||
+				   context == grammarAccess.getXPostfixOperationAccess().getXPostfixOperationOperandAction_1_0_0() ||
+				   context == grammarAccess.getXPrimaryExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXUnaryOperationRule()) {
+					sequence_HLScelAction(context, (HLScelGetAction) semanticObject); 
+					return; 
+				}
+				else break;
+			case HLScelPackage.HL_SCEL_GET_PACTION:
+				if(context == grammarAccess.getHLScelActionRule() ||
+				   context == grammarAccess.getTemplateFieldRule() ||
+				   context == grammarAccess.getXAdditiveExpressionRule() ||
+				   context == grammarAccess.getXAdditiveExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAndExpressionRule() ||
+				   context == grammarAccess.getXAndExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAssignmentRule() ||
+				   context == grammarAccess.getXAssignmentAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXCastedExpressionRule() ||
+				   context == grammarAccess.getXCastedExpressionAccess().getXCastedExpressionTargetAction_1_0_0_0() ||
+				   context == grammarAccess.getXEqualityExpressionRule() ||
+				   context == grammarAccess.getXEqualityExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXExpressionRule() ||
+				   context == grammarAccess.getXExpressionOrVarDeclarationRule() ||
+				   context == grammarAccess.getXMemberFeatureCallRule() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXAssignmentAssignableAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXMultiplicativeExpressionRule() ||
+				   context == grammarAccess.getXMultiplicativeExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOrExpressionRule() ||
+				   context == grammarAccess.getXOrExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOtherOperatorExpressionRule() ||
+				   context == grammarAccess.getXOtherOperatorExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXParenthesizedExpressionRule() ||
+				   context == grammarAccess.getXPostfixOperationRule() ||
+				   context == grammarAccess.getXPostfixOperationAccess().getXPostfixOperationOperandAction_1_0_0() ||
+				   context == grammarAccess.getXPrimaryExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXUnaryOperationRule()) {
+					sequence_HLScelAction(context, (HLScelGetPAction) semanticObject); 
+					return; 
+				}
+				else break;
+			case HLScelPackage.HL_SCEL_PREDICATE:
+				if(context == grammarAccess.getHLScelPredicateRule() ||
+				   context == grammarAccess.getTemplateFieldRule() ||
+				   context == grammarAccess.getXAdditiveExpressionRule() ||
+				   context == grammarAccess.getXAdditiveExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAndExpressionRule() ||
+				   context == grammarAccess.getXAndExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAssignmentRule() ||
+				   context == grammarAccess.getXAssignmentAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXCastedExpressionRule() ||
+				   context == grammarAccess.getXCastedExpressionAccess().getXCastedExpressionTargetAction_1_0_0_0() ||
+				   context == grammarAccess.getXEqualityExpressionRule() ||
+				   context == grammarAccess.getXEqualityExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXExpressionRule() ||
+				   context == grammarAccess.getXExpressionOrVarDeclarationRule() ||
+				   context == grammarAccess.getXMemberFeatureCallRule() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXAssignmentAssignableAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXMultiplicativeExpressionRule() ||
+				   context == grammarAccess.getXMultiplicativeExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOrExpressionRule() ||
+				   context == grammarAccess.getXOrExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOtherOperatorExpressionRule() ||
+				   context == grammarAccess.getXOtherOperatorExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXParenthesizedExpressionRule() ||
+				   context == grammarAccess.getXPostfixOperationRule() ||
+				   context == grammarAccess.getXPostfixOperationAccess().getXPostfixOperationOperandAction_1_0_0() ||
+				   context == grammarAccess.getXPrimaryExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXUnaryOperationRule()) {
+					sequence_HLScelPredicate(context, (HLScelPredicate) semanticObject); 
+					return; 
+				}
+				else break;
 			case HLScelPackage.HL_SCEL_PUT_ACTION:
 				if(context == grammarAccess.getHLScelActionRule() ||
 				   context == grammarAccess.getTemplateFieldRule() ||
@@ -116,7 +303,7 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 					return; 
 				}
 				else break;
-			case HLScelPackage.HSCEL_GET_ACTION:
+			case HLScelPackage.HL_SCEL_QUERY_ACTION:
 				if(context == grammarAccess.getHLScelActionRule() ||
 				   context == grammarAccess.getTemplateFieldRule() ||
 				   context == grammarAccess.getXAdditiveExpressionRule() ||
@@ -148,7 +335,43 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
 				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
 				   context == grammarAccess.getXUnaryOperationRule()) {
-					sequence_HLScelAction(context, (HScelGetAction) semanticObject); 
+					sequence_HLScelAction(context, (HLScelQueryAction) semanticObject); 
+					return; 
+				}
+				else break;
+			case HLScelPackage.HL_SCEL_QUERY_PACTION:
+				if(context == grammarAccess.getHLScelActionRule() ||
+				   context == grammarAccess.getTemplateFieldRule() ||
+				   context == grammarAccess.getXAdditiveExpressionRule() ||
+				   context == grammarAccess.getXAdditiveExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAndExpressionRule() ||
+				   context == grammarAccess.getXAndExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXAssignmentRule() ||
+				   context == grammarAccess.getXAssignmentAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXCastedExpressionRule() ||
+				   context == grammarAccess.getXCastedExpressionAccess().getXCastedExpressionTargetAction_1_0_0_0() ||
+				   context == grammarAccess.getXEqualityExpressionRule() ||
+				   context == grammarAccess.getXEqualityExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXExpressionRule() ||
+				   context == grammarAccess.getXExpressionOrVarDeclarationRule() ||
+				   context == grammarAccess.getXMemberFeatureCallRule() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXAssignmentAssignableAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXMemberFeatureCallAccess().getXMemberFeatureCallMemberCallTargetAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXMultiplicativeExpressionRule() ||
+				   context == grammarAccess.getXMultiplicativeExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOrExpressionRule() ||
+				   context == grammarAccess.getXOrExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXOtherOperatorExpressionRule() ||
+				   context == grammarAccess.getXOtherOperatorExpressionAccess().getXBinaryOperationLeftOperandAction_1_0_0_0() ||
+				   context == grammarAccess.getXParenthesizedExpressionRule() ||
+				   context == grammarAccess.getXPostfixOperationRule() ||
+				   context == grammarAccess.getXPostfixOperationAccess().getXPostfixOperationOperandAction_1_0_0() ||
+				   context == grammarAccess.getXPrimaryExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionRule() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXBinaryOperationLeftOperandAction_1_1_0_0_0() ||
+				   context == grammarAccess.getXRelationalExpressionAccess().getXInstanceOfExpressionExpressionAction_1_0_0_0_0() ||
+				   context == grammarAccess.getXUnaryOperationRule()) {
+					sequence_HLScelAction(context, (HLScelQueryPAction) semanticObject); 
 					return; 
 				}
 				else break;
@@ -158,8 +381,16 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 					return; 
 				}
 				else break;
+			case HLScelPackage.NODE_DECLARATION:
+				if(context == grammarAccess.getModelElementRule() ||
+				   context == grammarAccess.getNodeDeclarationRule()) {
+					sequence_NodeDeclaration(context, (NodeDeclaration) semanticObject); 
+					return; 
+				}
+				else break;
 			case HLScelPackage.PROCESS_DECLARATION:
-				if(context == grammarAccess.getProcessDeclarationRule()) {
+				if(context == grammarAccess.getModelElementRule() ||
+				   context == grammarAccess.getProcessDeclarationRule()) {
 					sequence_ProcessDeclaration(context, (ProcessDeclaration) semanticObject); 
 					return; 
 				}
@@ -1267,7 +1498,60 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     (featureCallArguments+=XExpression featureCallArguments+=XExpression* featureCallArguments+=XExpression)
+	 *     arg=XExpression
+	 */
+	protected void sequence_HLScelAction(EObject context, HLScelCallAction semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, HLScelPackage.Literals.HL_SCEL_CALL_ACTION__ARG) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, HLScelPackage.Literals.HL_SCEL_CALL_ACTION__ARG));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getHLScelActionAccess().getArgXExpressionParserRuleCall_6_3_0(), semanticObject.getArg());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (arg=XExpression target=XExpression)
+	 */
+	protected void sequence_HLScelAction(EObject context, HLScelExecAction semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, HLScelPackage.Literals.HL_SCEL_EXEC_ACTION__ARG) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, HLScelPackage.Literals.HL_SCEL_EXEC_ACTION__ARG));
+			if(transientValues.isValueTransient(semanticObject, HLScelPackage.Literals.HL_SCEL_EXEC_ACTION__TARGET) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, HLScelPackage.Literals.HL_SCEL_EXEC_ACTION__TARGET));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getHLScelActionAccess().getArgXExpressionParserRuleCall_5_3_0(), semanticObject.getArg());
+		feeder.accept(grammarAccess.getHLScelActionAccess().getTargetXExpressionParserRuleCall_5_6_0(), semanticObject.getTarget());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (fields+=TemplateField fields+=TemplateField* target=XExpression)
+	 */
+	protected void sequence_HLScelAction(EObject context, HLScelGetAction semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (fields+=TemplateField fields+=TemplateField* target=XExpression)
+	 */
+	protected void sequence_HLScelAction(EObject context, HLScelGetPAction semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (featureCallArguments+=XExpression featureCallArguments+=XExpression* target=XExpression)
 	 */
 	protected void sequence_HLScelAction(EObject context, HLScelPutAction semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -1278,16 +1562,50 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 	 * Constraint:
 	 *     (fields+=TemplateField fields+=TemplateField* target=XExpression)
 	 */
-	protected void sequence_HLScelAction(EObject context, HScelGetAction semanticObject) {
+	protected void sequence_HLScelAction(EObject context, HLScelQueryAction semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
 	
 	/**
 	 * Constraint:
-	 *     elements+=ProcessDeclaration*
+	 *     (fields+=TemplateField fields+=TemplateField* target=XExpression)
+	 */
+	protected void sequence_HLScelAction(EObject context, HLScelQueryPAction semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     exp=XExpression
+	 */
+	protected void sequence_HLScelPredicate(EObject context, HLScelPredicate semanticObject) {
+		if(errorAcceptor != null) {
+			if(transientValues.isValueTransient(semanticObject, HLScelPackage.Literals.HL_SCEL_PREDICATE__EXP) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, HLScelPackage.Literals.HL_SCEL_PREDICATE__EXP));
+		}
+		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
+		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
+		feeder.accept(grammarAccess.getHLScelPredicateAccess().getExpXExpressionParserRuleCall_1_0(), semanticObject.getExp());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     elements+=ModelElement*
 	 */
 	protected void sequence_Model(EObject context, Model semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Constraint:
+	 *     (name=ID (args+=FullJvmFormalParameter args+=FullJvmFormalParameter*)?)
+	 */
+	protected void sequence_NodeDeclaration(EObject context, NodeDeclaration semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -1312,7 +1630,7 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 	
 	/**
 	 * Constraint:
-	 *     reference=[JvmIdentifiableElement|FeatureCallID]
+	 *     reference=XFeatureCall
 	 */
 	protected void sequence_TemplateField(EObject context, FormalTemplateField semanticObject) {
 		if(errorAcceptor != null) {
@@ -1321,7 +1639,7 @@ public class HLScelSemanticSequencer extends XbaseSemanticSequencer {
 		}
 		INodesForEObjectProvider nodes = createNodeProvider(semanticObject);
 		SequenceFeeder feeder = createSequencerFeeder(semanticObject, nodes);
-		feeder.accept(grammarAccess.getTemplateFieldAccess().getReferenceJvmIdentifiableElementFeatureCallIDParserRuleCall_1_2_0_1(), semanticObject.getReference());
+		feeder.accept(grammarAccess.getTemplateFieldAccess().getReferenceXFeatureCallParserRuleCall_1_2_0(), semanticObject.getReference());
 		feeder.finish();
 	}
 }

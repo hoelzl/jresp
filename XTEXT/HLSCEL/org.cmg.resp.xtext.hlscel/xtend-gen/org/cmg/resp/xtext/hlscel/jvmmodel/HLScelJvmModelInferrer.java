@@ -2,9 +2,12 @@ package org.cmg.resp.xtext.hlscel.jvmmodel;
 
 import com.google.inject.Inject;
 import java.util.Arrays;
+import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.xtext.hlscel.hLScel.ProcessDeclaration;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtend2.lib.StringConcatenationClient;
+import org.eclipse.xtext.common.types.JvmConstructor;
 import org.eclipse.xtext.common.types.JvmFormalParameter;
 import org.eclipse.xtext.common.types.JvmGenericType;
 import org.eclipse.xtext.common.types.JvmMember;
@@ -66,9 +69,30 @@ public class HLScelJvmModelInferrer extends AbstractModelInferrer {
       public void apply(final JvmGenericType it) {
         String _documentation = HLScelJvmModelInferrer.this._jvmTypesBuilder.getDocumentation(process);
         HLScelJvmModelInferrer.this._jvmTypesBuilder.setDocumentation(it, _documentation);
+        EList<JvmTypeReference> _superTypes = it.getSuperTypes();
+        JvmTypeReference _newTypeRef = HLScelJvmModelInferrer.this._jvmTypesBuilder.newTypeRef(it, Agent.class);
+        HLScelJvmModelInferrer.this._jvmTypesBuilder.<JvmTypeReference>operator_add(_superTypes, _newTypeRef);
         EList<JvmMember> _members = it.getMembers();
-        JvmTypeReference _inferredType = HLScelJvmModelInferrer.this._jvmTypesBuilder.inferredType();
-        final Procedure1<JvmOperation> _function = new Procedure1<JvmOperation>() {
+        final Procedure1<JvmConstructor> _function = new Procedure1<JvmConstructor>() {
+          public void apply(final JvmConstructor it) {
+            StringConcatenationClient _client = new StringConcatenationClient() {
+              @Override
+              protected void appendTo(StringConcatenationClient.TargetStringConcatenation _builder) {
+                _builder.append("super(\"");
+                String _name = process.getName();
+                _builder.append(_name, "");
+                _builder.append("\");");
+                _builder.newLineIfNotEmpty();
+              }
+            };
+            HLScelJvmModelInferrer.this._jvmTypesBuilder.setBody(it, _client);
+          }
+        };
+        JvmConstructor _constructor = HLScelJvmModelInferrer.this._jvmTypesBuilder.toConstructor(process, _function);
+        HLScelJvmModelInferrer.this._jvmTypesBuilder.<JvmConstructor>operator_add(_members, _constructor);
+        EList<JvmMember> _members_1 = it.getMembers();
+        JvmTypeReference _newTypeRef_1 = HLScelJvmModelInferrer.this._jvmTypesBuilder.newTypeRef(it, Void.TYPE);
+        final Procedure1<JvmOperation> _function_1 = new Procedure1<JvmOperation>() {
           public void apply(final JvmOperation it) {
             EList<JvmFormalParameter> _args = process.getArgs();
             for (final JvmFormalParameter p : _args) {
@@ -82,8 +106,8 @@ public class HLScelJvmModelInferrer extends AbstractModelInferrer {
             HLScelJvmModelInferrer.this._jvmTypesBuilder.setBody(it, _body);
           }
         };
-        JvmOperation _method = HLScelJvmModelInferrer.this._jvmTypesBuilder.toMethod(process, "execute", _inferredType, _function);
-        HLScelJvmModelInferrer.this._jvmTypesBuilder.<JvmOperation>operator_add(_members, _method);
+        JvmOperation _method = HLScelJvmModelInferrer.this._jvmTypesBuilder.toMethod(process, "doRun", _newTypeRef_1, _function_1);
+        HLScelJvmModelInferrer.this._jvmTypesBuilder.<JvmOperation>operator_add(_members_1, _method);
       }
     };
     _accept.initializeLater(_function);

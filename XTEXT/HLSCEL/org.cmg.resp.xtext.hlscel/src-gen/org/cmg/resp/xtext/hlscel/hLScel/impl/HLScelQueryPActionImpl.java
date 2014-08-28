@@ -5,7 +5,7 @@ package org.cmg.resp.xtext.hlscel.hLScel.impl;
 import java.util.Collection;
 
 import org.cmg.resp.xtext.hlscel.hLScel.HLScelPackage;
-import org.cmg.resp.xtext.hlscel.hLScel.HScelGetAction;
+import org.cmg.resp.xtext.hlscel.hLScel.HLScelQueryPAction;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -26,19 +26,19 @@ import org.eclipse.xtext.xbase.impl.XExpressionImpl;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>HScel Get Action</b></em>'.
+ * An implementation of the model object '<em><b>Query PAction</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.impl.HScelGetActionImpl#getFields <em>Fields</em>}</li>
- *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.impl.HScelGetActionImpl#getTarget <em>Target</em>}</li>
+ *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.impl.HLScelQueryPActionImpl#getFields <em>Fields</em>}</li>
+ *   <li>{@link org.cmg.resp.xtext.hlscel.hLScel.impl.HLScelQueryPActionImpl#getTarget <em>Target</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class HScelGetActionImpl extends XExpressionImpl implements HScelGetAction
+public class HLScelQueryPActionImpl extends XExpressionImpl implements HLScelQueryPAction
 {
   /**
    * The cached value of the '{@link #getFields() <em>Fields</em>}' containment reference list.
@@ -65,7 +65,7 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
    * <!-- end-user-doc -->
    * @generated
    */
-  protected HScelGetActionImpl()
+  protected HLScelQueryPActionImpl()
   {
     super();
   }
@@ -78,7 +78,7 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   @Override
   protected EClass eStaticClass()
   {
-    return HLScelPackage.Literals.HSCEL_GET_ACTION;
+    return HLScelPackage.Literals.HL_SCEL_QUERY_PACTION;
   }
 
   /**
@@ -90,7 +90,7 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   {
     if (fields == null)
     {
-      fields = new EObjectContainmentEList<XExpression>(XExpression.class, this, HLScelPackage.HSCEL_GET_ACTION__FIELDS);
+      fields = new EObjectContainmentEList<XExpression>(XExpression.class, this, HLScelPackage.HL_SCEL_QUERY_PACTION__FIELDS);
     }
     return fields;
   }
@@ -116,7 +116,7 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
     target = newTarget;
     if (eNotificationRequired())
     {
-      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, HLScelPackage.HSCEL_GET_ACTION__TARGET, oldTarget, newTarget);
+      ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET, oldTarget, newTarget);
       if (msgs == null) msgs = notification; else msgs.add(notification);
     }
     return msgs;
@@ -133,14 +133,14 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
     {
       NotificationChain msgs = null;
       if (target != null)
-        msgs = ((InternalEObject)target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.HSCEL_GET_ACTION__TARGET, null, msgs);
+        msgs = ((InternalEObject)target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET, null, msgs);
       if (newTarget != null)
-        msgs = ((InternalEObject)newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.HSCEL_GET_ACTION__TARGET, null, msgs);
+        msgs = ((InternalEObject)newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET, null, msgs);
       msgs = basicSetTarget(newTarget, msgs);
       if (msgs != null) msgs.dispatch();
     }
     else if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, HLScelPackage.HSCEL_GET_ACTION__TARGET, newTarget, newTarget));
+      eNotify(new ENotificationImpl(this, Notification.SET, HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET, newTarget, newTarget));
   }
 
   /**
@@ -153,9 +153,9 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   {
     switch (featureID)
     {
-      case HLScelPackage.HSCEL_GET_ACTION__FIELDS:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__FIELDS:
         return ((InternalEList<?>)getFields()).basicRemove(otherEnd, msgs);
-      case HLScelPackage.HSCEL_GET_ACTION__TARGET:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET:
         return basicSetTarget(null, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -171,9 +171,9 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   {
     switch (featureID)
     {
-      case HLScelPackage.HSCEL_GET_ACTION__FIELDS:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__FIELDS:
         return getFields();
-      case HLScelPackage.HSCEL_GET_ACTION__TARGET:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET:
         return getTarget();
     }
     return super.eGet(featureID, resolve, coreType);
@@ -190,11 +190,11 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   {
     switch (featureID)
     {
-      case HLScelPackage.HSCEL_GET_ACTION__FIELDS:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__FIELDS:
         getFields().clear();
         getFields().addAll((Collection<? extends XExpression>)newValue);
         return;
-      case HLScelPackage.HSCEL_GET_ACTION__TARGET:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET:
         setTarget((XExpression)newValue);
         return;
     }
@@ -211,10 +211,10 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   {
     switch (featureID)
     {
-      case HLScelPackage.HSCEL_GET_ACTION__FIELDS:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__FIELDS:
         getFields().clear();
         return;
-      case HLScelPackage.HSCEL_GET_ACTION__TARGET:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET:
         setTarget((XExpression)null);
         return;
     }
@@ -231,12 +231,12 @@ public class HScelGetActionImpl extends XExpressionImpl implements HScelGetActio
   {
     switch (featureID)
     {
-      case HLScelPackage.HSCEL_GET_ACTION__FIELDS:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__FIELDS:
         return fields != null && !fields.isEmpty();
-      case HLScelPackage.HSCEL_GET_ACTION__TARGET:
+      case HLScelPackage.HL_SCEL_QUERY_PACTION__TARGET:
         return target != null;
     }
     return super.eIsSet(featureID);
   }
 
-} //HScelGetActionImpl
+} //HLScelQueryPActionImpl

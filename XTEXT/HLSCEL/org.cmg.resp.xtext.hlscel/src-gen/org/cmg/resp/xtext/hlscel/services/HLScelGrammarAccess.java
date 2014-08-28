@@ -22,17 +22,105 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 	public class ModelElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "Model");
 		private final Assignment cElementsAssignment = (Assignment)rule.eContents().get(1);
-		private final RuleCall cElementsProcessDeclarationParserRuleCall_0 = (RuleCall)cElementsAssignment.eContents().get(0);
+		private final RuleCall cElementsModelElementParserRuleCall_0 = (RuleCall)cElementsAssignment.eContents().get(0);
 		
 		//Model:
-		//	elements+=ProcessDeclaration*;
+		//	elements+=ModelElement*;
 		public ParserRule getRule() { return rule; }
 
-		//elements+=ProcessDeclaration*
+		//elements+=ModelElement*
 		public Assignment getElementsAssignment() { return cElementsAssignment; }
 
+		//ModelElement
+		public RuleCall getElementsModelElementParserRuleCall_0() { return cElementsModelElementParserRuleCall_0; }
+	}
+
+	public class ModelElementElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "ModelElement");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cProcessDeclarationParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final RuleCall cNodeDeclarationParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		
+		//ModelElement:
+		//	ProcessDeclaration | NodeDeclaration;
+		public ParserRule getRule() { return rule; }
+
+		//ProcessDeclaration | NodeDeclaration
+		public Alternatives getAlternatives() { return cAlternatives; }
+
 		//ProcessDeclaration
-		public RuleCall getElementsProcessDeclarationParserRuleCall_0() { return cElementsProcessDeclarationParserRuleCall_0; }
+		public RuleCall getProcessDeclarationParserRuleCall_0() { return cProcessDeclarationParserRuleCall_0; }
+
+		//NodeDeclaration
+		public RuleCall getNodeDeclarationParserRuleCall_1() { return cNodeDeclarationParserRuleCall_1; }
+	}
+
+	public class NodeDeclarationElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "NodeDeclaration");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Keyword cNodeKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cNameAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cNameIDTerminalRuleCall_1_0 = (RuleCall)cNameAssignment_1.eContents().get(0);
+		private final Keyword cLeftParenthesisKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Group cGroup_3 = (Group)cGroup.eContents().get(3);
+		private final Assignment cArgsAssignment_3_0 = (Assignment)cGroup_3.eContents().get(0);
+		private final RuleCall cArgsFullJvmFormalParameterParserRuleCall_3_0_0 = (RuleCall)cArgsAssignment_3_0.eContents().get(0);
+		private final Group cGroup_3_1 = (Group)cGroup_3.eContents().get(1);
+		private final Keyword cCommaKeyword_3_1_0 = (Keyword)cGroup_3_1.eContents().get(0);
+		private final Assignment cArgsAssignment_3_1_1 = (Assignment)cGroup_3_1.eContents().get(1);
+		private final RuleCall cArgsFullJvmFormalParameterParserRuleCall_3_1_1_0 = (RuleCall)cArgsAssignment_3_1_1.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		private final Keyword cLeftCurlyBracketKeyword_5 = (Keyword)cGroup.eContents().get(5);
+		private final Keyword cRightCurlyBracketKeyword_6 = (Keyword)cGroup.eContents().get(6);
+		
+		//NodeDeclaration:
+		//	"node" name=ID "(" (args+=FullJvmFormalParameter ("," args+=FullJvmFormalParameter)*)? ")" "{" "}";
+		public ParserRule getRule() { return rule; }
+
+		//"node" name=ID "(" (args+=FullJvmFormalParameter ("," args+=FullJvmFormalParameter)*)? ")" "{" "}"
+		public Group getGroup() { return cGroup; }
+
+		//"node"
+		public Keyword getNodeKeyword_0() { return cNodeKeyword_0; }
+
+		//name=ID
+		public Assignment getNameAssignment_1() { return cNameAssignment_1; }
+
+		//ID
+		public RuleCall getNameIDTerminalRuleCall_1_0() { return cNameIDTerminalRuleCall_1_0; }
+
+		//"("
+		public Keyword getLeftParenthesisKeyword_2() { return cLeftParenthesisKeyword_2; }
+
+		//(args+=FullJvmFormalParameter ("," args+=FullJvmFormalParameter)*)?
+		public Group getGroup_3() { return cGroup_3; }
+
+		//args+=FullJvmFormalParameter
+		public Assignment getArgsAssignment_3_0() { return cArgsAssignment_3_0; }
+
+		//FullJvmFormalParameter
+		public RuleCall getArgsFullJvmFormalParameterParserRuleCall_3_0_0() { return cArgsFullJvmFormalParameterParserRuleCall_3_0_0; }
+
+		//("," args+=FullJvmFormalParameter)*
+		public Group getGroup_3_1() { return cGroup_3_1; }
+
+		//","
+		public Keyword getCommaKeyword_3_1_0() { return cCommaKeyword_3_1_0; }
+
+		//args+=FullJvmFormalParameter
+		public Assignment getArgsAssignment_3_1_1() { return cArgsAssignment_3_1_1; }
+
+		//FullJvmFormalParameter
+		public RuleCall getArgsFullJvmFormalParameterParserRuleCall_3_1_1_0() { return cArgsFullJvmFormalParameterParserRuleCall_3_1_1_0; }
+
+		//")"
+		public Keyword getRightParenthesisKeyword_4() { return cRightParenthesisKeyword_4; }
+
+		//"{"
+		public Keyword getLeftCurlyBracketKeyword_5() { return cLeftCurlyBracketKeyword_5; }
+
+		//"}"
+		public Keyword getRightCurlyBracketKeyword_6() { return cRightCurlyBracketKeyword_6; }
 	}
 
 	public class ProcessDeclarationElements extends AbstractParserRuleElementFinder {
@@ -120,16 +208,17 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cXTryCatchFinallyExpressionParserRuleCall_11 = (RuleCall)cAlternatives.eContents().get(11);
 		private final RuleCall cXParenthesizedExpressionParserRuleCall_12 = (RuleCall)cAlternatives.eContents().get(12);
 		private final RuleCall cHLScelActionParserRuleCall_13 = (RuleCall)cAlternatives.eContents().get(13);
+		private final RuleCall cHLScelPredicateParserRuleCall_14 = (RuleCall)cAlternatives.eContents().get(14);
 		
 		//XPrimaryExpression returns xbase::XExpression:
 		//	XConstructorCall | XBlockExpression | XSwitchExpression | XFeatureCall | XLiteral | XIfExpression | XForLoopExpression
 		//	| XWhileExpression | XDoWhileExpression | XThrowExpression | XReturnExpression | XTryCatchFinallyExpression |
-		//	XParenthesizedExpression | HLScelAction;
+		//	XParenthesizedExpression | HLScelAction | HLScelPredicate;
 		public ParserRule getRule() { return rule; }
 
 		//XConstructorCall | XBlockExpression | XSwitchExpression | XFeatureCall | XLiteral | XIfExpression | XForLoopExpression |
 		//XWhileExpression | XDoWhileExpression | XThrowExpression | XReturnExpression | XTryCatchFinallyExpression |
-		//XParenthesizedExpression | HLScelAction
+		//XParenthesizedExpression | HLScelAction | HLScelPredicate
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//XConstructorCall
@@ -173,6 +262,37 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 
 		//HLScelAction
 		public RuleCall getHLScelActionParserRuleCall_13() { return cHLScelActionParserRuleCall_13; }
+
+		//HLScelPredicate
+		public RuleCall getHLScelPredicateParserRuleCall_14() { return cHLScelPredicateParserRuleCall_14; }
+	}
+
+	public class HLScelPredicateElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "HLScelPredicate");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Keyword cLeftSquareBracketVerticalLineKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cExpAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cExpXExpressionParserRuleCall_1_0 = (RuleCall)cExpAssignment_1.eContents().get(0);
+		private final Keyword cVerticalLineRightSquareBracketKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		
+		//HLScelPredicate:
+		//	"[|" exp=XExpression "|]";
+		public ParserRule getRule() { return rule; }
+
+		//"[|" exp=XExpression "|]"
+		public Group getGroup() { return cGroup; }
+
+		//"[|"
+		public Keyword getLeftSquareBracketVerticalLineKeyword_0() { return cLeftSquareBracketVerticalLineKeyword_0; }
+
+		//exp=XExpression
+		public Assignment getExpAssignment_1() { return cExpAssignment_1; }
+
+		//XExpression
+		public RuleCall getExpXExpressionParserRuleCall_1_0() { return cExpXExpressionParserRuleCall_1_0; }
+
+		//"|]"
+		public Keyword getVerticalLineRightSquareBracketKeyword_2() { return cVerticalLineRightSquareBracketKeyword_2; }
 	}
 
 	public class XLiteralElements extends AbstractParserRuleElementFinder {
@@ -256,10 +376,10 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cFeatureCallArgumentsXExpressionParserRuleCall_0_4_1_0 = (RuleCall)cFeatureCallArgumentsAssignment_0_4_1.eContents().get(0);
 		private final Keyword cRightParenthesisKeyword_0_5 = (Keyword)cGroup_0.eContents().get(5);
 		private final Keyword cCommercialAtKeyword_0_6 = (Keyword)cGroup_0.eContents().get(6);
-		private final Assignment cFeatureCallArgumentsAssignment_0_7 = (Assignment)cGroup_0.eContents().get(7);
-		private final RuleCall cFeatureCallArgumentsXExpressionParserRuleCall_0_7_0 = (RuleCall)cFeatureCallArgumentsAssignment_0_7.eContents().get(0);
+		private final Assignment cTargetAssignment_0_7 = (Assignment)cGroup_0.eContents().get(7);
+		private final RuleCall cTargetXExpressionParserRuleCall_0_7_0 = (RuleCall)cTargetAssignment_0_7.eContents().get(0);
 		private final Group cGroup_1 = (Group)cAlternatives.eContents().get(1);
-		private final Action cHScelGetActionAction_1_0 = (Action)cGroup_1.eContents().get(0);
+		private final Action cHLScelGetActionAction_1_0 = (Action)cGroup_1.eContents().get(0);
 		private final Keyword cGetKeyword_1_1 = (Keyword)cGroup_1.eContents().get(1);
 		private final Keyword cLeftParenthesisKeyword_1_2 = (Keyword)cGroup_1.eContents().get(2);
 		private final Assignment cFieldsAssignment_1_3 = (Assignment)cGroup_1.eContents().get(3);
@@ -272,20 +392,87 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		private final Keyword cCommercialAtKeyword_1_6 = (Keyword)cGroup_1.eContents().get(6);
 		private final Assignment cTargetAssignment_1_7 = (Assignment)cGroup_1.eContents().get(7);
 		private final RuleCall cTargetXExpressionParserRuleCall_1_7_0 = (RuleCall)cTargetAssignment_1_7.eContents().get(0);
+		private final Group cGroup_2 = (Group)cAlternatives.eContents().get(2);
+		private final Action cHLScelQueryActionAction_2_0 = (Action)cGroup_2.eContents().get(0);
+		private final Keyword cQueryKeyword_2_1 = (Keyword)cGroup_2.eContents().get(1);
+		private final Keyword cLeftParenthesisKeyword_2_2 = (Keyword)cGroup_2.eContents().get(2);
+		private final Assignment cFieldsAssignment_2_3 = (Assignment)cGroup_2.eContents().get(3);
+		private final RuleCall cFieldsTemplateFieldParserRuleCall_2_3_0 = (RuleCall)cFieldsAssignment_2_3.eContents().get(0);
+		private final Group cGroup_2_4 = (Group)cGroup_2.eContents().get(4);
+		private final Keyword cCommaKeyword_2_4_0 = (Keyword)cGroup_2_4.eContents().get(0);
+		private final Assignment cFieldsAssignment_2_4_1 = (Assignment)cGroup_2_4.eContents().get(1);
+		private final RuleCall cFieldsTemplateFieldParserRuleCall_2_4_1_0 = (RuleCall)cFieldsAssignment_2_4_1.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_2_5 = (Keyword)cGroup_2.eContents().get(5);
+		private final Keyword cCommercialAtKeyword_2_6 = (Keyword)cGroup_2.eContents().get(6);
+		private final Assignment cTargetAssignment_2_7 = (Assignment)cGroup_2.eContents().get(7);
+		private final RuleCall cTargetXExpressionParserRuleCall_2_7_0 = (RuleCall)cTargetAssignment_2_7.eContents().get(0);
+		private final Group cGroup_3 = (Group)cAlternatives.eContents().get(3);
+		private final Action cHLScelGetPActionAction_3_0 = (Action)cGroup_3.eContents().get(0);
+		private final Keyword cGetpKeyword_3_1 = (Keyword)cGroup_3.eContents().get(1);
+		private final Keyword cLeftParenthesisKeyword_3_2 = (Keyword)cGroup_3.eContents().get(2);
+		private final Assignment cFieldsAssignment_3_3 = (Assignment)cGroup_3.eContents().get(3);
+		private final RuleCall cFieldsTemplateFieldParserRuleCall_3_3_0 = (RuleCall)cFieldsAssignment_3_3.eContents().get(0);
+		private final Group cGroup_3_4 = (Group)cGroup_3.eContents().get(4);
+		private final Keyword cCommaKeyword_3_4_0 = (Keyword)cGroup_3_4.eContents().get(0);
+		private final Assignment cFieldsAssignment_3_4_1 = (Assignment)cGroup_3_4.eContents().get(1);
+		private final RuleCall cFieldsTemplateFieldParserRuleCall_3_4_1_0 = (RuleCall)cFieldsAssignment_3_4_1.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_3_5 = (Keyword)cGroup_3.eContents().get(5);
+		private final Keyword cCommercialAtKeyword_3_6 = (Keyword)cGroup_3.eContents().get(6);
+		private final Assignment cTargetAssignment_3_7 = (Assignment)cGroup_3.eContents().get(7);
+		private final RuleCall cTargetXExpressionParserRuleCall_3_7_0 = (RuleCall)cTargetAssignment_3_7.eContents().get(0);
+		private final Group cGroup_4 = (Group)cAlternatives.eContents().get(4);
+		private final Action cHLScelQueryPActionAction_4_0 = (Action)cGroup_4.eContents().get(0);
+		private final Keyword cQuerypKeyword_4_1 = (Keyword)cGroup_4.eContents().get(1);
+		private final Keyword cLeftParenthesisKeyword_4_2 = (Keyword)cGroup_4.eContents().get(2);
+		private final Assignment cFieldsAssignment_4_3 = (Assignment)cGroup_4.eContents().get(3);
+		private final RuleCall cFieldsTemplateFieldParserRuleCall_4_3_0 = (RuleCall)cFieldsAssignment_4_3.eContents().get(0);
+		private final Group cGroup_4_4 = (Group)cGroup_4.eContents().get(4);
+		private final Keyword cCommaKeyword_4_4_0 = (Keyword)cGroup_4_4.eContents().get(0);
+		private final Assignment cFieldsAssignment_4_4_1 = (Assignment)cGroup_4_4.eContents().get(1);
+		private final RuleCall cFieldsTemplateFieldParserRuleCall_4_4_1_0 = (RuleCall)cFieldsAssignment_4_4_1.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_4_5 = (Keyword)cGroup_4.eContents().get(5);
+		private final Keyword cCommercialAtKeyword_4_6 = (Keyword)cGroup_4.eContents().get(6);
+		private final Assignment cTargetAssignment_4_7 = (Assignment)cGroup_4.eContents().get(7);
+		private final RuleCall cTargetXExpressionParserRuleCall_4_7_0 = (RuleCall)cTargetAssignment_4_7.eContents().get(0);
+		private final Group cGroup_5 = (Group)cAlternatives.eContents().get(5);
+		private final Action cHLScelExecActionAction_5_0 = (Action)cGroup_5.eContents().get(0);
+		private final Keyword cExecKeyword_5_1 = (Keyword)cGroup_5.eContents().get(1);
+		private final Keyword cLeftParenthesisKeyword_5_2 = (Keyword)cGroup_5.eContents().get(2);
+		private final Assignment cArgAssignment_5_3 = (Assignment)cGroup_5.eContents().get(3);
+		private final RuleCall cArgXExpressionParserRuleCall_5_3_0 = (RuleCall)cArgAssignment_5_3.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_5_4 = (Keyword)cGroup_5.eContents().get(4);
+		private final Keyword cCommercialAtKeyword_5_5 = (Keyword)cGroup_5.eContents().get(5);
+		private final Assignment cTargetAssignment_5_6 = (Assignment)cGroup_5.eContents().get(6);
+		private final RuleCall cTargetXExpressionParserRuleCall_5_6_0 = (RuleCall)cTargetAssignment_5_6.eContents().get(0);
+		private final Group cGroup_6 = (Group)cAlternatives.eContents().get(6);
+		private final Action cHLScelCallActionAction_6_0 = (Action)cGroup_6.eContents().get(0);
+		private final Keyword cCallKeyword_6_1 = (Keyword)cGroup_6.eContents().get(1);
+		private final Keyword cLeftParenthesisKeyword_6_2 = (Keyword)cGroup_6.eContents().get(2);
+		private final Assignment cArgAssignment_6_3 = (Assignment)cGroup_6.eContents().get(3);
+		private final RuleCall cArgXExpressionParserRuleCall_6_3_0 = (RuleCall)cArgAssignment_6_3.eContents().get(0);
+		private final Keyword cRightParenthesisKeyword_6_4 = (Keyword)cGroup_6.eContents().get(4);
 		
 		//HLScelAction returns xbase::XExpression:
 		//	{HLScelPutAction} "put" "(" featureCallArguments+=XExpression ("," featureCallArguments+=XExpression)* ")" "@"
-		//	featureCallArguments+=XExpression | {HScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")"
-		//	"@" target=XExpression;
+		//	target=XExpression | {HLScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//	target=XExpression | {HLScelQueryAction} "query" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//	target=XExpression | {HLScelGetPAction} "getp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//	target=XExpression | {HLScelQueryPAction} "queryp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//	target=XExpression | {HLScelExecAction} "exec" "(" arg=XExpression ")" "@" target=XExpression | {HLScelCallAction}
+		//	"call" "(" arg=XExpression ")";
 		public ParserRule getRule() { return rule; }
 
 		//{HLScelPutAction} "put" "(" featureCallArguments+=XExpression ("," featureCallArguments+=XExpression)* ")" "@"
-		//featureCallArguments+=XExpression | {HScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")"
-		//"@" target=XExpression
+		//target=XExpression | {HLScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//target=XExpression | {HLScelQueryAction} "query" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//target=XExpression | {HLScelGetPAction} "getp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//target=XExpression | {HLScelQueryPAction} "queryp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+		//target=XExpression | {HLScelExecAction} "exec" "(" arg=XExpression ")" "@" target=XExpression | {HLScelCallAction}
+		//"call" "(" arg=XExpression ")"
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//{HLScelPutAction} "put" "(" featureCallArguments+=XExpression ("," featureCallArguments+=XExpression)* ")" "@"
-		//featureCallArguments+=XExpression
+		//target=XExpression
 		public Group getGroup_0() { return cGroup_0; }
 
 		//{HLScelPutAction}
@@ -321,17 +508,17 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		//"@"
 		public Keyword getCommercialAtKeyword_0_6() { return cCommercialAtKeyword_0_6; }
 
-		//featureCallArguments+=XExpression
-		public Assignment getFeatureCallArgumentsAssignment_0_7() { return cFeatureCallArgumentsAssignment_0_7; }
+		//target=XExpression
+		public Assignment getTargetAssignment_0_7() { return cTargetAssignment_0_7; }
 
 		//XExpression
-		public RuleCall getFeatureCallArgumentsXExpressionParserRuleCall_0_7_0() { return cFeatureCallArgumentsXExpressionParserRuleCall_0_7_0; }
+		public RuleCall getTargetXExpressionParserRuleCall_0_7_0() { return cTargetXExpressionParserRuleCall_0_7_0; }
 
-		//{HScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@" target=XExpression
+		//{HLScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@" target=XExpression
 		public Group getGroup_1() { return cGroup_1; }
 
-		//{HScelGetAction}
-		public Action getHScelGetActionAction_1_0() { return cHScelGetActionAction_1_0; }
+		//{HLScelGetAction}
+		public Action getHLScelGetActionAction_1_0() { return cHLScelGetActionAction_1_0; }
 
 		//"get"
 		public Keyword getGetKeyword_1_1() { return cGetKeyword_1_1; }
@@ -368,6 +555,183 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 
 		//XExpression
 		public RuleCall getTargetXExpressionParserRuleCall_1_7_0() { return cTargetXExpressionParserRuleCall_1_7_0; }
+
+		//{HLScelQueryAction} "query" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@" target=XExpression
+		public Group getGroup_2() { return cGroup_2; }
+
+		//{HLScelQueryAction}
+		public Action getHLScelQueryActionAction_2_0() { return cHLScelQueryActionAction_2_0; }
+
+		//"query"
+		public Keyword getQueryKeyword_2_1() { return cQueryKeyword_2_1; }
+
+		//"("
+		public Keyword getLeftParenthesisKeyword_2_2() { return cLeftParenthesisKeyword_2_2; }
+
+		//fields+=TemplateField
+		public Assignment getFieldsAssignment_2_3() { return cFieldsAssignment_2_3; }
+
+		//TemplateField
+		public RuleCall getFieldsTemplateFieldParserRuleCall_2_3_0() { return cFieldsTemplateFieldParserRuleCall_2_3_0; }
+
+		//("," fields+=TemplateField)*
+		public Group getGroup_2_4() { return cGroup_2_4; }
+
+		//","
+		public Keyword getCommaKeyword_2_4_0() { return cCommaKeyword_2_4_0; }
+
+		//fields+=TemplateField
+		public Assignment getFieldsAssignment_2_4_1() { return cFieldsAssignment_2_4_1; }
+
+		//TemplateField
+		public RuleCall getFieldsTemplateFieldParserRuleCall_2_4_1_0() { return cFieldsTemplateFieldParserRuleCall_2_4_1_0; }
+
+		//")"
+		public Keyword getRightParenthesisKeyword_2_5() { return cRightParenthesisKeyword_2_5; }
+
+		//"@"
+		public Keyword getCommercialAtKeyword_2_6() { return cCommercialAtKeyword_2_6; }
+
+		//target=XExpression
+		public Assignment getTargetAssignment_2_7() { return cTargetAssignment_2_7; }
+
+		//XExpression
+		public RuleCall getTargetXExpressionParserRuleCall_2_7_0() { return cTargetXExpressionParserRuleCall_2_7_0; }
+
+		//{HLScelGetPAction} "getp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@" target=XExpression
+		public Group getGroup_3() { return cGroup_3; }
+
+		//{HLScelGetPAction}
+		public Action getHLScelGetPActionAction_3_0() { return cHLScelGetPActionAction_3_0; }
+
+		//"getp"
+		public Keyword getGetpKeyword_3_1() { return cGetpKeyword_3_1; }
+
+		//"("
+		public Keyword getLeftParenthesisKeyword_3_2() { return cLeftParenthesisKeyword_3_2; }
+
+		//fields+=TemplateField
+		public Assignment getFieldsAssignment_3_3() { return cFieldsAssignment_3_3; }
+
+		//TemplateField
+		public RuleCall getFieldsTemplateFieldParserRuleCall_3_3_0() { return cFieldsTemplateFieldParserRuleCall_3_3_0; }
+
+		//("," fields+=TemplateField)*
+		public Group getGroup_3_4() { return cGroup_3_4; }
+
+		//","
+		public Keyword getCommaKeyword_3_4_0() { return cCommaKeyword_3_4_0; }
+
+		//fields+=TemplateField
+		public Assignment getFieldsAssignment_3_4_1() { return cFieldsAssignment_3_4_1; }
+
+		//TemplateField
+		public RuleCall getFieldsTemplateFieldParserRuleCall_3_4_1_0() { return cFieldsTemplateFieldParserRuleCall_3_4_1_0; }
+
+		//")"
+		public Keyword getRightParenthesisKeyword_3_5() { return cRightParenthesisKeyword_3_5; }
+
+		//"@"
+		public Keyword getCommercialAtKeyword_3_6() { return cCommercialAtKeyword_3_6; }
+
+		//target=XExpression
+		public Assignment getTargetAssignment_3_7() { return cTargetAssignment_3_7; }
+
+		//XExpression
+		public RuleCall getTargetXExpressionParserRuleCall_3_7_0() { return cTargetXExpressionParserRuleCall_3_7_0; }
+
+		//{HLScelQueryPAction} "queryp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@" target=XExpression
+		public Group getGroup_4() { return cGroup_4; }
+
+		//{HLScelQueryPAction}
+		public Action getHLScelQueryPActionAction_4_0() { return cHLScelQueryPActionAction_4_0; }
+
+		//"queryp"
+		public Keyword getQuerypKeyword_4_1() { return cQuerypKeyword_4_1; }
+
+		//"("
+		public Keyword getLeftParenthesisKeyword_4_2() { return cLeftParenthesisKeyword_4_2; }
+
+		//fields+=TemplateField
+		public Assignment getFieldsAssignment_4_3() { return cFieldsAssignment_4_3; }
+
+		//TemplateField
+		public RuleCall getFieldsTemplateFieldParserRuleCall_4_3_0() { return cFieldsTemplateFieldParserRuleCall_4_3_0; }
+
+		//("," fields+=TemplateField)*
+		public Group getGroup_4_4() { return cGroup_4_4; }
+
+		//","
+		public Keyword getCommaKeyword_4_4_0() { return cCommaKeyword_4_4_0; }
+
+		//fields+=TemplateField
+		public Assignment getFieldsAssignment_4_4_1() { return cFieldsAssignment_4_4_1; }
+
+		//TemplateField
+		public RuleCall getFieldsTemplateFieldParserRuleCall_4_4_1_0() { return cFieldsTemplateFieldParserRuleCall_4_4_1_0; }
+
+		//")"
+		public Keyword getRightParenthesisKeyword_4_5() { return cRightParenthesisKeyword_4_5; }
+
+		//"@"
+		public Keyword getCommercialAtKeyword_4_6() { return cCommercialAtKeyword_4_6; }
+
+		//target=XExpression
+		public Assignment getTargetAssignment_4_7() { return cTargetAssignment_4_7; }
+
+		//XExpression
+		public RuleCall getTargetXExpressionParserRuleCall_4_7_0() { return cTargetXExpressionParserRuleCall_4_7_0; }
+
+		//{HLScelExecAction} "exec" "(" arg=XExpression ")" "@" target=XExpression
+		public Group getGroup_5() { return cGroup_5; }
+
+		//{HLScelExecAction}
+		public Action getHLScelExecActionAction_5_0() { return cHLScelExecActionAction_5_0; }
+
+		//"exec"
+		public Keyword getExecKeyword_5_1() { return cExecKeyword_5_1; }
+
+		//"("
+		public Keyword getLeftParenthesisKeyword_5_2() { return cLeftParenthesisKeyword_5_2; }
+
+		//arg=XExpression
+		public Assignment getArgAssignment_5_3() { return cArgAssignment_5_3; }
+
+		//XExpression
+		public RuleCall getArgXExpressionParserRuleCall_5_3_0() { return cArgXExpressionParserRuleCall_5_3_0; }
+
+		//")"
+		public Keyword getRightParenthesisKeyword_5_4() { return cRightParenthesisKeyword_5_4; }
+
+		//"@"
+		public Keyword getCommercialAtKeyword_5_5() { return cCommercialAtKeyword_5_5; }
+
+		//target=XExpression
+		public Assignment getTargetAssignment_5_6() { return cTargetAssignment_5_6; }
+
+		//XExpression
+		public RuleCall getTargetXExpressionParserRuleCall_5_6_0() { return cTargetXExpressionParserRuleCall_5_6_0; }
+
+		//{HLScelCallAction} "call" "(" arg=XExpression ")"
+		public Group getGroup_6() { return cGroup_6; }
+
+		//{HLScelCallAction}
+		public Action getHLScelCallActionAction_6_0() { return cHLScelCallActionAction_6_0; }
+
+		//"call"
+		public Keyword getCallKeyword_6_1() { return cCallKeyword_6_1; }
+
+		//"("
+		public Keyword getLeftParenthesisKeyword_6_2() { return cLeftParenthesisKeyword_6_2; }
+
+		//arg=XExpression
+		public Assignment getArgAssignment_6_3() { return cArgAssignment_6_3; }
+
+		//XExpression
+		public RuleCall getArgXExpressionParserRuleCall_6_3_0() { return cArgXExpressionParserRuleCall_6_3_0; }
+
+		//")"
+		public Keyword getRightParenthesisKeyword_6_4() { return cRightParenthesisKeyword_6_4; }
 	}
 
 	public class TemplateFieldElements extends AbstractParserRuleElementFinder {
@@ -378,14 +742,12 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		private final Action cFormalTemplateFieldAction_1_0 = (Action)cGroup_1.eContents().get(0);
 		private final Keyword cQuestionMarkKeyword_1_1 = (Keyword)cGroup_1.eContents().get(1);
 		private final Assignment cReferenceAssignment_1_2 = (Assignment)cGroup_1.eContents().get(2);
-		private final CrossReference cReferenceJvmIdentifiableElementCrossReference_1_2_0 = (CrossReference)cReferenceAssignment_1_2.eContents().get(0);
-		private final RuleCall cReferenceJvmIdentifiableElementFeatureCallIDParserRuleCall_1_2_0_1 = (RuleCall)cReferenceJvmIdentifiableElementCrossReference_1_2_0.eContents().get(1);
+		private final RuleCall cReferenceXFeatureCallParserRuleCall_1_2_0 = (RuleCall)cReferenceAssignment_1_2.eContents().get(0);
 		
 		/// * 
 		//Variable:
 		//	type=JvmTypeReference name=ID	
 		//;
-		//
 		//
 		//Statement:
 		//	IfThenElseStatement
@@ -415,16 +777,16 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		//;
 		//
 		// * / TemplateField returns xbase::XExpression:
-		//	XExpression | {FormalTemplateField} "?" reference=[types::JvmIdentifiableElement|FeatureCallID];
+		//	XExpression | {FormalTemplateField} "?" reference=XFeatureCall;
 		public ParserRule getRule() { return rule; }
 
-		//XExpression | {FormalTemplateField} "?" reference=[types::JvmIdentifiableElement|FeatureCallID]
+		//XExpression | {FormalTemplateField} "?" reference=XFeatureCall
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//XExpression
 		public RuleCall getXExpressionParserRuleCall_0() { return cXExpressionParserRuleCall_0; }
 
-		//{FormalTemplateField} "?" reference=[types::JvmIdentifiableElement|FeatureCallID]
+		//{FormalTemplateField} "?" reference=XFeatureCall
 		public Group getGroup_1() { return cGroup_1; }
 
 		//{FormalTemplateField}
@@ -433,20 +795,20 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 		//"?"
 		public Keyword getQuestionMarkKeyword_1_1() { return cQuestionMarkKeyword_1_1; }
 
-		//reference=[types::JvmIdentifiableElement|FeatureCallID]
+		//reference=XFeatureCall
 		public Assignment getReferenceAssignment_1_2() { return cReferenceAssignment_1_2; }
 
-		//[types::JvmIdentifiableElement|FeatureCallID]
-		public CrossReference getReferenceJvmIdentifiableElementCrossReference_1_2_0() { return cReferenceJvmIdentifiableElementCrossReference_1_2_0; }
-
-		//FeatureCallID
-		public RuleCall getReferenceJvmIdentifiableElementFeatureCallIDParserRuleCall_1_2_0_1() { return cReferenceJvmIdentifiableElementFeatureCallIDParserRuleCall_1_2_0_1; }
+		//XFeatureCall
+		public RuleCall getReferenceXFeatureCallParserRuleCall_1_2_0() { return cReferenceXFeatureCallParserRuleCall_1_2_0; }
 	}
 	
 	
 	private ModelElements pModel;
+	private ModelElementElements pModelElement;
+	private NodeDeclarationElements pNodeDeclaration;
 	private ProcessDeclarationElements pProcessDeclaration;
 	private XPrimaryExpressionElements pXPrimaryExpression;
+	private HLScelPredicateElements pHLScelPredicate;
 	private XLiteralElements pXLiteral;
 	private SelfLiteralElements pSelfLiteral;
 	private HLScelActionElements pHLScelAction;
@@ -491,13 +853,33 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 
 	
 	//Model:
-	//	elements+=ProcessDeclaration*;
+	//	elements+=ModelElement*;
 	public ModelElements getModelAccess() {
 		return (pModel != null) ? pModel : (pModel = new ModelElements());
 	}
 	
 	public ParserRule getModelRule() {
 		return getModelAccess().getRule();
+	}
+
+	//ModelElement:
+	//	ProcessDeclaration | NodeDeclaration;
+	public ModelElementElements getModelElementAccess() {
+		return (pModelElement != null) ? pModelElement : (pModelElement = new ModelElementElements());
+	}
+	
+	public ParserRule getModelElementRule() {
+		return getModelElementAccess().getRule();
+	}
+
+	//NodeDeclaration:
+	//	"node" name=ID "(" (args+=FullJvmFormalParameter ("," args+=FullJvmFormalParameter)*)? ")" "{" "}";
+	public NodeDeclarationElements getNodeDeclarationAccess() {
+		return (pNodeDeclaration != null) ? pNodeDeclaration : (pNodeDeclaration = new NodeDeclarationElements());
+	}
+	
+	public ParserRule getNodeDeclarationRule() {
+		return getNodeDeclarationAccess().getRule();
 	}
 
 	//ProcessDeclaration:
@@ -513,13 +895,23 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 	//XPrimaryExpression returns xbase::XExpression:
 	//	XConstructorCall | XBlockExpression | XSwitchExpression | XFeatureCall | XLiteral | XIfExpression | XForLoopExpression
 	//	| XWhileExpression | XDoWhileExpression | XThrowExpression | XReturnExpression | XTryCatchFinallyExpression |
-	//	XParenthesizedExpression | HLScelAction;
+	//	XParenthesizedExpression | HLScelAction | HLScelPredicate;
 	public XPrimaryExpressionElements getXPrimaryExpressionAccess() {
 		return (pXPrimaryExpression != null) ? pXPrimaryExpression : (pXPrimaryExpression = new XPrimaryExpressionElements());
 	}
 	
 	public ParserRule getXPrimaryExpressionRule() {
 		return getXPrimaryExpressionAccess().getRule();
+	}
+
+	//HLScelPredicate:
+	//	"[|" exp=XExpression "|]";
+	public HLScelPredicateElements getHLScelPredicateAccess() {
+		return (pHLScelPredicate != null) ? pHLScelPredicate : (pHLScelPredicate = new HLScelPredicateElements());
+	}
+	
+	public ParserRule getHLScelPredicateRule() {
+		return getHLScelPredicateAccess().getRule();
 	}
 
 	//XLiteral returns xbase::XExpression:
@@ -545,8 +937,12 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 
 	//HLScelAction returns xbase::XExpression:
 	//	{HLScelPutAction} "put" "(" featureCallArguments+=XExpression ("," featureCallArguments+=XExpression)* ")" "@"
-	//	featureCallArguments+=XExpression | {HScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")"
-	//	"@" target=XExpression;
+	//	target=XExpression | {HLScelGetAction} "get" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+	//	target=XExpression | {HLScelQueryAction} "query" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+	//	target=XExpression | {HLScelGetPAction} "getp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+	//	target=XExpression | {HLScelQueryPAction} "queryp" "(" fields+=TemplateField ("," fields+=TemplateField)* ")" "@"
+	//	target=XExpression | {HLScelExecAction} "exec" "(" arg=XExpression ")" "@" target=XExpression | {HLScelCallAction}
+	//	"call" "(" arg=XExpression ")";
 	public HLScelActionElements getHLScelActionAccess() {
 		return (pHLScelAction != null) ? pHLScelAction : (pHLScelAction = new HLScelActionElements());
 	}
@@ -559,7 +955,6 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 	//Variable:
 	//	type=JvmTypeReference name=ID	
 	//;
-	//
 	//
 	//Statement:
 	//	IfThenElseStatement
@@ -589,7 +984,7 @@ public class HLScelGrammarAccess extends AbstractGrammarElementFinder {
 	//;
 	//
 	// * / TemplateField returns xbase::XExpression:
-	//	XExpression | {FormalTemplateField} "?" reference=[types::JvmIdentifiableElement|FeatureCallID];
+	//	XExpression | {FormalTemplateField} "?" reference=XFeatureCall;
 	public TemplateFieldElements getTemplateFieldAccess() {
 		return (pTemplateField != null) ? pTemplateField : (pTemplateField = new TemplateFieldElements());
 	}
