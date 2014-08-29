@@ -29,17 +29,17 @@ public class HelpRescuer extends Agent {
 						Double.class), new FormalTemplateField(Integer.class)),
 				new Group(new HasValue("role", Scenario.RESCUER)));
 		
-		// TODO DA FARE CON POLICY (bloccare helpRescuer quando si passa a Rescuer)
+		System.out.println("Robot " + robotId + " gets victim message from Rescuer");
+		
 		if (scenario.getRole(robotId).equals(Scenario.RESCUER) || scenario.getRole(robotId).equals(Scenario.LOW_BATT) ) {
-			//sono io RESCUER non dovevo prendere la tupla
-			//la riaggiungo su di me
+			//I'm the rescuer, I shouldn't receive this message. (also in Low_Battery level)
 			double x = t.getElementAt(Double.class, 1);
 			double y = t.getElementAt(Double.class, 2);
 			int dimRescuerSwarm = t.getElementAt(Integer.class, 3);
 			
 			put(new Tuple("victim", x, y, dimRescuerSwarm), Self.SELF);
 
-			System.out.println("Rescuer - fatta query del HelpRescuer - Riaggiunta");
+			//System.out.println("Rescuer/LowBattery - fatta query del HelpRescuer - Riaggiunta");
 		}else{
 		
 			double x = t.getElementAt(Double.class, 1);

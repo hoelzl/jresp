@@ -7,6 +7,7 @@ import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
@@ -37,40 +38,46 @@ public class IsMoving extends Agent {
 					new ActualTemplateField(true)), Self.SELF);
 			
 			//The condition on the battery is evaluated only when we are not in the RESCUER or HELP_RESCUER
-			if (!scenario.getRole(robotId).equals(Scenario.RESCUER) ||
-					!scenario.getRole(robotId).equals(Scenario.HELP_RES) && t.getElementAt(1).equals(true)) {
-				
-				//System.out.println("ROBOT "+ this.robotId + " " + t.getElementAt(Boolean.class, 1).toString());
+			if (!scenario.getRole(robotId).equals(Scenario.RESCUER) && 
+					!scenario.getRole(robotId).equals(Scenario.HELP_RES)) {
 				
 				//check the condition on batteryLevel
-				if (scenario.getBatteryLevel(this.robotId) < 30 ){
-					
-					System.out.println("ROBOT "+ this.robotId + " battery level "+ scenario.getBatteryLevel(this.robotId));
-					
-					scenario.setUnderRecharging(this.robotId);
-					
+				t = query (new Template(
+						new ActualTemplateField("BATTERY_LEVEL"),
+						new FormalTemplateField(Double.class)), Self.SELF);
+						
+				Double batteryLevel = t.getElementAt(Double.class, 1);
+				//test battery level
+				
+				if (batteryLevel < Scenario.dechargedBattery ){
+											
 					put(new Tuple("stop"), Self.SELF);
+										
+					/*
+					 * Add the tuple for the ACTUATOR (then also for the AttributeCollector) of ChargingBattery
+					 * Note that the ACTUATOR triggers the starting of re-charging process
+					 */
 					
-					//Pass to RESCUER state
+					put(new Tuple("CHARGING", true), Self.SELF);
+					/*
+					 * Force the underRecharginStatus for creating a good simulation
+					 */
+					scenario.setUnderRecharging(robotId, true);
+					
 					put(new Tuple("role",Scenario.LOW_BATT),Self.SELF);
 
 					System.out.print("Robot "+robotId+" has become LOW BATTERY\n");
-					
-					
-					//wait for recharged battery
+
+
+					//wait for recharged battery. The tuple is added by a Sensor
 					t = query(new Template(
-								new ActualTemplateField("CHARGED"), new ActualTemplateField(true)), 
+							new ActualTemplateField("CHARGED"), new ActualTemplateField(true)), 
 							Self.SELF);
 
 					//battery recharged
 
-					//move to the EXPLORER state
+					//move to the EXPLORER state. This triggers re-starting of random exploration
 					put(new Tuple("role",Scenario.EXPLORER),Self.SELF);
-//					
-					//re-start moving
-//					double dir = r.nextDouble() * 2 * Math.PI;
-//					put(new Tuple("direction", dir), Self.SELF);
-
 
 				}
 			}

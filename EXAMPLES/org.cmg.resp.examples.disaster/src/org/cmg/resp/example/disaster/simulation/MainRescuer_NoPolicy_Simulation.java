@@ -48,8 +48,8 @@ public class MainRescuer_NoPolicy_Simulation extends JFrame {
 	private JPanel internal;
 	// private JTable table;
 
-	private static final double HEIGHT = 600;
-	private static final double WIDTH = 450;
+	private static final double HEIGHT = 400;
+	private static final double WIDTH = 250;
 
 	public MainRescuer_NoPolicy_Simulation(int robots, int numSwarmRescuer,
 			double height, double width) {
@@ -76,7 +76,7 @@ public class MainRescuer_NoPolicy_Simulation extends JFrame {
 
 			@Override
 			public void doAction(double time) {
-				scenario.step(0.4);
+				scenario.step(0.2);
 			}
 
 		}, 0.1, 0.1);
@@ -94,6 +94,7 @@ public class MainRescuer_NoPolicy_Simulation extends JFrame {
 			n.addActuator(scenario.getDirectionActuator(i));
 			n.addActuator(scenario.getPointDirectionActuator(i));
 			n.addActuator(scenario.getStopActuator(i));
+			n.addActuator(scenario.getChargingBatteryActuator(i));
 			/**
 			 * Sensors
 			 */
@@ -101,10 +102,11 @@ public class MainRescuer_NoPolicy_Simulation extends JFrame {
 			n.addSensor(scenario.getVictimSensor(i));
 			n.addSensor(scenario.getWalkingSensor(i));
 			n.addSensor(scenario.getDirectionSensor(i));
+			n.addSensor(scenario.getBatteryLevelSensor(i));
+			//Used for signal the end of Charging Process
 			n.addSensor(scenario.getBatteryChargedSensor(i));
 
 			// starting robot role
-			// ChangeRoleActuator
 			n.put(new Tuple("role", Scenario.EXPLORER));
 		
 			/**
@@ -164,17 +166,55 @@ public class MainRescuer_NoPolicy_Simulation extends JFrame {
 				}
 			});
 
+			/*
+			 * ATTRIBUTE COLLECTORs for battery management: 
+			 * 1 - battery level
+			 * 2 - whether battery is under re-charging or not 
+			 */
+			
+			n.addAttributeCollector(new AttributeCollector(
+					"battery_level", new Template(
+							new ActualTemplateField("BATTERY_LEVEL"),
+							new FormalTemplateField(Double.class))) {
+
+				@Override
+				protected Object doEval(Tuple... t) {
+					return t[0].getElementAt(Double.class, 1);
+				}
+			});
+			
+			n.addAttributeCollector(new AttributeCollector("under_recharging"
+//					, new Template(
+//							new ActualTemplateField("CHARGING"),
+//							new FormalTemplateField(Boolean.class))
+					) {
+
+				@Override
+				protected Object doEval(Tuple... t) {
+					return scenario.getUnderRecharging(robotIndex);
+				}
+			});
+			
+			// -----------------------------
+			
+			
 			n.addObserver(new Observer() {
 
 				@Override
 				public void update(Observable o, Object arg) {
 
-					// System.out.println(n.getName() + "->" +
-					// n.getAttribute("victim_perceived") +
-					// n.getAttribute("walking_attribute") +
-					// n.getAttribute("collision_attribute") +
-					// n.getAttribute("direction_attribute")
-					// );
+//				   System.out.println(n.getName() + "->" +
+//							 n.getAttribute("battery_level") +
+//							 n.getAttribute("under_recharging")
+//						);
+//					
+					
+//					System.out.println(n.getName() + "->" +
+					 //n.getAttribute("victim_perceived") +
+					 //n.getAttribute("walking_attribute") + " "+
+					 //n.getAttribute("collision_attribute") +
+					 //n.getAttribute("direction_attribute")
+//					 );
 
 				}
 			});
@@ -193,7 +233,7 @@ public class MainRescuer_NoPolicy_Simulation extends JFrame {
 			nodes.put(n.getName(), n);
 		}
 
-		env.simulate(50000);
+		env.simulate(Scenario.simulationSteps);
 	}
 
 	private void init() {
