@@ -38,15 +38,29 @@ public class TransitionCondition {
 	}
 	
 	
+	/**
+	 * Add Atom Comparison condition for the transition, followed by a connector
+	 * @param condition
+	 * @param conn
+	 */
 	public void addCondition(AtomTransitionCondition condition, ConditionConnector conn){
 		this.condition_items.add(condition);
 		this.connector.add(conn);
 	}
 	
+	/**
+	 * Add Atom Comparison condition for the transition
+	 * @param condition
+	 */
 	public void addCondition(AtomTransitionCondition condition){
 		this.condition_items.add(condition);
 	}
 	
+	/**
+	 * Check if the transition is enabled and must be performed by the Automaton
+	 * @param req AuthorisationRequest to authorised
+	 * @return whether the transtion is enabled or not
+	 */
 	public boolean checkTransitionCondition(AuthorizationRequest req) {
 		if (!condition_items.isEmpty()){
 			Boolean res = condition_items.get(0).evaluate(req); 
