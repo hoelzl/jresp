@@ -85,7 +85,7 @@ public class HelpRescuer extends Agent {
 				}
 			}
 		}
-		System.out.println("Fine HelpExplorer");
+		System.out.println("HelpExplorer finish");
 	}
 
 	private void gotoVictim(double x, double y) throws InterruptedException,

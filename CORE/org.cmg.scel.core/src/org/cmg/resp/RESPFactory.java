@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,6 +41,7 @@ import org.cmg.resp.topology.GroupPredicate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 
 /**
  * This class is used to build and manage json serializers. 

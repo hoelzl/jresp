@@ -1,0 +1,356 @@
+grammar org.cmg.resp.xtext.scellight.ScelLight with org.eclipse.xtext.common.Terminals
+
+generate scelLight "http://www.cmg.org/resp/xtext/scellight/ScelLight"
+
+Model:
+	(  (constants += ConstantDeclaration)
+	 | (projections += ProjectionDeclaration)
+	 | (functions += FunctionDeclaration)
+	 | (attributes += AttributeDeclaration )
+	 | (processes += ProcessDeclaration)
+	 | (components += ComponentDeclaration)
+	 | (systems += SystemDeclaration))*
+	 ;
+
+AttributeDeclaration:
+	'attribute' name=ID ':' type=Type ';'
+;
+
+/* Attribute declaration:
+ * - name is the attribute name;
+ * - templates is a list containing the templates used to query data from the knowledge
+ * - exp is the expression associated to the attribute. This expression may contain variables
+ * that are bound by the templates.
+ * 
+ * To compute the value of an attribute first all the templates are queried from the local knowledge,
+ * then the expression is evaluated.
+ */
+ProjectionDeclaration:
+	'projection' name=ID '='
+	    projection=ProjectionExpression ';'
+;
+
+ProjectionExpression:
+	('[' template=Template ']' '->' value=Expression ':')?
+	default=Expression 
+;
+
+ConstantDeclaration:
+	'const' type=Type name=ID '=' value=Expression ';'
+;
+
+/*
+ * Declares the id associate to components in the system. 
+ */
+ComponentDeclaration:
+	'component' name=ID '(' (parameters+=Variable (','  parameters+=Variable)*)? ')' '='
+		component=ComponentExpression 
+	';'
+;
+
+ComponentExpression:
+	ComponentConstant | ComponentReference	
+;
+
+ComponentReference:
+	reference = [ComponentDeclaration] '(' (arguments += Expression (',' arguments += Expression )* )? ')'
+;
+
+ComponentConstant:
+	'{' interface=Interface '}' '[' (knowledge=Knowledge ',')? (processes += ProcessExpression ('|' processes+=ProcessExpression )*)']'
+;
+
+ProcessExpression:
+	{ProcessReference} reference=[ProcessDeclaration] '(' (arguments+=Expression (',' arguments+=Expression )*)? ')' |
+	{EmptyProcess} 'nil'
+;
+
+
+Knowledge:
+	'<' tuples += Tuple '>' ('|' '<' tuples += Tuple '>' )*
+;
+
+Interface:
+	attributes += (IdAttributeDefinition|AttributeInstantiation) 
+	(',' attributes += (IdAttributeDefinition|AttributeInstantiation))*
+;
+
+IdAttributeDefinition:
+	'id' '=' componentId = STRING
+;
+
+AttributeInstantiation:
+	attribute = [AttributeDeclaration] '=' value=Expression
+;
+
+FunctionDeclaration:
+	'function' returnType=Type name=ID '(' (parameters+=Variable (','  parameters+=Variable)*)? ')' '=' body=Expression ';'
+;
+
+ProcessDeclaration:
+	'process' name=ID '(' (parameters+=Variable (','  parameters+=Variable)*)? ')' '{' body=Block '}'
+;
+
+
+Variable:
+	type=Type name=ID
+;
+
+ReferenceableElements:
+	Variable|ConstantDeclaration|FunctionDeclaration|AttributeDeclaration|ProjectionDeclaration
+;
+
+Command:
+	  Action  
+	| IfThenElse 
+	| While 
+	| VariableDeclaration
+	| ProcessExpression
+	| '{' Block '}'
+;
+
+VariableDeclaration:
+	declaredVariable=Variable ('=' init=Expression)? ';'
+;
+
+Action:
+	PutAction | GetAction | QueryAction | ReplaceAction
+;
+
+ReplaceAction:
+	'replace' '[' template=Template '->' tuple=Tuple ']' ';' 
+;
+
+
+GetAction:
+	'get' '(' template=Template  ')' '@' target=Expression ';'
+;
+
+QueryAction:
+	'query' '(' template=Template  ')' '@' target=Expression ';'
+;
+
+PutAction:
+	'put' '(' tuple=Tuple  ')' '@' target=Expression';'
+;
+
+ExecAction:
+	'exec' '(' arg=Expression  ')' ';'
+;
+
+Tuple:
+	fields += Expression ( ',' fields+=Expression )*
+;
+
+Template:
+	fields += TemplateField ( ',' fields += TemplateField )*
+;
+
+TemplateField:
+	AnyFormalField | FormalField | ActualField | TypedFormalField 
+;
+
+AnyFormalField: {AnyFormalField}
+	'*' 
+;
+
+TypedFormalField:
+	'(' type=Type ')'	
+;
+
+FormalField:
+	'?' ({StandardFormalField} reference=[Variable] | {FormalFieldWithDeclaration} '[' variable=Variable ']')
+;
+
+
+
+ActualField:
+	value=Expression
+;
+
+While:
+	'while' '(' guard=Expression ')' body=Command
+;
+
+/* 
+For:
+	'for' name=ID 'from' init=Expression  'to' end=Expression body=Command
+;
+*/
+
+IfThenElse: 
+	'if' '('guard=Expression')' thenBranch=Command (=> 'else' elseBranch=Command)?
+;
+
+
+Block: {Block}
+	( commands+=Command )*
+;
+
+
+
+enum Type:
+	SBOOL='bool' |
+	SINT='int' |
+	SDOUBLE='double' |
+	SSTRING='string'
+;
+
+
+Expression:
+	Disjunction
+;
+
+Disjunction returns Expression:
+	Conjunction ({Disjunction.left=current} '|' right=Disjunction)?
+;
+
+Conjunction returns Expression:
+	Negation ({Conjunction.left=current} '&' right=Conjunction)?
+;
+
+Negation returns Expression:
+	'!' {Negation} arg=Relation |
+	Relation
+;
+
+Relation returns Expression:
+	SummationSubtraction ({Relation.left=current} rel=RelationSymbol right=Relation)?
+;
+
+SummationSubtraction returns Expression:
+	MultiplicationDivision ({SummationSubtraction.left=current} op=('+'|'-') right=SummationSubtraction )?
+;
+
+MultiplicationDivision returns Expression:
+	BaseExpression ({MultiplicationDivision.left=current} op=('*'|'/') right=MultiplicationDivision )?
+;
+
+BaseExpression returns Expression:
+	'true' {TrueExpression}
+	| 'false' {FalseExpression}
+	|'(' Expression ({IfThenElseExpression.guard=current} '?'  thenBranch=Expression ':' elseBranch=Expression )? ')'
+	| StringLiteral
+	| NumberLiteral
+	| MinExpression
+	| MaxExpression
+	| FloorExpression
+	| CeilExpression
+	| PowExpression
+	| ModExpression
+	| LogExpression
+	| FactorialExpression
+	| SinExpression
+	| CosExpression
+	| TanExpression
+	| ASinExpression
+	| ACosExpression
+	| ATanExpression
+	| SelfExpression
+	| ReferenceCallAccess
+;
+
+//CountExpression:
+//	'#' arg=BaseExpression
+//;
+
+SelfExpression: {SelfExpression}
+	'self'
+;
+
+IdAttribute: {IdExpression}
+	'id'
+;
+
+StringLiteral:
+	value=STRING	
+;
+
+
+ReferenceCallAccess returns Expression:
+	Reference 
+	=> ( 
+			 {Call.function=current} '(' ( args+=Expression (',' args+=Expression )* )? ')' 
+		   )?
+;
+
+Reference:
+	ref=[ReferenceableElements]
+;
+
+
+NumberLiteral hidden() :
+	intpart=INT (isDouble ?= '.' decimal=INT)?
+;
+
+FactorialExpression:
+	'factorial' '(' arg=Expression ')'
+;
+
+LogExpression:
+	'ln' '(' arg=Expression ')'
+;
+
+ModExpression:
+	'mod' '(' arg=Expression ',' mod=Expression ')'
+;
+
+PowExpression:
+	'pow' '(' base=Expression ',' exp=Expression ')'
+;
+
+FloorExpression:
+	'floor' '(' arg=Expression ')'
+;
+
+CeilExpression:
+	'ceil' '(' arg=Expression ')'
+;
+
+MinExpression:
+	'min' '(' left = Expression ',' right = Expression  ')'
+;
+
+MaxExpression:
+	'man' '(' left = Expression ',' right = Expression ')'
+;
+
+SinExpression:
+	'sin' '(' arg = Expression ')'
+;
+
+CosExpression:
+	'cos' '(' arg = Expression ')'
+;
+
+TanExpression:
+	'tan' '(' arg = Expression ')'
+;
+
+ATanExpression:
+	'atan' '(' arg = Expression ')'
+;
+
+ASinExpression:
+	'asin' '(' arg = Expression ')'
+;
+
+ACosExpression:
+	'acos' '(' arg = Expression ')'
+;
+
+enum RelationSymbol:
+	EQ='=' |
+	NEQ='!=' |
+	LES='<'  | 
+	LEQ='<=' |
+	GEQ='>=' |
+	GTR='>'
+;
+
+/*
+ * A system consists of a sequence of componenets:
+ */
+SystemDeclaration:
+	"system" name=ID "=" elements += ComponentExpression ('||' elements += ComponentExpression )* ';'
+;

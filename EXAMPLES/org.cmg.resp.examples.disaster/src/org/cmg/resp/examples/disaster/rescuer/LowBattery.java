@@ -37,8 +37,6 @@ public class LowBattery extends Agent {
 					new ActualTemplateField("WALKING"), 
 					new ActualTemplateField(true)), Self.SELF);
 			
-			//System.out.println("ROBOT "+ this.robotId + " " + t.getElementAt(Boolean.class, 1).toString());
-			
 			//The condition on the battery is evaluated only when we are not in the RESCUER or HELP_RESCUER
 			if (!scenario.getRole(robotId).equals(Scenario.RESCUER) ||
 					!scenario.getRole(robotId).equals(Scenario.HELP_RES) && t.getElementAt(1).equals(true)) {
@@ -69,7 +67,8 @@ public class LowBattery extends Agent {
 
 					//move to the EXPLORER state
 					put(new Tuple("role",Scenario.EXPLORER),Self.SELF);
-//					//re-start moving
+//					
+					//re-start moving
 //					double dir = r.nextDouble() * 2 * Math.PI;
 //					put(new Tuple("direction", dir), Self.SELF);
 

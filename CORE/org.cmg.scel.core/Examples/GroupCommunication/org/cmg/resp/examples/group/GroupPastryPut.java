@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2012 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -92,9 +92,9 @@ public class GroupPastryPut {
 	    // env.getParameters().setString("loglevel","INFO");
 
 
-	    ScribePort p1 = ScribePort.createScribePort(new InetSocketAddress("10.94.123.42", 9998).getAddress(),9998, null, env);
-	    ScribePort p2 = ScribePort.createScribePort(new InetSocketAddress("10.94.123.42", 9999).getAddress(),9999, new InetSocketAddress("10.94.123.42", 9998), env);
-	    ScribePort p3 = ScribePort.createScribePort(new InetSocketAddress("10.94.123.42", 9997).getAddress(),9997, new InetSocketAddress("10.94.123.42", 9998), env);
+	    ScribePort p1 = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9998).getAddress(),9998, null, env);
+	    ScribePort p2 = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9999).getAddress(),9999, new InetSocketAddress("127.0.0.1", 9998), env);
+	    ScribePort p3 = ScribePort.createScribePort(new InetSocketAddress("127.0.0.1", 9997).getAddress(),9997, new InetSocketAddress("127.0.0.1", 9998), env);
 	    p1.subscribe();
 	    p2.subscribe();
 	    p3.subscribe();

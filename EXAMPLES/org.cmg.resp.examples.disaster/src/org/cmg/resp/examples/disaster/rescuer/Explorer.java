@@ -1,10 +1,8 @@
 package org.cmg.resp.examples.disaster.rescuer;
 
 import java.io.IOException;
-import java.util.concurrent.locks.Lock;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.examples.disaster.rescuer.Scenario;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
@@ -53,7 +51,7 @@ public class Explorer extends Agent {
 			}
 				
 		}
-		System.out.println("Fine Explorer");	
+		System.out.println("Explorer finish");	
 	}
 
 	private void found() throws InterruptedException, IOException {

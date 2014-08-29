@@ -34,6 +34,7 @@ import org.cmg.resp.knowledge.KnowledgeListener;
 import org.cmg.resp.knowledge.KnowledgeManager;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.policy.DefaultPermitPolicy;
 import org.cmg.resp.policy.IPolicy;
 import org.cmg.resp.protocol.Ack;
 import org.cmg.resp.protocol.AttributeReply;
@@ -389,7 +390,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 	
 	/**
 	 * Creates a new instance of a nome named <code>name</code> with knowledge repository
-	 * <code>knowledge</code>.
+	 * <code>knowledge</code>. The policy, in this case, is the default-permit one, i.e. all actions are authorized 
 	 * 
 	 * @param name node name
 	 * @param knowledge knowledge repository
@@ -398,7 +399,7 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		this.name = name;
 		this.knowledge = new Knowledge( knowledge , adapters );
 		this.agents = new LinkedList<Agent>();
-		this.policy = new NodePolicy(this);
+		this.policy = new DefaultPermitPolicy(this);
 		this.state = ContextState.READY;
 		this.ports = new LinkedList<AbstractPort>();
 		this.waiting = new LinkedList<Agent>();
@@ -413,8 +414,13 @@ public class Node extends Observable implements MessageDispatcher, INode {
 		});
 	}
 
-
-	protected void setPolicy( IPolicy policy ) {
+	/**
+	 * Add policy manager. As default it is added a permit-all policy. 
+	 * This method can be used e.g. for adding the PolicyAutomaton. 
+	 * All other classes implementing IPolicy are allowed.  
+	 * @param policy
+	 */
+	public void setPolicy( IPolicy policy ) {
 		this.policy = policy;
 		this.policy.setNode( this );
 	}

@@ -1,0 +1,120 @@
+grammar org.cmg.resp.xtext.hlscel.HLScel with org.eclipse.xtext.xbase.Xbase 
+//with org.eclipse.xtext.common.Terminals
+
+generate hLScel "http://www.cmg.org/resp/xtext/hlscel/HLScel"
+import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+
+
+Model:
+	(
+		elements += ModelElement
+	)*
+;
+
+ModelElement:
+	ProcessDeclaration | NodeDeclaration		
+;
+
+NodeDeclaration:
+	'node' name=ID '(' ( args += FullJvmFormalParameter ( ',' args += FullJvmFormalParameter )* )? ')' '{'
+
+	'}'
+;
+	
+ProcessDeclaration:
+	'process' name=ID '(' (args += FullJvmFormalParameter ( ',' args += FullJvmFormalParameter )* )?')' 
+	body=XBlockExpression
+;
+
+XPrimaryExpression returns xbase::XExpression:
+	XConstructorCall |
+	XBlockExpression |
+	XSwitchExpression |
+	XFeatureCall |
+	XLiteral |
+	XIfExpression |
+	XForLoopExpression |
+	XWhileExpression |
+	XDoWhileExpression |
+	XThrowExpression |
+	XReturnExpression |
+	XTryCatchFinallyExpression |
+	XParenthesizedExpression |
+	HLScelAction |
+	HLScelPredicate;
+
+HLScelPredicate:
+	'[|' exp = XExpression '|]'
+;
+	
+XLiteral returns xbase::XExpression:
+	XCollectionLiteral |
+	XClosure |
+	XBooleanLiteral |
+	XNumberLiteral |
+	XNullLiteral |
+	XStringLiteral |
+	XTypeLiteral |
+	SelfLiteral 
+;
+
+SelfLiteral returns xbase::XListLiteral:
+	{SelfLiteral} 'self'
+;	
+
+HLScelAction returns xbase::XExpression:
+	{HLScelPutAction}
+	'put' '(' featureCallArguments += XExpression (',' featureCallArguments +=XExpression)* ')' '@' target = XExpression
+	| {HLScelGetAction}
+	'get' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelQueryAction}
+	'query' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelGetPAction}
+	'getp' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelQueryPAction}
+	'queryp' '(' fields += TemplateField ( ',' fields += TemplateField )* ')' '@' target=XExpression
+	| {HLScelExecAction}
+	'exec' '(' arg = XExpression ')' '@' target=XExpression
+	| {HLScelCallAction}
+	'call' '(' arg = XExpression ')'
+;
+
+TemplateField returns xbase::XExpression:
+	XExpression | {FormalTemplateField} '?' reference=XFeatureCall
+;
+
+
+/* 
+Variable:
+	type=JvmTypeReference name=ID	
+;
+
+Statement:
+	IfThenElseStatement
+	| WhileStatement
+	| VariableDeclaration
+	| Block
+;
+
+Assignment:
+	target=[Variable] '=' value=XBlockExpression ';'
+;
+
+VariableDeclaration:
+	variable=Variable ('=' init=XExpression )? ';'
+;
+
+Block: 
+	'{' statements += Statement '}'
+;
+
+IfThenElseStatement:
+	'if' '(' condition=XExpression ')' thenBlock=Statement 'else' elseBlock=Statement
+;
+
+WhileStatement:
+	'while' '(' condition=XExpression ')' body=Statement
+;
+
+*/

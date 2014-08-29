@@ -54,7 +54,7 @@ public class RandomWalk extends Agent {
 			query(new Template(new ActualTemplateField("COLLISION"),
 					new ActualTemplateField(true)), Self.SELF);
 		}
-		System.out.println("Fine RandomWalk");
+		System.out.println("RandomWalk finish");
 	}
 
 }

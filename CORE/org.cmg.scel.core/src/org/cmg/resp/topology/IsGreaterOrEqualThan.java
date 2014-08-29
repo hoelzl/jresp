@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2013 Concurrency and Mobility Group.
- * Universitˆ di Firenze
+ * Universitï¿½ di Firenze
  *	
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,14 @@ public class IsGreaterOrEqualThan extends GroupPredicate {
 	 */
 	@Override
 	public boolean evaluate(HashMap<String, Attribute> data) {
-		Object v = data.get(attribute).getValue();
+		Attribute a = data.get(attribute);
+		if (a == null) {
+			return false;
+		}
+		Object v = a.getValue();
+		if (v == null) {
+			return false;
+		}
 		if (v instanceof Number) {
 			return ((Number) v).doubleValue() >= value.doubleValue();
 		}
