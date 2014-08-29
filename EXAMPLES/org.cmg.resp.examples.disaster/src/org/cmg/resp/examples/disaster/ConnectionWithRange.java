@@ -1,6 +1,5 @@
 package org.cmg.resp.examples.disaster;
 
-import java.awt.geom.Point2D;
 import java.util.Observable;
 
 import org.cmg.resp.comp.NodeConnection;

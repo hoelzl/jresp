@@ -52,10 +52,14 @@ public class SpatialPanel extends JPanel implements Observer {
 	public void paint(Graphics arg0) {
 		super.paint(arg0);
 		Graphics2D g2 = (Graphics2D) arg0;
-		//Recharging Station (only one)
+		
+		/*
+		//Re-charging Station (only one)
 		Point2D.Double charge_station = scenario.getChargingStationPosition();
 		g2.setColor(scenario.getColorChargingStation());
 		g2.fill(new Ellipse2D.Double(charge_station.x-20,charge_station.y-20, 60, 20));
+		*/
+		
 		//VICTIMs
 		for(  int i=0 ; i<scenario.getVictims() ; i++ ) {
 			g2.setColor(scenario.getColorVictim(i));

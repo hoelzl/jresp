@@ -27,7 +27,6 @@ import javax.swing.JTable;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.AttributeCollector;
-import org.cmg.resp.comp.Node;
 import org.cmg.resp.examples.disaster.DataForwarder;
 import org.cmg.resp.examples.disaster.GoToVictim;
 import org.cmg.resp.examples.disaster.RandomWalk;
@@ -35,18 +34,15 @@ import org.cmg.resp.examples.disaster.Scenario;
 import org.cmg.resp.examples.disaster.SpatialPanel;
 import org.cmg.resp.examples.disaster.VictimSeeker;
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.simulation.DeterministicDelayFactory;
 import org.cmg.resp.simulation.RandomSelector;
 import org.cmg.resp.simulation.SimulationAction;
 import org.cmg.resp.simulation.SimulationEnvironment;
 import org.cmg.resp.simulation.SimulationNode;
 import org.cmg.resp.simulation.SimulationScheduler;
-import org.cmg.resp.topology.VirtualPort;
 
 
 /**

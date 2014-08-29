@@ -13,7 +13,6 @@
 package org.cmg.resp.examples.disaster;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;

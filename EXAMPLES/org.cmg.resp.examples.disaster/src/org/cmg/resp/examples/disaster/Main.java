@@ -27,7 +27,6 @@ import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.AttributeCollector;
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;

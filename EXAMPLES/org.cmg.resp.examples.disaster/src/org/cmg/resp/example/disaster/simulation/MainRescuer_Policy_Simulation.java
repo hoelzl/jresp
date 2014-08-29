@@ -23,7 +23,6 @@ import javax.swing.JScrollPane;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.AttributeCollector;
-import org.cmg.resp.comp.Node;
 import org.cmg.resp.examples.disaster.rescuer.policy.Explorer;
 import org.cmg.resp.examples.disaster.rescuer.policy.HelpRescuer;
 import org.cmg.resp.examples.disaster.rescuer.policy.IsMoving;
@@ -34,7 +33,6 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.policy.automaton.PolicyAutomaton;
 import org.cmg.resp.policy.facpl.FacplPolicyState;
 import org.cmg.resp.policy.facpl.algorithm.PermitUnlessDeny;
@@ -44,7 +42,6 @@ import org.cmg.resp.simulation.SimulationAction;
 import org.cmg.resp.simulation.SimulationEnvironment;
 import org.cmg.resp.simulation.SimulationNode;
 import org.cmg.resp.simulation.SimulationScheduler;
-import org.cmg.resp.topology.VirtualPort;
 
 /**
  * 
@@ -201,6 +198,8 @@ public class MainRescuer_Policy_Simulation extends JFrame {
 			n.addAgent(h);
 			
 			
+			/*
+			
 			//add the PolicyAutomaton with four states [from 0 to 1]
 			n.setPolicy(new PolicyAutomaton(
 					new FacplPolicyState(n,PermitUnlessDeny.class, e.getPolicyExplorer()),
@@ -217,6 +216,10 @@ public class MainRescuer_Policy_Simulation extends JFrame {
 			//TODO per adesso non considerate
 			 
 			//########
+			
+			
+			*/
+			
 			
 			nodes.put(n.getName(), n);
 		}

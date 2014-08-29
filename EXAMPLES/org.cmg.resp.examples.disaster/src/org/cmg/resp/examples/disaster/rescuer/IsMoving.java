@@ -7,7 +7,6 @@ import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
@@ -16,14 +15,14 @@ import org.cmg.resp.topology.Self;
  * @author Andrea Margheri
  *
  */
-public class LowBattery extends Agent {
+public class IsMoving extends Agent {
 
 	private int robotId;
 	private Scenario scenario;
 	
 	Random r = new Random();
 	
-	public LowBattery(int robotId, Scenario scenario) {
+	public IsMoving(int robotId, Scenario scenario) {
 		super("LowBattery");
 		this.robotId = robotId;
 		this.scenario = scenario;

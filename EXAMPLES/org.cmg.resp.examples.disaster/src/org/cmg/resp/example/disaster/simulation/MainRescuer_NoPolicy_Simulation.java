@@ -13,15 +13,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.AttributeCollector;
-import org.cmg.resp.comp.Node;
 import org.cmg.resp.examples.disaster.rescuer.Explorer;
 import org.cmg.resp.examples.disaster.rescuer.HelpRescuer;
-import org.cmg.resp.examples.disaster.rescuer.LowBattery;
-import org.cmg.resp.examples.disaster.rescuer.Main;
+import org.cmg.resp.examples.disaster.rescuer.IsMoving;
 import org.cmg.resp.examples.disaster.rescuer.RandomWalk;
 import org.cmg.resp.examples.disaster.rescuer.Scenario;
 import org.cmg.resp.examples.disaster.rescuer.SpatialPanel;
@@ -29,21 +26,19 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.simulation.DeterministicDelayFactory;
 import org.cmg.resp.simulation.RandomSelector;
 import org.cmg.resp.simulation.SimulationAction;
 import org.cmg.resp.simulation.SimulationEnvironment;
 import org.cmg.resp.simulation.SimulationNode;
 import org.cmg.resp.simulation.SimulationScheduler;
-import org.cmg.resp.topology.VirtualPort;
 
 /**
  * @author Andrea Margheri
  * @author Michele Loreti
  * 
  */
-public class MainRescuerSimulation extends JFrame {
+public class MainRescuer_NoPolicy_Simulation extends JFrame {
 
 	/**
 	 * 
@@ -56,7 +51,7 @@ public class MainRescuerSimulation extends JFrame {
 	private static final double HEIGHT = 600;
 	private static final double WIDTH = 450;
 
-	public MainRescuerSimulation(int robots, int numSwarmRescuer,
+	public MainRescuer_NoPolicy_Simulation(int robots, int numSwarmRescuer,
 			double height, double width) {
 		super("Disaster scenario in jRESP");
 		// 1 = number of victim
@@ -192,7 +187,7 @@ public class MainRescuerSimulation extends JFrame {
 			n.addAgent(a);
 			a = new HelpRescuer(i, scenario);
 			n.addAgent(a);
-			a = new LowBattery(i, scenario);
+			a = new IsMoving(i, scenario);
 			n.addAgent(a);
 
 			nodes.put(n.getName(), n);
@@ -215,7 +210,7 @@ public class MainRescuerSimulation extends JFrame {
 		int numRescuerSwarmSize = inputRobots("Size of RESCUER swarm", 4);
 		// double width = inputHeightWidth("Arena width", 500);
 		// double height = inputHeightWidth("Arena height", 500);
-		new MainRescuerSimulation(numRobots, numRescuerSwarmSize, HEIGHT, WIDTH);
+		new MainRescuer_NoPolicy_Simulation(numRobots, numRescuerSwarmSize, HEIGHT, WIDTH);
 	}
 
 	public static int inputRobots(String message, int value) {

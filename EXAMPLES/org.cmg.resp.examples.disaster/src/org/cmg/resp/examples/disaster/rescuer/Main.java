@@ -107,18 +107,12 @@ public class Main extends JFrame {
 			n.addSensor(scenario.getBatteryChargedSensor(i));
 			
 			//starting robot role
-			//1 - for ChangeRoleActuator
 			n.put(new Tuple("role" , Scenario.EXPLORER));
-//			//2 - for RoleAttributeCollector			
-//			n.put(new Tuple("roleAttr" , Scenario.EXPLORER));
-
-			// starting robot role
-			n.put(new Tuple("role", Scenario.EXPLORER));
 
 			/**
 			 * AttributeCollector = exposing the attribute of component in the interface
 			 */
-			n.addAttributeCollector( new AttributeCollector("roleAttr"
+			n.addAttributeCollector( new AttributeCollector("role"
 //					, 
 //					new Template( new ActualTemplateField("roleAttr"),
 //								new FormalTemplateField(String.class))
@@ -193,13 +187,9 @@ public class Main extends JFrame {
 			n.addAgent(a);
 			a = new HelpRescuer(i,scenario);
 			n.addAgent(a);
-			a = new LowBattery(i, scenario);
+			a = new IsMoving(i, scenario);
 			n.addAgent(a);
 			
-
-			// TODO LowBattery behavior will be added when policy is finished
-			// a = new LowBattery(i);
-
 			nodes.put(n.getName(), n);
 		}
 	
