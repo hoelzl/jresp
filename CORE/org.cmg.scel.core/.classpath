@@ -12,5 +12,7 @@
 	<classpathentry kind="lib" path="lib/abcl-contrib.jar"/>
 	<classpathentry kind="lib" path="lib/abcl.jar"/>
 	<classpathentry kind="lib" path="lib/pastry.jar"/>
+	<classpathentry kind="lib" path="/Users/tc/Prog/Java/Workspace/jresp/LIB/google-gson-2.2.1/gson-2.2.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/hexameter-java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
