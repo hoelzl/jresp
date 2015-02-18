@@ -19,7 +19,7 @@ public class HexameterAdapter implements KnowledgeAdapter {
 	
 	private HexameterContext hexameterContext;
 	
-	public HexameterAdapter(String networkAddress, Map<String,String> repositoryMap) {
+	public HexameterAdapter(String networkAddress) {
 		hexameterContext = new HexameterContext();
 		hexameterContext.init(networkAddress);
 	}
