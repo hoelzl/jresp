@@ -59,7 +59,6 @@ public class Knowledge extends Observable {
 		}
 		this.sensors = new LinkedList<AbstractSensor>();
 		this.actuators = new LinkedList<AbstractActuator>();
-		this.adapters = new LinkedList<KnowledgeAdapter>();
 	}
 	
 	public boolean put( Tuple t ) {

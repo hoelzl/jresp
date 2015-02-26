@@ -15,19 +15,23 @@ public class HexameterAdapter implements KnowledgeAdapter {
 
 	public enum HexameterTag  {
 		HEXAMETER,
+		HADES
 	}
 	
-	private HexameterContext hexameterContext;
+	protected HexameterContext hexameterContext;
 	
 	public HexameterAdapter(String networkAddress) {
 		hexameterContext = new HexameterContext();
 		hexameterContext.init(networkAddress);
 	}
 	
+	protected HexameterAdapter() {
+		hexameterContext = new HexameterContext();	
+	}
+	
 	@Override
 	public boolean put(Tuple t) {
 		assert (HexameterTag)t.getElementAt(0) == HexameterTag.HEXAMETER;
-		
 		String recipient = (String)t.getElementAt(1);
 		String space = (String)t.getElementAt(2);
 		JSONArray data = (JSONArray)t.getElementAt(3);
